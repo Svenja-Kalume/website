@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+const lang = toLang(Astro.params.lang);
+const t = useTranslations(lang);
+
+const cases = (await getCollection('case-studies')).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout lang={lang} title={t('cases.h1')} description={t('cases.desc')}>
+  <h1>{t('cases.h1')}</h1>
+  <p class="muted">{t('cases.intro')}</p>
+  <ul class="reset">
+    {cases.map((c) => (
+      <li class="card">
+        <a href={`/${lang}/case-studies/${c.id}`}><strong>{localize(c.data.title, lang)}</strong></a>
+        <span class="tag" style="margin-left:.5rem">v{c.data.version}</span>
+        <p class="muted small" style="margin:.4rem 0 0">{localize(c.data.summary, lang)}</p>
+      </li>
+    ))}
+    {cases.length === 0 && <li class="muted">{t('cases.empty')}</li>}
+  </ul>
+</BaseLayout>

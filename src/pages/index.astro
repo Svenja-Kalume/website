@@ -1,0 +1,18 @@
+---
+// Root entry point. The site is bilingual and both locales are prefixed
+// (/en/…, /de/…), so the bare domain redirects to the default locale.
+// Kept static-friendly (meta refresh) so it works on plain IONOS hosting.
+const target = '/en/';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={target} />
+    <title>Making Complexity Understandable</title>
+  </head>
+  <body>
+    <p><a href={target}>Continue to the site →</a></p>
+  </body>
+</html>

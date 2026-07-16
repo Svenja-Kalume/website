@@ -1,0 +1,18 @@
+---
+// Client-side Mermaid rendering (light build, no headless browser needed).
+// Can be switched to build-time SVG (rehype-mermaid + Playwright) -- see CLAUDE.md.
+interface Props { code: string; }
+const { code } = Astro.props;
+---
+<div class="mermaid-wrap">
+  <pre class="mermaid">{code}</pre>
+</div>
+
+<script>
+  import mermaid from 'mermaid';
+  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'neutral';
+  mermaid.initialize({ startOnLoad: false, theme });
+  const run = () => mermaid.run({ querySelector: '.mermaid' });
+  run();
+  document.addEventListener('astro:page-load', run);
+</script>

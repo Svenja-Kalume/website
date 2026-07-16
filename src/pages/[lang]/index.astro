@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Mermaid from '../../components/Mermaid.astro';
+import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+const lang = toLang(Astro.params.lang);
+const t = useTranslations(lang);
+
+const cases = (await getCollection('case-studies')).sort((a, b) => a.data.order - b.data.order);
+
+const redThread = `flowchart TD
+  P[Problem] --> S[Stakeholders] --> W[Workshop] --> G[Glossary]
+  G --> D[DDD] --> B[BPMN] --> U[User Stories]
+  U --> J[Jira] --> A[Architecture] --> C[Code] --> R[Retrospective]`;
+---
+<BaseLayout lang={lang} title="Making Complexity Understandable" description={t('home.desc')}>
+  <h1>{t('home.h1')}</h1>
+  <p>{t('home.p1')}</p>
+  <p class="muted">{t('home.p2')}</p>
+
+  <h2>{t('home.redThread')}</h2>
+  <Mermaid code={redThread} />
+
+  <h2>{t('nav.cases')}</h2>
+  <ul class="reset">
+    {cases.map((c) => (
+      <li class="card">
+        <a href={`/${lang}/case-studies/${c.id}`}><strong>{localize(c.data.title, lang)}</strong></a>
+        <span class="tag" style="margin-left:.5rem">v{c.data.version}</span>
+        <span class="tag" style="margin-left:.3rem">{c.data.status}</span>
+        <p class="muted small" style="margin:.4rem 0 0">{localize(c.data.summary, lang)}</p>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

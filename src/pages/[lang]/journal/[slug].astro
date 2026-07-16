@@ -1,0 +1,34 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('journal');
+  return Object.keys(languages).flatMap((lang) =>
+    entries.map((entry) => ({ params: { lang, slug: entry.id }, props: { entry } }))
+  );
+}
+
+const lang = toLang(Astro.params.lang);
+const t = useTranslations(lang);
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const relatedCase = entry.data.case ? await getEntry(entry.data.case) : undefined;
+
+const locale = lang === 'de' ? 'de-DE' : 'en-US';
+const fmt = (d: Date) =>
+  d.toLocaleDateString(locale, { day: '2-digit', month: 'long', year: 'numeric' });
+---
+<BaseLayout lang={lang} title={localize(entry.data.title, lang) ?? entry.id} description={localize(entry.data.summary, lang)}>
+  <p class="small"><a href={`/${lang}/journal`}>{t('journal.back')}</a></p>
+  <p class="log-date-full small muted">{fmt(entry.data.date)}</p>
+  <h1>{localize(entry.data.title, lang)}</h1>
+  <p class="log-meta small">
+    {relatedCase && (
+      <a class="tag" href={`/${lang}/case-studies/${relatedCase.id}`}>{localize(relatedCase.data.title, lang)}</a>
+    )}
+    {entry.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+  </p>
+  <Content />
+</BaseLayout>

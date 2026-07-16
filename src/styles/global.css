@@ -1,0 +1,158 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #5c5c5c;
+  --border: #e3e3e3;
+  --accent: #2d5f8a;
+  --code-bg: #f5f5f5;
+  --max: 46rem;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171a;
+    --fg: #e6e6e6;
+    --muted: #9aa0a6;
+    --border: #2a2f34;
+    --accent: #7fb3e0;
+    --code-bg: #1e2226;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--fg);
+  background: var(--bg);
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+header.site {
+  border-bottom: 1px solid var(--border);
+}
+header.site nav {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  align-items: baseline;
+}
+header.site .brand { font-weight: 700; margin-right: auto; }
+header.site a { color: var(--fg); }
+header.site .lang-switch {
+  font-size: 0.85rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.05rem 0.6rem;
+}
+header.site .lang-switch:hover { color: var(--fg); text-decoration: none; }
+
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 2rem 1.2rem 4rem;
+}
+
+footer.site {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 2rem 1.2rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+h1, h2, h3 { line-height: 1.25; }
+h1 { font-size: 1.9rem; }
+h2 { font-size: 1.35rem; margin-top: 2.4rem; }
+
+code { font-family: var(--mono); background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
+pre { background: var(--code-bg); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+.muted { color: var(--muted); }
+.small { font-size: 0.9rem; }
+
+.tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+.button {
+  display: inline-block;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+.button:hover { background: var(--accent); color: var(--bg); text-decoration: none; }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin: 0.8rem 0;
+}
+
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { border: 1px solid var(--border); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
+th { background: var(--code-bg); }
+.table-scroll { overflow-x: auto; }
+
+/* KI-Anteil-Block: der Teil, den fast niemand zeigt */
+.ai-note {
+  border-left: 3px solid var(--accent);
+  padding: 0.4rem 0 0.4rem 0.9rem;
+  margin: 0.8rem 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.ai-note strong { color: var(--fg); }
+
+ul.reset { list-style: none; padding: 0; }
+
+.flow { display: flex; flex-direction: column; gap: 0.3rem; }
+.flow .step { padding: 0.2rem 0; }
+.flow .arrow { color: var(--muted); }
+
+.mermaid-wrap { overflow-x: auto; margin: 1.2rem 0; }
+
+/* Journal: a dated log rather than a blog. Entries sit on a timeline, the
+   date runs down the left margin, newest first, grouped by year. */
+.log-year h2 { margin-top: 2rem; }
+ol.log { margin: 0; }
+.log-entry {
+  display: flex;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--border);
+}
+.log-year ol.log .log-entry:first-child { border-top: none; }
+.log-date {
+  flex: 0 0 3.6rem;
+  padding-top: 0.15rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.log-body { flex: 1 1 auto; min-width: 0; }
+.log-body p { margin: 0.25rem 0 0; }
+.log-meta { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.log-date-full { margin-bottom: 0.2rem; }

@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Mermaid from '../../components/Mermaid.astro';
+import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+const lang = toLang(Astro.params.lang);
+const t = useTranslations(lang);
+
+const steps = (await getCollection('workflow')).sort((a, b) => a.data.order - b.data.order);
+
+const mcpFlow = `flowchart TD
+  N[Workshop notes] --> L1[LLM drafts glossary]
+  L1 --> RV[Human review]
+  RV --> L2[LLM proposes user stories]
+  L2 --> RV2[Review]
+  RV2 --> JI[Stories in Jira]
+  JI --> L3[LLM checks acceptance criteria]
+  L3 --> DEV[Development]`;
+---
+<BaseLayout lang={lang} title={t('how.h1')} description={t('how.desc')}>
+  <h1>{t('how.h1')}</h1>
+  <p>{t('how.intro')}</p>
+
+  <h2>{t('how.mcp')}</h2>
+  <Mermaid code={mcpFlow} />
+
+  <h2>{t('how.steps')}</h2>
+  {steps.length === 0 && <p class="muted">{t('how.empty')}</p>}
+  <ol>
+    {steps.map((s) => (
+      <li class="card" style="list-style:none">
+        <strong>{localize(s.data.title, lang)}</strong>
+        {s.data.tools.length > 0 && <p class="small muted" style="margin:.3rem 0">{t('how.tools')} {s.data.tools.join(', ')}</p>}
+        <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(s.data.aiRole, lang)}</p>
+      </li>
+    ))}
+  </ol>
+</BaseLayout>

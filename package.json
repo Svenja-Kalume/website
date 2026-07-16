@@ -1,0 +1,23 @@
+{
+  "name": "arbeitsweise-website",
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "re:check": "node scripts/check-traceability.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^7.0.3",
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.1.0",
+    "mermaid": "^11.16.0"
+  },
+  "devDependencies": {
+    "gray-matter": "^4.0.3"
+  }
+}
