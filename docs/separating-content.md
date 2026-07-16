@@ -77,12 +77,56 @@ This preserves an earlier state of understanding exactly, while the content repo
 
 ## Multiple example projects
 
-- **Simple (recommended start):** ONE content repo, with one `case-studies/<project>.md` per project
+Two layouts are possible. **This repo is set up for the second (multi-submodule).**
+
+- **Single content repo:** ONE content repo, with one `case-studies/<project>.md` per project
   plus its `requirements/`, `user-stories/`, etc. IDs must be unique within the content repo
   (e.g. prefix per project: `GW-R-01`, `CP-R-01`).
-- **Advanced:** one content repo per project and several submodules. Then the `base` paths in
-  `src/content.config.ts` must be extended to several directories and IDs kept unique per project.
-  Do this on demand — check in first (scope).
+- **One content repo per project (the layout in use):** each project is its own content repo,
+  mounted as its own submodule at **`src/content/<project>/`**, holding the collection folders at
+  its root. `src/content.config.ts` globs every project folder for each collection
+  (`*/<collection>/**`) and flattens IDs to the filename, so `reference()` links keep working.
+
+### The layout in use
+
+```
+Website/                         (this repo — the engine)
+└─ src/content/
+   ├─ wurzel/        → submodule → ../wurzel-content   (project 1)
+   └─ <next>/        → submodule → ../<next>-content   (project 2, later)
+```
+
+Each project content repo has the collection folders at its root:
+
+```
+wurzel-content/
+├─ case-studies/  requirements/  user-stories/  epics/  stakeholders/
+├─ glossary/  adr/  diagrams/  workflow/  journal/
+└─ README.md
+```
+
+`src/content.config.ts` already implements this — no code change to add a project:
+
+- `pattern: '*/<collection>/**/*.{md,mdx}'` — the leading `*` is the project folder.
+- `generateId` returns the **filename** (no path, extension stripped), so IDs stay flat.
+- Therefore **IDs must be unique across all projects** → prefix per project (`WZ-` for wurzel,
+  pick a new prefix for the next). `scripts/check-traceability.mjs` reads the same layout.
+
+### Adding another project later (recipe)
+
+```bash
+# 1. Create the project's content repo (skeleton = the 10 collection folders + README).
+#    Easiest: copy wurzel-content, wipe its content, pick a new ID prefix.
+
+# 2. Mount it as a submodule under the website (local path now, real URL later):
+cd Website
+git -c protocol.file.allow=always submodule add -b main ../<name>-content src/content/<name>
+git config -f .gitmodules submodule.src/content/<name>.url "../<name>-content"   # relative = portable
+git submodule sync
+
+# 3. Nothing to change in content.config.ts. Verify:
+npm run re:check && npm run build
+```
 
 ---
 

@@ -67,11 +67,15 @@ Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanl
 
 ## Content in a separate repo (separating it from the website code)
 
-The content location is configurable (`CONTENT_DIR`, default `./src/content`) so example projects can
-live in their **own repo**. Two ways, same data model, no code change:
-- **Sibling checkout:** `CONTENT_DIR=../greenworks-content npm run build`.
-- **Submodule at `src/content`** (recommended for CI/IONOS + freezing): pinning the submodule to a tag
-  freezes a state of understanding. Check out with `submodules: true` in CI/IONOS.
+Example projects live in their **own repos** — one content repo per project, each mounted as a git
+submodule at **`src/content/<project>/`** (multi-submodule layout). Each collection is the union of
+`src/content/*/<collection>/**`; `src/content.config.ts` already globs this, and IDs are flattened to
+the filename, so **IDs must be unique across projects** (prefix per project, e.g. `WZ-` for wurzel).
+- Currently mounted: `src/content/wurzel` → `../wurzel-content`.
+- Pinning a submodule to a tag freezes a state of understanding. Check out with `submodules: true` in
+  CI/IONOS. Adding a project = add another submodule, no code change (recipe in
+  `docs/separating-content.md`).
+- The whole tree is still relocatable via `CONTENT_DIR` (default `./src/content`).
 
 Rule: raw artifacts (code, `.bpmn`, `.puml`) stay in the project repo and are **linked** (`codeUrl`,
 `source`); only the presentation SVG goes to `public/diagrams/`. Full guide: **`docs/separating-content.md`**.

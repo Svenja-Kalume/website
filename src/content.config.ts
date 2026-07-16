@@ -33,17 +33,31 @@ const loc = z.object({ en: z.string(), de: z.string() });
 // A localized list of strings.
 const locArr = z.object({ en: z.array(z.string()), de: z.array(z.string()) });
 
-// The content location is configurable so example projects/content can live in a
-// SEPARATE repo. Default: ./src/content (or a submodule mounted there).
-// Alternatively via env var: CONTENT_DIR=../greenworks-content npm run build
+// MULTI-PROJECT LAYOUT (one content repo per project, mounted as git submodules).
+//
+// Each example project's content lives in its OWN repo, mounted as a submodule at
+//   src/content/<project>/
+// and holds the collection folders at its root:
+//   src/content/<project>/case-studies/  .../requirements/  .../user-stories/  ...
+//
+// A single collection therefore globs across EVERY project folder via the `*/` wildcard
+// (one path segment = the project dir). Adding another project = add another submodule;
+// no code change here. See docs/separating-content.md.
+//
+// The content root is still configurable so the whole tree can be relocated:
+//   CONTENT_DIR=../some-checkout npm run build
 const CONTENT_ROOT = process.env.CONTENT_DIR ?? './src/content';
 // Relative paths are resolved by Astro relative to the project root; absolute paths
 // must be passed as a file:// URL (otherwise: "The URL must be of scheme file").
-const resolveBase = (dir: string) => {
-  const p = `${CONTENT_ROOT}/${dir}`;
-  return isAbsolute(CONTENT_ROOT) ? pathToFileURL(p + '/') : p;
-};
-const base = (dir: string) => glob({ pattern: '**/*.{md,mdx}', base: resolveBase(dir) });
+const resolveRoot = () =>
+  isAbsolute(CONTENT_ROOT) ? pathToFileURL(CONTENT_ROOT.replace(/[\\/]?$/, '/')) : CONTENT_ROOT;
+// IDs stay FLAT (= filename without extension) regardless of which project folder a file
+// sits in, so reference() links keep working. IDs MUST therefore be unique across all
+// projects -- prefix per project (e.g. WZ-US-01 for wurzel, XX-US-01 for the next).
+const flatId = ({ entry }: { entry: string }) =>
+  entry.split(/[\\/]/).pop()!.replace(/\.(mdx?|markdown)$/i, '');
+const base = (dir: string) =>
+  glob({ pattern: `*/${dir}/**/*.{md,mdx}`, base: resolveRoot(), generateId: flatId });
 
 const caseStudies = defineCollection({
   loader: base('case-studies'),

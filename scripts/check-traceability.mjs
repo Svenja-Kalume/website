@@ -34,16 +34,30 @@ const errors = [];
 const warnings = [];
 const infos = [];
 
+// Multi-project layout: each project's content lives in its own submodule at
+// CONTENT_ROOT/<project>/, with the collection folders at its root. So a collection
+// is the union of CONTENT_ROOT/*/<collection>/**  (mirrors the glob in content.config.ts).
+// IDs stay flat (= filename without extension) and must be unique across all projects.
+const projectDirs = () =>
+  existsSync(CONTENT_ROOT)
+    ? readdirSync(CONTENT_ROOT, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name)
+    : [];
+
 function load(collection) {
-  const dir = join(CONTENT_ROOT, collection);
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir)
-    .filter((f) => /\.(md|mdx)$/.test(f))
-    .map((f) => {
+  const out = [];
+  for (const project of projectDirs()) {
+    const dir = join(CONTENT_ROOT, project, collection);
+    if (!existsSync(dir)) continue;
+    for (const rel of readdirSync(dir, { recursive: true })) {
+      const f = String(rel);
+      if (!/\.(md|mdx)$/.test(f)) continue;
       const raw = readFileSync(join(dir, f), 'utf8');
       const { data, content } = matter(raw);
-      return { id: f.replace(/\.(md|mdx)$/, ''), data, body: content, file: `${collection}/${f}` };
-    });
+      const base = f.split(/[\\/]/).pop();
+      out.push({ id: base.replace(/\.(md|mdx)$/, ''), data, body: content, file: `${project}/${collection}/${f}` });
+    }
+  }
+  return out;
 }
 
 const cases = load('case-studies');
