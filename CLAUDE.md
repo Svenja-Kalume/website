@@ -82,9 +82,11 @@ Rule: raw artifacts (code, `.bpmn`, `.puml`) stay in the project repo and are **
 
 ## Maintaining content (the normal case)
 
-A new artifact = **one Markdown file with frontmatter** in the right collection. Templates to copy:
-**`docs/templates.md`**. Do not maintain navigation/link lists by hand — just set IDs in the
-`reference()` fields, the page computes the rest.
+A new artifact = **one Markdown file with frontmatter** in the right collection. Fastest way to
+create one: **`npm run content:new -- <collection> <project> [id] [options]`** (scaffolds a
+schema-correct stub with `TODO` placeholders — it does not invent content; `--help` lists options).
+Or copy a block from **`docs/templates.md`** by hand. Do not maintain navigation/link lists by
+hand — just set IDs in the `reference()` fields, the page computes the rest.
 
 When a full example project is ready to be published as a case study and go live, follow the
 step-by-step checklist in **`docs/launch-plan.md`**.

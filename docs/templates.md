@@ -1,7 +1,20 @@
 # Content templates (to copy)
 
+> **Faster than copying by hand:** the generator scaffolds a schema-correct stub (with `TODO`
+> placeholders) in the right project submodule for you:
+> ```bash
+> npm run content:new -- <collection> <project> [id] [options]
+> npm run content:new -- requirement wurzel --prefix WZ --priority must   # auto-numbers the ID
+> npm run content:new -- story wurzel WZ-US-01 --requirement WZ-R-01
+> npm run content:new -- list wurzel                                      # what already exists
+> ```
+> It never invents content — you replace the TODOs with the real thing (linked, not made up),
+> then run `npm run re:check && npm run build`. `node scripts/new-content.mjs --help` lists all
+> options. The blocks below are the reference for what each stub contains.
+
 These files intentionally live **outside** `src/content` so they are not validated as content.
-Copy the relevant block into a new file under `src/content/<collection>/`.
+Copy the relevant block into a new file under `src/content/<project>/<collection>/` (or use the
+generator above).
 
 **Ground rule:** content from your existing project is **linked** (GitHub, Jira, diagram export),
 not re-invented. IDs = filename (e.g. `R-01.md` → ID `R-01`).

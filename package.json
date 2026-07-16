@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "re:check": "node scripts/check-traceability.mjs"
+    "re:check": "node scripts/check-traceability.mjs",
+    "content:new": "node scripts/new-content.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.3",
