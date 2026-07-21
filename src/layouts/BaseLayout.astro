@@ -30,12 +30,26 @@ const switchHref = alternatePath(Astro.url.pathname, lang);
     {description && <meta name="description" content={description} />}
     <link rel="alternate" hreflang={switchLang} href={switchHref} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      /* Apply a saved theme before paint so there is no flash. No saved value =
+         follow the OS (prefers-color-scheme). */
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <header class="site">
       <nav>
         <a class="brand" href={`/${lang}/`}>{SITE_TITLE}</a>
         {nav.slice(1).map((i) => <a href={`/${lang}${i.href}`}>{t(i.key)}</a>)}
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label={t('theme.toggle.aria')}>
+          <span class="icon-light" aria-hidden="true">☾</span>
+          <span class="icon-dark" aria-hidden="true">☀</span>
+        </button>
         <a class="lang-switch" href={switchHref} lang={switchLang} aria-label={t('lang.switch.aria')}>
           {t('lang.switch')}
         </a>
@@ -47,5 +61,18 @@ const switchHref = alternatePath(Astro.url.pathname, lang);
     <footer class="site">
       {t('footer')}
     </footer>
+    <script is:inline>
+      /* Flip between light and dark, remembering the choice. Reads the current
+         effective theme (explicit override, else OS) and stores the opposite. */
+      document.querySelector('[data-theme-toggle]')?.addEventListener('click', function () {
+        var root = document.documentElement;
+        var current =
+          root.dataset.theme ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var next = current === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try { localStorage.setItem('theme', next); } catch (e) {}
+      });
+    </script>
   </body>
 </html>

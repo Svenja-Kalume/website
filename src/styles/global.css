@@ -1,25 +1,46 @@
 :root {
-  --bg: #ffffff;
-  --fg: #1a1a1a;
-  --muted: #5c5c5c;
-  --border: #e3e3e3;
-  --accent: #2d5f8a;
-  --code-bg: #f5f5f5;
+  --bg: #fcfdfc;
+  --surface: #f5f8f6;
+  --fg: #263029;
+  --muted: #6b7a71;
+  --border: #e8ede9;
+  --accent: #2b8a5b;
+  --accent-strong: #1f6e47;
+  --accent-soft: #eaf5ef;
+  --code-bg: #f5f8f6;
   --max: 46rem;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
+/* Dark palette. Applied when the visitor's OS asks for dark AND they have not
+   forced light via the toggle, or when they explicitly force dark. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14171a;
-    --fg: #e6e6e6;
-    --muted: #9aa0a6;
-    --border: #2a2f34;
-    --accent: #7fb3e0;
-    --code-bg: #1e2226;
+  :root:not([data-theme="light"]) {
+    --bg: #11150e;
+    --surface: #1a2018;
+    --fg: #e4ebe4;
+    --muted: #94a399;
+    --border: #2a322a;
+    --accent: #56c281;
+    --accent-strong: #7bd39f;
+    --accent-soft: #18291d;
+    --code-bg: #1a2018;
   }
 }
+:root[data-theme="dark"] {
+  --bg: #11150e;
+  --surface: #1a2018;
+  --fg: #e4ebe4;
+  --muted: #94a399;
+  --border: #2a322a;
+  --accent: #56c281;
+  --accent-strong: #7bd39f;
+  --accent-soft: #18291d;
+  --code-bg: #1a2018;
+}
+
+::selection { background: var(--accent-soft); color: var(--accent-strong); }
 
 * { box-sizing: border-box; }
 
@@ -28,12 +49,14 @@ body {
   font-family: var(--font);
   color: var(--fg);
   background: var(--bg);
-  line-height: 1.6;
+  line-height: 1.7;
   font-size: 17px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
 }
 
 a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a:hover { color: var(--accent-strong); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 2px; }
 
 header.site {
   border-bottom: 1px solid var(--border);
@@ -47,8 +70,19 @@ header.site nav {
   gap: 1.1rem;
   align-items: baseline;
 }
-header.site .brand { font-weight: 700; margin-right: auto; }
+header.site .brand { font-weight: 600; margin-right: auto; letter-spacing: -0.01em; }
+header.site .brand::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 2px;
+  background: var(--accent);
+  vertical-align: baseline;
+}
 header.site a { color: var(--fg); }
+header.site nav > a:not(.brand):not(.lang-switch):hover { color: var(--accent); text-decoration: none; }
 header.site .lang-switch {
   font-size: 0.85rem;
   color: var(--muted);
@@ -57,11 +91,32 @@ header.site .lang-switch {
   padding: 0.05rem 0.6rem;
 }
 header.site .lang-switch:hover { color: var(--fg); text-decoration: none; }
+header.site .theme-toggle {
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+header.site .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+/* Swap the glyph by active theme: sun in dark mode (click → light), moon in light. */
+.theme-toggle .icon-dark { display: none; }
+.theme-toggle .icon-light { display: inline; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-dark { display: inline; }
+  :root:not([data-theme="light"]) .theme-toggle .icon-light { display: none; }
+}
+:root[data-theme="dark"] .theme-toggle .icon-dark { display: inline; }
+:root[data-theme="dark"] .theme-toggle .icon-light { display: none; }
 
 main {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 2rem 1.2rem 4rem;
+  padding: 3rem 1.2rem 5rem;
 }
 
 footer.site {
@@ -73,9 +128,14 @@ footer.site {
   font-size: 0.9rem;
 }
 
-h1, h2, h3 { line-height: 1.25; }
-h1 { font-size: 1.9rem; }
-h2 { font-size: 1.35rem; margin-top: 2.4rem; }
+h1, h2, h3 { line-height: 1.3; letter-spacing: -0.02em; font-weight: 600; }
+h1 { font-size: 1.95rem; }
+h2 {
+  font-size: 1.3rem;
+  margin-top: 2.8rem;
+  padding-left: 0.65rem;
+  border-left: 3px solid var(--accent);
+}
 
 code { font-family: var(--mono); background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
 pre { background: var(--code-bg); padding: 1rem; border-radius: 8px; overflow-x: auto; }
@@ -89,28 +149,34 @@ hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
 .tag {
   display: inline-block;
   font-size: 0.78rem;
-  padding: 0.1rem 0.5rem;
-  border: 1px solid var(--border);
+  padding: 0.1rem 0.55rem;
+  background: var(--accent-soft);
+  border: 1px solid transparent;
   border-radius: 999px;
-  color: var(--muted);
+  color: var(--accent-strong);
+  font-weight: 500;
 }
 
 .button {
   display: inline-block;
-  padding: 0.5rem 0.9rem;
+  padding: 0.5rem 1rem;
   border: 1px solid var(--accent);
   border-radius: 6px;
-  color: var(--accent);
+  background: var(--accent);
+  color: #fff;
   font-size: 0.95rem;
+  font-weight: 600;
 }
-.button:hover { background: var(--accent); color: var(--bg); text-decoration: none; }
+.button:hover { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; text-decoration: none; }
 
 .card {
   border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
   border-radius: 8px;
   padding: 1rem 1.2rem;
-  margin: 0.8rem 0;
+  margin: 0.9rem 0;
 }
+.card:hover { border-left-color: var(--accent); }
 
 table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
 th, td { border: 1px solid var(--border); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
