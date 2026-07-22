@@ -64,6 +64,14 @@ header.site .lang-switch {
   padding: 0.05rem 0.6rem;
 }
 header.site .lang-switch:hover { color: var(--fg); text-decoration: none; }
+header.site nav { padding-bottom: 0.4rem; }
+header.site .tagline {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 1.2rem 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
 
 main {
   max-width: var(--max);

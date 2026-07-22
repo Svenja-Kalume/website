@@ -33,8 +33,10 @@ export const ui = {
     'nav.about': 'About',
     'lang.switch': 'Deutsch',
     'lang.switch.aria': 'Auf Deutsch anzeigen',
-    'footer':
-      'Documentation of a way of working — AI-assisted Technical Business Analyst / Requirements Engineer.',
+    'site.title': 'Understanding Before Solving',
+    'site.subtitle':
+      'An open working journal on insights from software development, requirements engineering, and the path to a solution.',
+    'footer': 'Complexity is my dopamine.',
 
     'home.desc':
       'The visible documentation of an AI-assisted way of working in requirements engineering.',
@@ -118,8 +120,10 @@ export const ui = {
     'nav.about': 'Über mich',
     'lang.switch': 'English',
     'lang.switch.aria': 'Show in English',
-    'footer':
-      'Dokumentation einer Arbeitsweise — KI-gestützt: Technical Business Analyst / Requirements Engineer.',
+    'site.title': 'Verstehen kommt vor Lösen',
+    'site.subtitle':
+      'Ein offenes Arbeitsjournal über Erkenntnisse aus Softwareentwicklung, Requirements Engineering und dem Weg zur Lösung.',
+    'footer': 'Komplexität ist mein Dopamin',
 
     'home.desc':
       'Die sichtbare Dokumentation einer KI-gestützten Arbeitsweise im Requirements Engineering.',

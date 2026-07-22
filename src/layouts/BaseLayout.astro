@@ -2,12 +2,12 @@
 import '../styles/global.css';
 import { useTranslations, alternatePath, toLang, type Lang } from '../i18n/ui';
 
-interface Props { title: string; description?: string; lang: Lang; }
+interface Props { title?: string; description?: string; lang: Lang; }
 const { title, description, lang } = Astro.props;
 const t = useTranslations(lang);
 
-const SITE_TITLE = 'Making Complexity Understandable';
-const pageTitle = title === SITE_TITLE ? title : `${title} — ${SITE_TITLE}`;
+const SITE_TITLE = t('site.title');
+const pageTitle = !title || title === SITE_TITLE ? SITE_TITLE : `${title} — ${SITE_TITLE}`;
 
 const nav = [
   { href: '', key: 'nav.home' as const },
@@ -40,6 +40,7 @@ const switchHref = alternatePath(Astro.url.pathname, lang);
           {t('lang.switch')}
         </a>
       </nav>
+      <p class="tagline">{t('site.subtitle')}</p>
     </header>
     <main>
       <slot />
