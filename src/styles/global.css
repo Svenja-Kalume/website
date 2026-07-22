@@ -13,33 +13,6 @@
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
-/* Dark palette. Applied when the visitor's OS asks for dark AND they have not
-   forced light via the toggle, or when they explicitly force dark. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #11150e;
-    --surface: #1a2018;
-    --fg: #e4ebe4;
-    --muted: #94a399;
-    --border: #2a322a;
-    --accent: #56c281;
-    --accent-strong: #7bd39f;
-    --accent-soft: #18291d;
-    --code-bg: #1a2018;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #11150e;
-  --surface: #1a2018;
-  --fg: #e4ebe4;
-  --muted: #94a399;
-  --border: #2a322a;
-  --accent: #56c281;
-  --accent-strong: #7bd39f;
-  --accent-soft: #18291d;
-  --code-bg: #1a2018;
-}
-
 ::selection { background: var(--accent-soft); color: var(--accent-strong); }
 
 * { box-sizing: border-box; }
@@ -91,27 +64,6 @@ header.site .lang-switch {
   padding: 0.05rem 0.6rem;
 }
 header.site .lang-switch:hover { color: var(--fg); text-decoration: none; }
-header.site .theme-toggle {
-  font-size: 0.95rem;
-  line-height: 1;
-  color: var(--muted);
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.25rem 0.5rem;
-  cursor: pointer;
-  font-family: inherit;
-}
-header.site .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
-/* Swap the glyph by active theme: sun in dark mode (click → light), moon in light. */
-.theme-toggle .icon-dark { display: none; }
-.theme-toggle .icon-light { display: inline; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .theme-toggle .icon-dark { display: inline; }
-  :root:not([data-theme="light"]) .theme-toggle .icon-light { display: none; }
-}
-:root[data-theme="dark"] .theme-toggle .icon-dark { display: inline; }
-:root[data-theme="dark"] .theme-toggle .icon-light { display: none; }
 
 main {
   max-width: var(--max);

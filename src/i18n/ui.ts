@@ -33,7 +33,6 @@ export const ui = {
     'nav.about': 'About',
     'lang.switch': 'Deutsch',
     'lang.switch.aria': 'Auf Deutsch anzeigen',
-    'theme.toggle.aria': 'Toggle light / dark theme',
     'footer':
       'Documentation of a way of working — AI-assisted Technical Business Analyst / Requirements Engineer.',
 
@@ -119,7 +118,6 @@ export const ui = {
     'nav.about': 'Über mich',
     'lang.switch': 'English',
     'lang.switch.aria': 'Show in English',
-    'theme.toggle.aria': 'Helles / dunkles Design umschalten',
     'footer':
       'Dokumentation einer Arbeitsweise — KI-gestützt: Technical Business Analyst / Requirements Engineer.',
 

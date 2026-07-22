@@ -10,8 +10,7 @@ const { code } = Astro.props;
 
 <script>
   import mermaid from 'mermaid';
-  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'neutral';
-  mermaid.initialize({ startOnLoad: false, theme });
+  mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
   const run = () => mermaid.run({ querySelector: '.mermaid' });
   run();
   document.addEventListener('astro:page-load', run);
