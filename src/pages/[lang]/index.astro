@@ -14,8 +14,10 @@ const cases = (await getCollection('case-studies')).sort((a, b) => a.data.order 
 
 const redThread = `flowchart TD
   P[Problem] --> S[Stakeholders] --> W[Workshop] --> G[Glossary]
-  G --> D[DDD] --> B[BPMN] --> U[User Stories]
-  U --> J[Jira] --> A[Architecture] --> C[Code] --> R[Retrospective]`;
+  G --> D[DDD] --> U[User Stories]
+  G --> B[BPMN] --> U
+  U --> A[Architecture] --> C[Code] --> R[Retrospective]
+  R -.-> S`;
 ---
 <BaseLayout lang={lang} description={t('home.desc')}>
   <h1>{t('home.h1')}</h1>
@@ -29,7 +31,7 @@ const redThread = `flowchart TD
   <ul class="reset">
     {cases.map((c) => (
       <li class="card">
-        <a href={`/${lang}/case-studies/${c.id}`}><strong>{localize(c.data.title, lang)}</strong></a>
+        <a class="card-link" href={`/${lang}/case-studies/${c.id}`}><strong>{localize(c.data.title, lang)}</strong></a>
         <span class="tag" style="margin-left:.5rem">v{c.data.version}</span>
         <span class="tag" style="margin-left:.3rem">{c.data.status}</span>
         <p class="muted small" style="margin:.4rem 0 0">{localize(c.data.summary, lang)}</p>

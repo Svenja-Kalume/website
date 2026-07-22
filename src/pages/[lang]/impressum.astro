@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { languages, useTranslations, toLang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+const lang = toLang(Astro.params.lang);
+const t = useTranslations(lang);
+---
+<BaseLayout lang={lang} title={t('footer.impressum')}>
+  <h1>{t('footer.impressum')}</h1>
+  {lang === 'de' ? (
+    <>
+      <p>Angaben gemäß § 5 DDG</p>
+      <p>
+        Svenja Kalume<br />
+        [Straße und Hausnummer]<br />
+        [PLZ und Ort]
+      </p>
+      <h2>Kontakt</h2>
+      <p>E-Mail: [Kontakt-E-Mail]</p>
+      <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+      <p>
+        Svenja Kalume<br />
+        [Anschrift wie oben]
+      </p>
+    </>
+  ) : (
+    <>
+      <p>Information pursuant to § 5 DDG (German Digital Services Act)</p>
+      <p>
+        Svenja Kalume<br />
+        [Street and number]<br />
+        [Postal code and city]
+      </p>
+      <h2>Contact</h2>
+      <p>E-mail: [Contact e-mail]</p>
+      <h2>Responsible for the content pursuant to § 18 (2) MStV</h2>
+      <p>
+        Svenja Kalume<br />
+        [Address as above]
+      </p>
+    </>
+  )}
+</BaseLayout>

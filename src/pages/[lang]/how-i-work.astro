@@ -16,10 +16,13 @@ const mcpFlow = `flowchart TD
   N[Workshop notes] --> L1[LLM drafts glossary]
   L1 --> RV[Human review]
   RV --> L2[LLM proposes user stories]
-  L2 --> RV2[Review]
-  RV2 --> JI[Stories in Jira]
-  JI --> L3[LLM checks acceptance criteria]
-  L3 --> DEV[Development]`;
+  L2 --> RV2[Human review]
+  RV2 --> JI[User stories]
+  JI --> L3[LLM checks consistency between glossary and stories]
+  L3 --> RV3[Human review]
+  RV3 --> DEV["Development (incl. automated tests)"]
+  DEV --> RV4[AI review]
+  RV4 --> MT[Manual tests]`;
 ---
 <BaseLayout lang={lang} title={t('how.h1')} description={t('how.desc')}>
   <h1>{t('how.h1')}</h1>

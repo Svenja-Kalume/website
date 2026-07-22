@@ -1,4 +1,8 @@
 ---
+import '@fontsource/manrope/400.css';
+import '@fontsource/manrope/500.css';
+import '@fontsource/manrope/600.css';
+import '@fontsource/manrope/700.css';
 import '../styles/global.css';
 import { useTranslations, alternatePath, toLang, type Lang } from '../i18n/ui';
 
@@ -8,6 +12,9 @@ const t = useTranslations(lang);
 
 const SITE_TITLE = t('site.title');
 const pageTitle = !title || title === SITE_TITLE ? SITE_TITLE : `${title} — ${SITE_TITLE}`;
+
+const SITE_OWNER = 'Svenja Kalume';
+const year = new Date().getFullYear();
 
 const nav = [
   { href: '', key: 'nav.home' as const },
@@ -33,20 +40,32 @@ const switchHref = alternatePath(Astro.url.pathname, lang);
   </head>
   <body>
     <header class="site">
-      <nav>
-        <a class="brand" href={`/${lang}/`}>{SITE_TITLE}</a>
-        {nav.slice(1).map((i) => <a href={`/${lang}${i.href}`}>{t(i.key)}</a>)}
-        <a class="lang-switch" href={switchHref} lang={switchLang} aria-label={t('lang.switch.aria')}>
-          {t('lang.switch')}
+      <div class="masthead">
+        <a class="brand" href={`/${lang}/`}>
+          <span class="brand-title">{SITE_TITLE}</span>
+          <span class="tagline">{t('site.subtitle')}</span>
         </a>
-      </nav>
-      <p class="tagline">{t('site.subtitle')}</p>
+        <nav>
+          {nav.slice(1).map((i) => <a href={`/${lang}${i.href}`}>{t(i.key)}</a>)}
+          <a class="lang-switch" href={switchHref} lang={switchLang} aria-label={t('lang.switch.aria')}>
+            {t('lang.switch')}
+          </a>
+        </nav>
+      </div>
     </header>
     <main>
       <slot />
     </main>
     <footer class="site">
-      {t('footer')}
+      <div>
+        <p class="footer-tagline">{t('footer')}</p>
+        <nav class="footer-links">
+          <a href={`/${lang}/impressum`}>{t('footer.impressum')}</a>
+          <span aria-hidden="true">·</span>
+          <a href={`/${lang}/datenschutz`}>{t('footer.datenschutz')}</a>
+        </nav>
+        <p class="footer-copy">© {year} {SITE_OWNER} · {t('footer.rights')}</p>
+      </div>
     </footer>
   </body>
 </html>

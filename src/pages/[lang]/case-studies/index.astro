@@ -17,7 +17,7 @@ const cases = (await getCollection('case-studies')).sort((a, b) => a.data.order 
   <ul class="reset">
     {cases.map((c) => (
       <li class="card">
-        <a href={`/${lang}/case-studies/${c.id}`}><strong>{localize(c.data.title, lang)}</strong></a>
+        <a class="card-link" href={`/${lang}/case-studies/${c.id}`}><strong>{localize(c.data.title, lang)}</strong></a>
         <span class="tag" style="margin-left:.5rem">v{c.data.version}</span>
         <p class="muted small" style="margin:.4rem 0 0">{localize(c.data.summary, lang)}</p>
       </li>

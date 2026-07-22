@@ -48,7 +48,7 @@ for (const e of entries) {
           <li class="log-entry">
             <span class="log-date small muted">{fmt(e.data.date)}</span>
             <div class="log-body">
-              <a href={`/${lang}/journal/${e.id}`}><strong>{localize(e.data.title, lang)}</strong></a>
+              <a class="card-link" href={`/${lang}/journal/${e.id}`}><strong>{localize(e.data.title, lang)}</strong></a>
               {e.data.summary && <p class="small muted">{localize(e.data.summary, lang)}</p>}
               <p class="small log-meta">
                 {e.data.case && cases.get(e.id) && (

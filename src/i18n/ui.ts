@@ -37,6 +37,9 @@ export const ui = {
     'site.subtitle':
       'An open working journal on insights from software development, requirements engineering, and the path to a solution.',
     'footer': 'Complexity is my dopamine.',
+    'footer.impressum': 'Imprint',
+    'footer.datenschutz': 'Privacy',
+    'footer.rights': 'Built with curiosity and Markdown.',
 
     'home.desc':
       'The visible documentation of an AI-assisted way of working in requirements engineering.',
@@ -75,8 +78,8 @@ export const ui = {
     'how.desc': 'The AI-assisted RE/BA workflow — practical, with real tools and MCP.',
     'how.h1': 'How I Work',
     'how.intro':
-      'The real differentiator: not "I use AI", but this is what my RE workflow with AI looks like — with real tools and MCP, every step under human judgement.',
-    'how.mcp': 'MCP workflow (from a domain perspective)',
+      'The real differentiator: not "I use AI", but this is what my RE workflow with AI looks like, every step under human judgement.',
+    'how.mcp': 'Workflow (from a domain perspective)',
     'how.steps': 'Steps',
     'how.empty': 'No steps documented yet.',
     'how.tools': 'Tools:',
@@ -106,9 +109,13 @@ export const ui = {
       'From software engineer to AI-assisted requirements engineer / technical business analyst.',
     'about.h1': 'About',
     'about.p1':
-      '11 years of software development, moving towards AI-assisted requirements engineering / technical business analysis.',
+      "Good solutions don't happen by chance. They emerge when the real problem is understood — technically, in terms of the domain, and from the perspective of the people who work with it. It is exactly this path, from the first understanding to a viable solution, that fascinates me.",
     'about.p2':
-      'This site shows how I work: understand business problems, design robust systems, and use AI productively and responsibly — traceable from requirement to code.',
+      'I love understanding complex relationships, bringing different perspectives together, and letting a shared picture emerge from many individual pieces.',
+    'about.p3':
+      'This website documents exactly that process — not as a collection of perfect projects, but as an open working journal of my learning path, including wrong turns, new insights, and the question of how good solutions grow out of understanding.',
+    'about.p4':
+      'Professionally, I have worked as a software engineer for over eleven years. My focus is increasingly moving towards requirements engineering, because that is where I rediscover the very things that have driven me since the start of my career: understanding problems, connecting people, and structuring complexity.',
     'about.contact': 'Contact',
   },
   de: {
@@ -124,6 +131,9 @@ export const ui = {
     'site.subtitle':
       'Ein offenes Arbeitsjournal über Erkenntnisse aus Softwareentwicklung, Requirements Engineering und dem Weg zur Lösung.',
     'footer': 'Komplexität ist mein Dopamin',
+    'footer.impressum': 'Impressum',
+    'footer.datenschutz': 'Datenschutz',
+    'footer.rights': 'Gebaut mit Neugier und Markdown.',
 
     'home.desc':
       'Die sichtbare Dokumentation einer KI-gestützten Arbeitsweise im Requirements Engineering.',
@@ -162,8 +172,8 @@ export const ui = {
     'how.desc': 'Der KI-gestützte RE/BA-Workflow — praxisnah, mit echten Tools und MCP.',
     'how.h1': 'Arbeitsweise',
     'how.intro':
-      'Der eigentliche Unterschied: nicht „ich nutze KI", sondern so sieht mein RE-Workflow mit KI aus — mit echten Tools und MCP, jeder Schritt unter menschlichem Urteil.',
-    'how.mcp': 'MCP-Workflow (aus fachlicher Sicht)',
+      'Der eigentliche Unterschied: nicht „ich nutze KI", sondern so sieht mein RE-Workflow mit KI aus, jeder Schritt unter menschlichem Urteil.',
+    'how.mcp': 'Workflow (aus fachlicher Sicht)',
     'how.steps': 'Schritte',
     'how.empty': 'Noch keine Schritte dokumentiert.',
     'how.tools': 'Tools:',
@@ -193,9 +203,13 @@ export const ui = {
       'Vom Software-Engineering zur KI-gestützten Rolle als Requirements Engineer / Technical Business Analyst.',
     'about.h1': 'Über mich',
     'about.p1':
-      '11 Jahre Softwareentwicklung, auf dem Weg zur KI-gestützten Rolle im Requirements Engineering / als Technical Business Analyst.',
+      'Gute Lösungen entstehen nicht zufällig. Sie entstehen, wenn das eigentliche Problem verstanden wird – fachlich, technisch und aus Sicht der Menschen, die damit arbeiten. Genau dieser Weg vom ersten Verständnis bis zur tragfähigen Lösung fasziniert mich.',
     'about.p2':
-      'Diese Seite zeigt, wie ich arbeite: fachliche Probleme verstehen, robuste Systeme entwerfen und KI produktiv und verantwortungsvoll einsetzen — nachvollziehbar von der Anforderung bis zum Code.',
+      'Ich liebe es, komplexe Zusammenhänge zu verstehen, unterschiedliche Perspektiven zusammenzubringen und aus vielen Einzelteilen ein gemeinsames Bild entstehen zu lassen.',
+    'about.p3':
+      'Diese Website dokumentiert genau diesen Prozess. Nicht als Sammlung perfekter Projekte, sondern als offenes Arbeitsjournal meines Lernwegs – inklusive Irrwegen, neuen Erkenntnissen und der Frage, wie aus Verständnis gute Lösungen entstehen.',
+    'about.p4':
+      'Beruflich arbeite ich seit über elf Jahren als Software Engineer. Mein Schwerpunkt entwickelt sich zunehmend in Richtung Requirements Engineering, weil ich dort genau die Themen wiederfinde, die mich seit Beginn meiner Laufbahn antreiben: Probleme verstehen, Menschen verbinden und Komplexität strukturieren.',
     'about.contact': 'Kontakt',
   },
 } as const;
