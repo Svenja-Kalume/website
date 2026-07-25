@@ -14,15 +14,24 @@ const steps = (await getCollection('workflow')).sort((a, b) => a.data.order - b.
 
 const mcpFlow = `flowchart TD
   N[Workshop notes] --> L1[LLM drafts glossary]
-  L1 --> RV[Human review]
-  RV --> L2[LLM proposes user stories]
-  L2 --> RV2[Human review]
-  RV2 --> JI[User stories]
+  L1 --> RV{Human review}
+  RV -- ok --> L2[LLM proposes user stories]
+  RV -- needs refinement --> L1
+  L2 --> RV2{Human review}
+  RV2 -- ok --> JI[User stories]
+  RV2 -- needs refinement --> L2
   JI --> L3[LLM checks consistency between glossary and stories]
-  L3 --> RV3[Human review]
-  RV3 --> DEV["Development (incl. automated tests)"]
-  DEV --> RV4[AI review]
-  RV4 --> MT[Manual tests]`;
+  L3 --> RV3{Human review}
+  RV3 -- ok --> DEV["Development (incl. automated tests)"]
+  RV3 -- needs refinement --> L3
+  RV3 -- glossary or stories wrong --> L1
+  DEV --> RV4{AI review}
+  RV4 -- ok --> MT{Manual tests}
+  RV4 -- needs refinement --> DEV
+  MT -- ok --> ST{Stakeholder tests}
+  MT -- needs refinement --> DEV
+  ST -- ok --> DONE[Increment done]
+  ST -- needs refinement --> N`;
 ---
 <BaseLayout lang={lang} title={t('how.h1')} description={t('how.desc')}>
   <h1>{t('how.h1')}</h1>
