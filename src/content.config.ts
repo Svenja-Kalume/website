@@ -64,6 +64,9 @@ const caseStudies = defineCollection({
   schema: z.object({
     title: loc,
     summary: loc,
+    // Localized narrative shown on the case-study page (one entry per paragraph,
+    // per locale). Preferred over the Markdown body so the intro is bilingual.
+    intro: locArr.optional(),
     status: z.enum(['draft', 'in-progress', 'active', 'archived']).default('in-progress'),
     // Freeze/versioning concept: version of the documented case study (e.g. 0.1, mvp, 1.0)
     version: z.string().default('0.1'),
@@ -182,6 +185,9 @@ const journal = defineCollection({
     title: loc,
     date: z.coerce.date(),
     summary: loc.optional(),
+    // Localized entry text (one entry per paragraph, per locale). Preferred over
+    // the Markdown body so the log entry is bilingual.
+    body: locArr.optional(),
     case: reference('case-studies').optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),

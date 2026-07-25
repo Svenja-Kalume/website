@@ -45,7 +45,9 @@ const storyRows = await Promise.all(
   </p>
 
   <div>
-    <Content />
+    {entry.data.intro
+      ? localize<string[]>(entry.data.intro, lang)!.map((p) => <p>{p}</p>)
+      : <Content />}
   </div>
 
   {stakeholders.length > 0 && (
