@@ -11,7 +11,13 @@ software system: **AI-assisted, but always with human judgement.** Target profil
 The **process is the portfolio**, not the result.
 
 Red thread of every case study:
-`Problem → Stakeholders → Workshop → Glossary → DDD → BPMN → User Stories → Jira → Architecture → Code → Retrospective`.
+`Problem → Stakeholders → Workshop → Glossary → Intent-driven AI Harness → Requirements + DDD + BPMN
+→ User Stories → Readiness gate → Architecture (ADR) → Code → Tests → Retrospective`.
+
+The **readiness gate** splits failures by owner: a *formal* defect (ambiguous, not testable, glossary
+term missing) loops back into the harness — you and the machine fix it. A *business question* has no
+answer in any artifact; only a stakeholder has it, so it re-enters via the workshop. Never let the AI
+synthesise an answer to the second kind.
 
 At each station: the **artifact**, the **reasoning** ("why did I decide this way?") and the
 **AI contribution** ("what did the AI propose, what did I change?").

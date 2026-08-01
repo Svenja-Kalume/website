@@ -294,7 +294,38 @@ the only claim on the site backed by a countable figure. Last, because it rewrit
 5 workflow scripts, 8 rules, 10 skills, and the existing `docs/plans/harness-improvements.md`. The
 draft at `src/content/wurzel/docs/harness-improvement-plan.md` targets the *website's* harness and is
 misaimed; its still-valid parts are folded into stage 5 above, so that file should be deleted.
-6.2 Verify `astro-docs-structure.md`'s own checks actually hold: duplicate basenames, `title` +
+6.2 **Document the intent-driven AI harness project-side, before the website uses the term.**
+`CLAUDE.md` in the website repo now names *Intent-driven AI Harness* as a station in the red thread,
+but the harness it names lives in the app repo — 6 agents, `groom-story`/`deliver-story`, 5 workflow
+scripts, 8 rules, 10 skills. Vocabulary has to be defined where the thing itself is, or the website is
+coining a label for someone else's system.
+
+The formulation already exists in your own words, in `WZ-delivery-pipeline.md`'s caption: *"the AI
+executes the delivery phases; the human owns intent, scope and every gate."* That is the definition —
+it needs a home and a name.
+
+Suggested home: `docs/process/intent-driven-harness.md` in the app repo. `process/` is declared
+"human-facing orientation only" with `.claude/commands/` authoritative for mechanics, which is exactly
+the right split for a conceptual definition — as opposed to `harness/`, which records how the way of
+working *changed*.
+
+What it should pin down:
+
+- **What stays human**: the business need, the invariants that bound each AI proposal, priority, the
+  curation cut, and every gate. Evidence for this is already in the requirement records — the AI
+  proposed the mechanism, you set the rule it could not break.
+- **What is delegated**: drafting, grooming, parallel planning, implementation, test-first execution,
+  review.
+- **Where each gate sits and who owns it**: readiness gate, plan approval, acceptance — and the rule
+  that a *business* question never gets an AI-synthesised answer.
+- **How intent is captured** so it survives the session: which artifact holds it (`docs/` records) and
+  which does not (chat).
+
+Then the website *quotes* this rather than inventing vocabulary, and the `workflow`-per-iteration
+rendering has a source to cite. This also makes the term legible to a reader who arrives at the site
+cold — currently it would appear only in the red thread, undefined.
+
+6.3 Verify `astro-docs-structure.md`'s own checks actually hold: duplicate basenames, `title` +
 `description` on every file, no spaces in paths, `index.md` per folder. Marked executed 2026-07-26,
 never verified. Read-only, minutes — and its own justification applies: running them in the vault
 means the site never discovers a break that could have been caught earlier.
@@ -310,14 +341,19 @@ to a parent origin that does not exist, so the plumbing works only on this machi
 7.3 `astro.config.mjs` — set `site:` to the real domain.
 7.4 CI/IONOS — check out with `submodules: true`.
 
-## Pending in the working tree right now
+## Held back deliberately
 
-- **website** — `CLAUDE.md` modified: the red thread now reads
-  `Problem → Stakeholders → Workshop → Glossary → Intent-driven AI Harness → Requirements + DDD + BPMN
-  → User Stories → Readiness gate → Architecture (ADR) → Code → Tests → Retrospective`, plus a
-  paragraph on how the gate splits failures by owner (a formal defect loops back into the harness; a
-  business question goes to a stakeholder, and the AI never synthesises the answer).
-- **content repo** — untracked `workflow/WZ-01b-requirements.md` (order 1.5, `aiRole` derived from the
-  7 requirement records) and `docs/harness-improvement-plan.md` (to be deleted per 6.1).
-- Both site Mermaid diagrams and the five workflow renames were **reverted** to the `0.1.0` state:
-  hand-editing them was papering over a versioning problem that data solves.
+`workflow/WZ-01b-requirements.md` sits untracked in the content repo — a requirements stage missing
+from the six documented workflow steps, `order: 1.5`, `aiRole` derived from the seven requirement
+records rather than invented.
+
+**Do not commit it before step 1.2.** `workflow` has no `introducedIn` field yet, so committing it now
+would put it in the *current* step list and present a 7-step process as Level 1's way of working. It is
+Level 2 thinking — the `aiRole` was written with hindsight across all seven records. Nothing is broken
+by waiting: the `0.1.0` content tag does not contain it. Commit it in stage 1 with
+`introducedIn: WZ-0.2.0`, and settle its `order` against Level 2's real step list instead of the `1.5`
+guessed at now.
+
+For the same reason both site Mermaid diagrams and five workflow renames were **reverted** to the
+`0.1.0` state during the session: hand-editing them was papering over a versioning problem that data
+solves.
