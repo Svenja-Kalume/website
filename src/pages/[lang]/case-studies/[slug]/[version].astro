@@ -46,6 +46,7 @@ const groups = [
 ].filter((g) => g.items.length > 0);
 
 const corrects = await Promise.all((iteration.data.corrects ?? []).map((r) => getEntry(r)));
+const sameProcess = iteration.data.sameProcessAs ? await getEntry(iteration.data.sameProcessAs) : undefined;
 const caseTitle = localize(caseEntry.data.title, lang) ?? caseEntry.id;
 const title = localize(iteration.data.title, lang) ?? iteration.id;
 const dateStr = iteration.data.date.toISOString().slice(0, 10);
@@ -77,6 +78,17 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
     <>
       <h2>{t('iter.processChanges')}</h2>
       <ul>{(localize(iteration.data.processChanges, lang) ?? []).map((c: string) => <li>{c}</li>)}</ul>
+    </>
+  )}
+
+  {/* Continuity is a finding too: features shipped, the way of working did not move. */}
+  {sameProcess && (
+    <>
+      <h2>{t('iter.processChanges')}</h2>
+      <p class="muted">
+        {t('iter.sameProcessAs')}{' '}
+        <a href={`/${lang}/case-studies/${caseEntry.id}/${sameProcess.data.version}`}>v{sameProcess.data.version}</a>.
+      </p>
     </>
   )}
 

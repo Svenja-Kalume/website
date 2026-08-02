@@ -92,6 +92,9 @@ intro:                   # optional
 processChanges:          # the headline: what changed in HOW you work
   en: [The readiness gate now splits formal defects from business questions.]
   de: [Das Readiness-Gate trennt jetzt formale Mängel von fachlichen Fragen.]
+sameProcessAs: WZ-0.1.0  # use INSTEAD of processChanges when nothing changed in how
+                         # you work — an unchanged practice is a finding, but it has
+                         # to be said. re:check requires one of the two.
 corrects: [WZ-0.1.0]     # optional; only ever points BACKWARDS
 lessons:                 # optional
   en: [What you would do differently.]
@@ -105,6 +108,10 @@ aiContribution:          # optional
 
 There is no `status: current | superseded` field on purpose — the current iteration is *derived* from
 the highest `order`, so publishing a new one never edits the old one.
+
+**Every iteration after the first needs `processChanges` *or* `sameProcessAs`** — `re:check` warns
+otherwise. An iteration that shipped features under an unchanged way of working is a real finding, but
+a silent gap does not say so: it reads as an omission. The absence does not speak; the sentence does.
 
 ## Open question → `src/content/<project>/questions/OQ-01.md`
 

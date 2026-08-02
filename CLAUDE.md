@@ -75,6 +75,10 @@ collection. Full reasoning: **`docs/iterations-and-publication-plan.md`**.
   `npm run content:new -- story wurzel --requirement WZ-R-01 --iteration WZ-0.2.0`.
 - **Publish only `Done` work.** Shipping `Ready`/`Placeholder` stories advertises features that do not
   exist — the simulation this site refuses.
+- **Every iteration after the first states what changed in how you work** — `processChanges`, or
+  `sameProcessAs` pointing at the iteration whose practice it reused. `re:check` warns otherwise.
+  A gap in an earlier iteration only counts as evidence of growth if a later one **names** it;
+  unnarrated, it just reads as missing content. The absence does not speak; the sentence does.
 - **Citations out of a published iteration must be immutable**, and **hosting does not gate writing
   them.** Write `codeUrl` as a **repo-relative path**; it resolves against the case study's `repoUrl`
   pinned to the tag of the artifact's own iteration, so the tag is never typed and never wrong. Until

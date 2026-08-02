@@ -336,6 +336,27 @@ for (const it of iterations) {
     if (iterById.has(toId) && orderOf(toId) > it.data.order)
       errors.push(`${it.file}: corrects points at "${toId}", which comes later (order ${orderOf(toId)} > ${it.data.order}). An iteration may only correct an earlier one.`);
   }
+  if (it.data.sameProcessAs) {
+    const toId = refId(it.data.sameProcessAs);
+    checkRef(it.file, 'sameProcessAs', it.data.sameProcessAs, iterationIds);
+    if (iterById.has(toId) && orderOf(toId) > it.data.order)
+      errors.push(`${it.file}: sameProcessAs points at "${toId}", which comes later. A practice is inherited from an EARLIER iteration.`);
+  }
+}
+
+// An iteration with a predecessor must say what changed in how you work — or say
+// explicitly that nothing did, via sameProcessAs. "What changed in HOW you work" is the
+// headline of the whole concept; an iteration that only lists features is publishing a
+// changelog. A silent gap is not evidence of continuity, it just reads as an omission:
+// the absence does not speak, the sentence does.
+for (const [, list] of iterationsByCase) {
+  const sorted = [...list].sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+  for (const it of sorted.slice(1)) {
+    const hasChanges = locHasContent(it.data.processChanges)
+      || (Array.isArray(it.data.processChanges?.en) && it.data.processChanges.en.length > 0);
+    if (!hasChanges && !it.data.sameProcessAs)
+      warnings.push(`${it.file}: no processChanges and no sameProcessAs. Say what changed in how you work — or state that nothing did, with sameProcessAs pointing at the iteration whose practice this one reused.`);
+  }
 }
 
 // Every versioned artifact: introducedIn present and resolvable, change pointers backwards.

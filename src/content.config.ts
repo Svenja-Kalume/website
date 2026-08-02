@@ -118,6 +118,12 @@ const iterations = defineCollection({
     intro: locArr.optional(),
     // What changed in HOW you work -- the headline of the whole iterations concept.
     processChanges: locArr.optional(),
+    // ...or an explicit statement that NOTHING changed, pointing at the iteration whose
+    // practice this one reused. An iteration that shipped features under an unchanged way
+    // of working is a real and interesting fact -- but it has to be SAID, because a silent
+    // gap reads as an omission. re:check requires one of the two on any iteration that has
+    // a predecessor.
+    sameProcessAs: reference('iterations').optional(),
     // A later iteration may correct an earlier one; never the reverse (re:check errors).
     corrects: z.array(reference('iterations')).default([]),
     lessons: locArr.optional(),
