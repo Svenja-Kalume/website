@@ -152,6 +152,20 @@ for (const d of diagrams) {
   if (!locHasContent(d.data.aiContribution)) infos.push(`${d.file}: no AI contribution documented.`);
 }
 
+// ---- Citations out of a published iteration must be immutable ----
+// An iteration is append-only: what it published must still read the same in a year.
+// A citation pinned to a moving branch breaks that silently — the artifact stays
+// unedited while the thing it points at changes underneath it. Pin to the release tag
+// the iteration is named after.
+const MOVING_REF = /\/(blob|tree|raw|src)\/(main|master|HEAD|develop)\//i;
+for (const e of [...stories, ...requirements, ...diagrams, ...adrs, ...workflow, ...iterations]) {
+  for (const field of ['codeUrl', 'sourceUrl']) {
+    const url = e.data[field];
+    if (typeof url === 'string' && MOVING_REF.test(url))
+      warnings.push(`${e.file}: ${field} points at a moving branch. A published artifact must cite a tag (e.g. .../blob/0.1.0/...), or what it says changes underneath it.`);
+  }
+}
+
 // ---- Retrospectives must name what they changed ----
 // "The retrospective improves the process" is a claim the site makes. A retro-tagged
 // entry that names no harness change is a status update wearing the label.

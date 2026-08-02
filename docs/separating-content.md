@@ -42,6 +42,38 @@ The 0.1.0 content history is preserved: `C:\spielerei\wurzel-content` holds comm
 
 ---
 
+## The citation contract (what the site needs from a project's vault)
+
+The site never reads a project's vault — it **cites** it, through two fields:
+
+| field | on | shape |
+|---|---|---|
+| `source` | user-stories, requirements, diagrams, adr, workflow, questions | a **vault-relative path**, e.g. `docs/user-stories/l2-block1-offer-pdf.md` |
+| `codeUrl` | user-stories | an **absolute URL**, so it needs the project repo to be reachable |
+| `sourceUrl` | iterations | absolute URL of the release tag |
+
+Two rules follow from iterations being append-only, and they are the whole contract:
+
+1. **Citations out of a published iteration must be immutable.** An artifact published in `0.1.0`
+   still has to read the same in a year. A URL pointing at `…/blob/main/…` breaks that *silently*:
+   the artifact is never edited, but what it points at changes underneath it. Pin to the tag the
+   iteration is named after — `…/blob/0.1.0/…`. `re:check` warns on a moving-branch citation.
+2. **Basenames must stay unique and paths must stay stable** *within one published state*. Moving a
+   vault file after it has been cited rots the `source` path. Reorganise **before** the citations
+   exist, or accept that older iterations point at the old layout — which is fine, and is exactly
+   why rule 1 pins to a tag.
+
+A vault that keeps its own house rules (unique basenames across the tree, no spaces in paths,
+`title` + `description` everywhere) satisfies this without extra work.
+
+**If a vault is ever mounted directly** (option A+ in the publication plan), one more thing bites:
+index/manifest files. A generated `index.md` or `manifest.md` inside a collection folder carries only
+`title` + `description`, and the collection schemas require far more — so those files fail validation.
+Mounting would need them moved out of the collection folders, or a schema union that tolerates them.
+Worth knowing before choosing A+; not a problem while the vault is only cited.
+
+---
+
 ## Option A — Content in this repo (in use)
 
 Nothing to configure. `src/content/<project>/` is tracked here like any other source, and the default

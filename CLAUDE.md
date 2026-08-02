@@ -75,6 +75,10 @@ collection. Full reasoning: **`docs/iterations-and-publication-plan.md`**.
   `npm run content:new -- story wurzel --requirement WZ-R-01 --iteration WZ-0.2.0`.
 - **Publish only `Done` work.** Shipping `Ready`/`Placeholder` stories advertises features that do not
   exist — the simulation this site refuses.
+- **Citations out of a published iteration must be immutable.** `codeUrl` / `sourceUrl` pin to the
+  release tag (`…/blob/0.1.0/…`), never to `main` — otherwise the artifact stays unedited while what
+  it points at changes underneath it, which defeats append-only silently. `re:check` warns.
+  Full contract with the project vault: `docs/separating-content.md`.
 - `case-studies.version` is **deprecated**; the displayed version must be derived from the current
   iteration.
 
