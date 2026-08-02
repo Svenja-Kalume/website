@@ -10,16 +10,25 @@ is published — and show **how the way of working changed**, not only which fea
 
 | Name used here | Path | Role |
 |---|---|---|
-| **website** | `C:\spielerei\Website` | the Astro site |
-| **content repo** | `C:\spielerei\Website\src\content\wurzel` → origin `C:\spielerei\wurzel-content` | curated, bilingual, `aiContribution`-carrying case-study content (submodule) |
+| **website** | `C:\spielerei\Website` | the Astro site **and the case-study content** (`src/content/wurzel/`) |
 | **app repo / vault** | `C:\spielerei\wurzel` | the .NET solution + `docs/` — the working vault. Never mounted into the site; cited by URL. |
 
-No git relationship between the app repo and the content repo; content is derived by hand.
-None of the three has a remote today.
+No git relationship between the app repo and the content; content is derived by hand.
+Neither repo has a remote today.
+
+> **Amended 2026-08-02.** The content was originally a third repo (`C:\spielerei\wurzel-content`)
+> mounted as a submodule at `src/content/wurzel`. Removed: it isolated content written for this site
+> only, by the same author, consumed by nothing else — while the independence that matters (the app
+> repo) was already achieved by *linking* rather than mounting. Freezing a state of understanding is
+> what this plan turns into data anyway (`iterations` + `introducedIn`), which was the submodule's
+> last job. `wurzel-content` is retained as a history backup (branch `import-0.1.0`, tag `0.1.0`);
+> the re-split recipe lives in `docs/separating-content.md` (Option C) for the day the content gains
+> a second author or consumer. Everywhere below that said "content repo", read
+> "`src/content/wurzel/` in the website repo".
 
 ## Decisions taken
 
-1. **Option A — one content repo per project.** The content repo holds what cannot be derived
+1. **Option A — one curated content folder per project.** That folder holds what cannot be derived
    (bilingual prose, `aiContribution`, stakeholders, requirements, the curation cut); the vault holds
    what was built and is *cited*, not copied. Chosen over mounting the vault (A+) because the vault's
    machine-readable contract exists only thanks to a deliberate Astro-shaping plan, and the next
@@ -122,12 +131,14 @@ Same reasoning for `adr`: `supersedes: reference('adr').optional()` on the new A
 `supersededBy` on the old one (this also matches the vault, where the superseding ADR is the newer
 file).
 
-1.3 **content repo** — `iterations/WZ-0.1.0.md`: level 1, version `0.1.0`, date = the `0.1.0` tag date
-from the app repo. `processChanges` / `lessons` stay empty — they are your commentary, not derivable.
+1.3 **content** — `src/content/wurzel/iterations/WZ-0.1.0.md`: level 1, version `0.1.0`, date = the
+`0.1.0` tag date from the app repo. `processChanges` / `lessons` stay empty — they are your
+commentary, not derivable.
 
-1.4 **content repo** — backfill `introducedIn: WZ-0.1.0` into the 46 existing artifacts
+1.4 **content** — backfill `introducedIn: WZ-0.1.0` into the 46 existing artifacts
 (20 stories · 7 requirements · 8 diagrams · 5 ADRs · 6 workflow steps) as **one commit labelled as a
-migration**. Additive metadata only, no claim is edited.
+migration**. Additive metadata only, no claim is edited. Since 2026-08-02 the schema (1.2) and this
+backfill live in the same repo, so they can land as one atomic commit — no broken intermediate state.
 
 1.5 **website** `scripts/check-traceability.mjs` — count limits **per project per iteration**; ADRs and
 diagrams as "new per iteration"; validate iteration references; `order` unique within a case study
@@ -142,8 +153,8 @@ warning from the second iteration onward, and an uncleanable warning is one you 
 
 A second project is expected. What that requires, and what it must not require:
 
-- **Adding a project stays "add a submodule, no code change."** Its content repo carries the same
-  collections, including `iterations`. Nothing in stage 1 or 2 may hard-code wurzel.
+- **Adding a project stays "add a folder, no code change."** Its folder carries the same collections,
+  including `iterations`. Nothing in stage 1 or 2 may hard-code wurzel.
 - **Ids are prefixed per project** — `WZ-0.1.0`, then `<XX>-0.1.0`. Ids are flattened to the filename
   across all projects (`content.config.ts`), so they must be globally unique. Same for `order`, which
   is only ever compared within one case study.
@@ -156,15 +167,15 @@ A second project is expected. What that requires, and what it must not require:
   comparing feature delivery across unrelated projects means nothing.
 - **But the way of working has one timeline, and it spans projects.** The harness carrying over from
   wurzel into the next project — and improving there — is a stronger story than either project's
-  features. Today `workflow` steps live inside each content repo, so a cross-project view of the
-  method has no home.
+  features. Today `workflow` steps live inside each project's content folder, so a cross-project view
+  of the method has no home.
 
   Two options when the second project arrives, to decide then rather than now:
-  **(a)** a site-level `method` collection in the website repo (not per project), whose entries
+  **(a)** a site-level `method` collection outside every project folder, whose entries
   reference the project-iterations that changed them — one timeline of how you work, citing evidence
   from both projects; or **(b)** keep `workflow` per project and render a comparison view that reads
   both. (a) is cleaner and matches "the process is the portfolio"; (b) avoids inventing a collection
-  that lives outside every content repo. Not blocking — it only matters once project two has content.
+  that lives outside every project folder. Not blocking — it only matters once project two has content.
 
 Consequence for stage 2: build the rendering to loop over case studies and their iterations, never
 over "wurzel" specifically, and never assume a level exists.
@@ -248,11 +259,11 @@ The publication shape agreed for an iteration:
 - **Level 3 as work-in-progress evidence** — groomed, not built, `l3-block1a-grilling-decisions.md`
   linked. Process evidence, no feature claim.
 
-Steps: tag the app repo → write the content in the content repo with
+Steps: tag the app repo → write the content under `src/content/wurzel/` with
 `introducedIn: WZ-0.2.0` (L1 files untouched) → an L2 process diagram beside
-`WZ-delivery-pipeline.md` → tag the content repo → bump the submodule pointer → `re:check`, `build`.
+`WZ-delivery-pipeline.md` → `re:check`, `build` → one commit, tagged in the website repo.
 
-**Publishing adds files; it never overwrites one.** `git status` in the content repo after writing L2
+**Publishing adds files; it never overwrites one.** `git status` after writing L2
 should show only additions. A modified L1 file is the signal that something is being expressed on the
 wrong side of the link — put it on the new artifact instead. The two legitimate exceptions, both
 outside the frozen content: `case-studies/wurzel.md` if the case study's own narrative genuinely needs
@@ -332,25 +343,26 @@ means the site never discovers a break that could have been caught earlier.
 
 ## Stage 7 — deployment plumbing
 
-7.1 The content origin `C:\spielerei\wurzel-content` still lacks the `0.1.0` content commit and tag —
-it holds only the skeleton. A clean clone of the site therefore builds with zero content. Note it is
-**non-bare** with `main` checked out, so a plain push is refused; convert to bare, set
-`receive.denyCurrentBranch=updateInstead`, or move to a real remote.
-7.2 Real remotes for all three repos. `.gitmodules` currently points at `../wurzel-content`, relative
-to a parent origin that does not exist, so the plumbing works only on this machine.
+7.1 ~~The content origin lacks the `0.1.0` commit~~ — **resolved 2026-08-02** by absorbing the content
+into the website repo. A clean clone now builds with full content, and there is no submodule pointer
+to keep in sync. (`C:\spielerei\wurzel-content` keeps the original history as a backup on branch
+`import-0.1.0` with tag `0.1.0`; nothing reads it.)
+7.2 A real remote for the website repo, and one for the app repo (`C:\spielerei\wurzel`) so the
+`codeUrl` / `source` links the content already carries actually resolve. One remote, not three.
 7.3 `astro.config.mjs` — set `site:` to the real domain.
-7.4 CI/IONOS — check out with `submodules: true`.
+7.4 CI/IONOS — plain checkout, no submodule flag needed.
 
 ## Held back deliberately
 
-`workflow/WZ-01b-requirements.md` sits untracked in the content repo — a requirements stage missing
+`src/content/wurzel/workflow/WZ-01b-requirements.md` sits **untracked** — a requirements stage missing
 from the six documented workflow steps, `order: 1.5`, `aiRole` derived from the seven requirement
 records rather than invented.
 
 **Do not commit it before step 1.2.** `workflow` has no `introducedIn` field yet, so committing it now
 would put it in the *current* step list and present a 7-step process as Level 1's way of working. It is
 Level 2 thinking — the `aiRole` was written with hindsight across all seven records. Nothing is broken
-by waiting: the `0.1.0` content tag does not contain it. Commit it in stage 1 with
+by waiting: the `0.1.0` content tag does not contain it, and it was deliberately left out of the
+2026-08-02 absorb commit as well, so it is still untracked in the website repo. Commit it in stage 1 with
 `introducedIn: WZ-0.2.0`, and settle its `order` against Level 2's real step list instead of the `1.5`
 guessed at now.
 

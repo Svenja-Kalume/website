@@ -2,13 +2,13 @@
 /**
  * Scaffolding generator for a new content artifact.
  *
- * Creates ONE schema-correct Markdown stub in the right project submodule, with
+ * Creates ONE schema-correct Markdown stub in the right project folder, with
  * `TODO` placeholders for the human-readable prose. It does NOT invent content
  * (north-star principle #2): it produces an empty-but-valid file that builds, and
  * you replace the TODOs with the real thing (drawn from the linked project, not
  * made up). Mirrors the shapes in docs/templates.md and src/content.config.ts.
  *
- * Layout (multi-submodule): files go to  <CONTENT_ROOT>/<project>/<collection>/<id>.md
+ * Layout (one folder per project): files go to  <CONTENT_ROOT>/<project>/<collection>/<id>.md
  * Honours CONTENT_DIR (default ./src/content), same as the site and re:check.
  *
  * Usage:
@@ -107,7 +107,7 @@ if (!collection) die(`unknown collection "${collInput}". One of: ${[...new Set(O
 
 const projectRoot = join(CONTENT_ROOT, project);
 if (!existsSync(projectRoot))
-  die(`project "${project}" not mounted at ${projectRoot}.\n  Add its content repo as a submodule first (see docs/separating-content.md).`);
+  die(`project "${project}" not found at ${projectRoot}.\n  Create its content folder first (see docs/separating-content.md).`);
 const targetDir = join(projectRoot, collection);
 
 // ---- determine id ----

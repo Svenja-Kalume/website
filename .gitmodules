@@ -1,4 +1,0 @@
-[submodule "src/content/wurzel"]
-	path = src/content/wurzel
-	url = ../wurzel-content
-	branch = main

@@ -10,9 +10,11 @@ repo; the site is the showcase that ties them together and makes them traceable.
 
 ## Phase 0 — Decisions to lock first
 
-- [ ] Confirm the **content strategy**: Option A (sibling `CONTENT_DIR`) or **Option B (submodule at
-      `src/content`)** — recommended B for CI + freezing. See `docs/separating-content.md`.
-- [ ] Decide the **repo layout**: this website repo · a content repo · the real project repo(s).
+- [ ] Confirm the **content strategy**. Settled 2026-08-02: content lives **in this repo** under
+      `src/content/<project>/` (Option A). Only revisit if this project's content gains a second
+      author or a second consumer. See `docs/separating-content.md`.
+- [ ] Decide the **repo layout**: this website repo · the real project repo(s). The project repo stays
+      independent — it is **linked**, never mounted.
 - [ ] Confirm **hosting** (IONOS Deploy Now) and the **domain** (+ demo subdomain, if any).
 - [ ] Decide whether this project ships **with a demo** or as a documented case study only.
 
@@ -26,7 +28,7 @@ repo; the site is the showcase that ties them together and makes them traceable.
 
 ## Phase 2 — Model the case study (populate collections)
 
-Copy from `docs/templates.md` into `src/content/…` (or the content repo). If you have several
+Copy from `docs/templates.md` into `src/content/<project>/…`. If you have several
 projects, **prefix IDs** per project (e.g. `GW-R-01`).
 
 - [ ] `case-studies/<project>.md` — business case, `status`, `version`, `demoUrl` (if a demo).
@@ -62,17 +64,19 @@ projects, **prefix IDs** per project (e.g. `GW-R-01`).
 - [ ] Freeze it: build the tagged milestone once, host it under a versioned URL
       (`/mvp/` or `demo.<domain>`), set the case study's `demoUrl`. Do not rebuild a frozen version.
 
-## Phase 6 — Wire the content repo (if Option B)
+## Phase 6 — Freeze the state of understanding
 
-- [ ] `git submodule add <content-repo-url> src/content`; commit the pointer.
-- [ ] For a frozen state: `cd src/content && git checkout <tag>` and commit the submodule pointer.
-- [ ] Enable `submodules: true` in the CI checkout (IONOS Deploy Now / GitHub Actions).
+- [ ] Freezing is **data, not a git pointer**: add the project's `iterations` entry and stamp
+      `introducedIn` on its artifacts. Published iterations are append-only — never edit a published
+      file (`docs/iterations-and-publication-plan.md`).
+- [ ] Only if the content was split out again (Option C): commit the submodule pointer and enable
+      `submodules: true` in the CI checkout.
 
 ## Phase 7 — Deploy (IONOS)
 
 - [ ] Set `site:` in `astro.config.mjs` to the real domain.
 - [ ] Initialise/push the Git repo(s) to GitHub.
-- [ ] IONOS **Deploy Now**: connect the repo, confirm Astro is auto-detected, defaults ok, submodules on.
+- [ ] IONOS **Deploy Now**: connect the repo, confirm Astro is auto-detected, defaults ok.
 - [ ] Make CI run `npm run re:check` **and** `npm run build` (gate on green).
 - [ ] Attach the custom domain (+ demo subdomain). Verify sitemap/canonical.
 

@@ -1,16 +1,17 @@
 # Keeping example projects / content separate from the website code
 
-The site reads all content from one content directory (default: `src/content/`).
-That directory can be moved into its **own repo**, so the website code stays cleanly separated from
-your example projects. There are two ways; both work with the same data model
-(`src/content.config.ts`), with no code change.
+The site reads all content from one content directory (default: `src/content/`), and within it one
+folder per example project. That directory can stay in this repo, sit next to it, or live in its own
+repo — all three work with the same data model (`src/content.config.ts`), with no code change.
 
 **Repo split:**
-- **Website repo** (this one): the engine — Astro code, pages, layout, harness.
-- **Content repo(s)**: the case-study markdown (`case-studies/`, `requirements/`, `user-stories/`,
-  `adr/`, `diagrams/` …) in exactly the structure the site expects.
+- **Website repo** (this one): the engine — Astro code, pages, layout, harness — **and, today, the
+  case-study content.**
 - **Real project repos**: the actual application code + raw artifacts (`.bpmn`, `.puml`, code).
-  These are **linked** from the content (`codeUrl`, `source`), not embedded.
+  These are **linked** from the content (`codeUrl`, `source`), never embedded. This is the separation
+  that matters — see *Which separation is the real one* below.
+- **Content repo(s)** (optional, not in use): the case-study markdown in its own repo, if it ever
+  gains a second author or a second consumer.
 
 > Raw source vs. presentation: the **source** of a diagram (`.bpmn`) stays in the project repo
 > (the `source:` field links it). The exported **SVG** for display goes to `public/diagrams/` in the
@@ -18,41 +19,84 @@ your example projects. There are two ways; both work with the same data model
 
 ---
 
-## Option A — Sibling checkout via `CONTENT_DIR` (simplest for local work)
+## Which separation is the real one
 
-Clone the content repo next to the website repo and point the site at it:
+The content for wurzel was once a separate repo (`wurzel-content`) mounted as a git submodule at
+`src/content/wurzel`. Removed on **2026-08-02**, because it guarded the wrong boundary:
+
+- The **app repo** (`C:\spielerei\wurzel`) is what has to stay independent, and it already is — it is
+  never mounted, only **cited by URL**. Nothing about the website constrains it.
+- The **content repo** was curated by hand *for this site*, by the same author, consumed by nothing
+  else. Its own repo bought no independence and cost a second remote, a pointer bump per publication,
+  and cross-repo migrations for any change that touches schema *and* content at once.
+- **Freezing a state of understanding is now data**, not a submodule pointer: the `iterations`
+  collection plus `introducedIn`, append-only (`docs/iterations-and-publication-plan.md`). That was
+  the submodule's last real job.
+
+Re-split when — and only when — a real trigger appears: a second author on the content, a second
+consumer of it, or content that needs its own release cycle. The folder layout below is unchanged by
+a re-split, so Option C stays a drop-in.
+
+The 0.1.0 content history is preserved: `C:\spielerei\wurzel-content` holds commit `a1ca12f` on branch
+`import-0.1.0` plus tag `0.1.0`.
+
+---
+
+## Option A — Content in this repo (in use)
+
+Nothing to configure. `src/content/<project>/` is tracked here like any other source, and the default
+`CONTENT_DIR` points at it.
+
+```
+Website/                    (this repo — engine + content)
+└─ src/content/
+   ├─ wurzel/               (project 1)
+   └─ <next>/               (project 2, later)
+```
+
+Pro: one clone builds, one commit per change, schema and content migrate atomically.
+Con: content and engine share a history — acceptable while one person writes both.
+
+---
+
+## Option B — Sibling checkout via `CONTENT_DIR`
+
+Keep the content tree somewhere else and point the site at it:
 
 ```bash
 # Folder layout:
 #   projects/
 #     website/              (this repo)
-#     greenworks-content/   (your content repo)
+#     site-content/         (the content tree: one folder per project inside it)
 
 # bash / IONOS Deploy Now / GitHub Actions:
-CONTENT_DIR=../greenworks-content npm run dev
-CONTENT_DIR=../greenworks-content npm run build
+CONTENT_DIR=../site-content npm run dev
+CONTENT_DIR=../site-content npm run build
 ```
 
 ```powershell
 # Windows PowerShell:
-$env:CONTENT_DIR = "..\greenworks-content"; npm run dev
+$env:CONTENT_DIR = "..\site-content"; npm run dev
 ```
 
-Pro: fully decoupled repos, no submodule. Con: the build location needs the content folder next to
-it (check it out accordingly in CI/IONOS).
+Pro: fully decoupled, no submodule. Con: the build location needs the content folder next to it
+(check it out accordingly in CI/IONOS).
 
 ---
 
-## Option B — Git submodule (recommended for CI/IONOS and the freeze concept)
+## Option C — Git submodule (the re-split path, not in use)
 
-The content repo is mounted at `src/content`. The default `CONTENT_DIR` then works with no extra setting.
+Kept documented because it is the move when a content repo earns its own life. The content repo is
+mounted at `src/content/<project>`, so the default `CONTENT_DIR` still works.
 
 ```bash
-# One-off: remove local placeholders and add the submodule
-git rm -r --cached src/content 2>/dev/null || true
-rm -rf src/content
-git submodule add <content-repo-url> src/content
-git commit -m "Add content as a submodule"
+# Move a project's content out of this repo and back into its own:
+cd Website
+git rm -r --cached src/content/<name>
+mv src/content/<name> ../<name>-content        # or clone the existing content repo
+git -c protocol.file.allow=always submodule add -b main ../<name>-content src/content/<name>
+git config -f .gitmodules submodule.src/content/<name>.url "../<name>-content"   # relative = portable
+git submodule sync
 ```
 
 **Clone including content:**
@@ -62,44 +106,28 @@ git clone --recurse-submodules <website-repo-url>
 git submodule update --init --recursive
 ```
 
-**Freeze / version (your versioning concept):** the submodule points at a specific commit/tag.
-```bash
-cd src/content && git checkout demo-v0.1 && cd ../..
-git commit -am "Freeze content at v0.1"
-```
-This preserves an earlier state of understanding exactly, while the content repo keeps evolving.
-
-**CI / IONOS Deploy Now:** check out submodules during the build.
-- GitHub Actions: `actions/checkout` with `submodules: true` (see the example below).
-- IONOS Deploy Now runs GitHub Actions internally — add `submodules: true` to the generated workflow.
+**CI / IONOS Deploy Now:** submodules must be checked out during the build —
+`actions/checkout` with `submodules: true`. IONOS Deploy Now runs GitHub Actions internally, so the
+flag goes into the generated workflow. **Not needed under Option A.**
 
 ---
 
 ## Multiple example projects
 
-Two layouts are possible. **This repo is set up for the second (multi-submodule).**
+Two layouts are possible. **This repo is set up for the second (one folder per project).**
 
-- **Single content repo:** ONE content repo, with one `case-studies/<project>.md` per project
-  plus its `requirements/`, `user-stories/`, etc. IDs must be unique within the content repo
-  (e.g. prefix per project: `GW-R-01`, `CP-R-01`).
-- **One content repo per project (the layout in use):** each project is its own content repo,
-  mounted as its own submodule at **`src/content/<project>/`**, holding the collection folders at
-  its root. `src/content.config.ts` globs every project folder for each collection
-  (`*/<collection>/**`) and flattens IDs to the filename, so `reference()` links keep working.
+- **One flat content tree:** one `case-studies/<project>.md` per project plus shared `requirements/`,
+  `user-stories/`, etc. IDs must be unique across the tree (e.g. prefix per project: `GW-R-01`,
+  `CP-R-01`).
+- **One folder per project (the layout in use):** each project gets `src/content/<project>/`, holding
+  the collection folders at its root. `src/content.config.ts` globs every project folder for each
+  collection (`*/<collection>/**`) and flattens IDs to the filename, so `reference()` links keep
+  working.
 
-### The layout in use
-
-```
-Website/                         (this repo — the engine)
-└─ src/content/
-   ├─ wurzel/        → submodule → ../wurzel-content   (project 1)
-   └─ <next>/        → submodule → ../<next>-content   (project 2, later)
-```
-
-Each project content repo has the collection folders at its root:
+Each project folder has the collection folders at its root:
 
 ```
-wurzel-content/
+src/content/wurzel/
 ├─ case-studies/  requirements/  user-stories/  epics/  stakeholders/
 ├─ glossary/  adr/  diagrams/  workflow/  journal/
 └─ README.md
@@ -115,22 +143,16 @@ wurzel-content/
 ### Adding another project later (recipe)
 
 ```bash
-# 1. Create the project's content repo (skeleton = the 10 collection folders + README).
-#    Easiest: copy wurzel-content, wipe its content, pick a new ID prefix.
+# 1. Create the project's folder skeleton (the collection folders + README).
+#    Easiest: copy src/content/wurzel, wipe its content, pick a new ID prefix.
 
-# 2. Mount it as a submodule under the website (local path now, real URL later):
-cd Website
-git -c protocol.file.allow=always submodule add -b main ../<name>-content src/content/<name>
-git config -f .gitmodules submodule.src/content/<name>.url "../<name>-content"   # relative = portable
-git submodule sync
-
-# 3. Nothing to change in content.config.ts. Verify:
+# 2. Nothing to change in content.config.ts. Verify:
 npm run re:check && npm run build
 ```
 
 ---
 
-## Example: GitHub Actions build with submodule
+## Example: GitHub Actions build
 
 ```yaml
 # .github/workflows/build.yml (only needed for your own CI, not the IONOS assistant)
@@ -141,8 +163,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: true
+      # Under Option C, add:  with: { submodules: true }
       - uses: actions/setup-node@v4
         with:
           node-version: 20

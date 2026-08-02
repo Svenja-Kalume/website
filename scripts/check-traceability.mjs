@@ -34,7 +34,7 @@ const errors = [];
 const warnings = [];
 const infos = [];
 
-// Multi-project layout: each project's content lives in its own submodule at
+// Multi-project layout: each project's content lives in its own folder at
 // CONTENT_ROOT/<project>/, with the collection folders at its root. So a collection
 // is the union of CONTENT_ROOT/*/<collection>/**  (mirrors the glob in content.config.ts).
 // IDs stay flat (= filename without extension) and must be unique across all projects.

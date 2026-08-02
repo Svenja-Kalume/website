@@ -71,16 +71,21 @@ Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanl
   to pure build-time SVG (no JS) via `rehype-mermaid` + Playwright.
 - IDs = filename (e.g. `requirements/R-01.md` → `R-01`). References use these IDs.
 
-## Content in a separate repo (separating it from the website code)
+## One folder per example project (content layout)
 
-Example projects live in their **own repos** — one content repo per project, each mounted as a git
-submodule at **`src/content/<project>/`** (multi-submodule layout). Each collection is the union of
-`src/content/*/<collection>/**`; `src/content.config.ts` already globs this, and IDs are flattened to
-the filename, so **IDs must be unique across projects** (prefix per project, e.g. `WZ-` for wurzel).
-- Currently mounted: `src/content/wurzel` → `../wurzel-content`.
-- Pinning a submodule to a tag freezes a state of understanding. Check out with `submodules: true` in
-  CI/IONOS. Adding a project = add another submodule, no code change (recipe in
-  `docs/separating-content.md`).
+Each example project's content lives in its **own folder** at **`src/content/<project>/`**, holding
+the collection folders at its root. Each collection is the union of `src/content/*/<collection>/**`;
+`src/content.config.ts` already globs this, and IDs are flattened to the filename, so **IDs must be
+unique across projects** (prefix per project, e.g. `WZ-` for wurzel).
+- Currently present: `src/content/wurzel`.
+- The content is tracked **in this repo**. It used to be a git submodule (`../wurzel-content`); that
+  was removed on 2026-08-02 because the repo it isolated was written for this site only — the real
+  independence is the *app* repo (`C:\spielerei\wurzel`), which is never mounted, only cited by URL.
+- Freezing a state of understanding is **data, not a git pointer**: the `iterations` collection plus
+  `introducedIn` (see `docs/iterations-and-publication-plan.md`). Published artifacts are append-only.
+- Adding a project = add another folder, no code change (recipe in `docs/separating-content.md`).
+  That doc also keeps the submodule recipe, for the day a content repo gains a second author or a
+  second consumer.
 - The whole tree is still relocatable via `CONTENT_DIR` (default `./src/content`).
 
 Rule: raw artifacts (code, `.bpmn`, `.puml`) stay in the project repo and are **linked** (`codeUrl`,

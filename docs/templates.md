@@ -1,7 +1,7 @@
 # Content templates (to copy)
 
 > **Faster than copying by hand:** the generator scaffolds a schema-correct stub (with `TODO`
-> placeholders) in the right project submodule for you:
+> placeholders) in the right project folder for you:
 > ```bash
 > npm run content:new -- <collection> <project> [id] [options]
 > npm run content:new -- requirement wurzel --prefix WZ --priority must   # auto-numbers the ID
