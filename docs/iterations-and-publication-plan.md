@@ -87,9 +87,12 @@ Neither repo has a remote today.
 - [ ] `acceptance-checklist.md` is authoritative for the Level axis and its Level 2 criteria were
       never read. If any of them require issuing an invoice, they must move to Level 3, or Level 2 can
       never be signed off.
-- [ ] Hosting: where the two repos live when not on this machine. Blocks all deployment. The website
-      repo needs a remote to build anywhere; the app repo needs one for `codeUrl` / `source` to
-      resolve at all — today every such link points at a path on this machine.
+- [ ] Hosting: where the two repos live when not on this machine. Blocks all deployment — and more
+      than that, it blocks the end of the red thread. `codeUrl` is typed `z.string().url()`, so an
+      absolute URL is required and no code link can be written before the app repo is reachable.
+      Today **no artifact carries one**: `codeUrl`, `jiraKey`, `source`, `image`, `demoUrl` are all
+      unset across the 65 L1 files, so the published chain stops at ADR and the "→ Code → Tests"
+      stations exist only in the prose. Fixing this is the highest-value non-content work available.
 - [ ] Where the way-of-working timeline lives once a second project exists — a site-level `method`
       collection, or a comparison view over each project's `workflow` steps. See *Multi-project*.
       Not blocking until project two has content.
