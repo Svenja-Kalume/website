@@ -128,10 +128,15 @@ Each project folder has the collection folders at its root:
 
 ```
 src/content/wurzel/
-├─ case-studies/  requirements/  user-stories/  epics/  stakeholders/
+├─ case-studies/  iterations/  requirements/  user-stories/  epics/  stakeholders/
 ├─ glossary/  adr/  diagrams/  workflow/  journal/
 └─ README.md
 ```
+
+**`iterations/` is not optional for a project you intend to publish.** It is what makes an earlier
+level stay visible when a later one ships, and `introducedIn` on the other artifacts references it.
+A project can start without one — every artifact then lands in the "(no iteration)" bucket and
+`re:check` warns per file until the first iteration exists.
 
 `src/content.config.ts` already implements this — no code change to add a project:
 
@@ -146,7 +151,13 @@ src/content/wurzel/
 # 1. Create the project's folder skeleton (the collection folders + README).
 #    Easiest: copy src/content/wurzel, wipe its content, pick a new ID prefix.
 
-# 2. Nothing to change in content.config.ts. Verify:
+# 2. Its first iteration, before any artifact that references it:
+npm run content:new -- iteration <name> <XX>-0.1.0 --version 0.1.0 --order 1 --date <tag-date>
+
+# 3. Then artifacts, with the iteration stamped by the tool:
+npm run content:new -- requirement <name> --prefix <XX> --iteration <XX>-0.1.0
+
+# 4. Nothing to change in content.config.ts. Verify:
 npm run re:check && npm run build
 ```
 
