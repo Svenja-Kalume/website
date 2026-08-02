@@ -68,6 +68,16 @@ export function groupByCase<T extends { data: { introducedIn?: { id: string } | 
 /** Convenience: load the collection once per page. */
 export const allIterations = () => getCollection('iterations');
 
+/** Artifacts introduced by one iteration, in id order. */
+export function introducedIn<T extends { id: string; data: { introducedIn?: { id: string } | undefined } }>(
+  entries: T[],
+  iterationId: string,
+): T[] {
+  return entries
+    .filter((e) => e.data.introducedIn?.id === iterationId)
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
 /**
  * Resolve an artifact's `codeUrl` into something linkable.
  *

@@ -1,0 +1,121 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import { languages, useTranslations, localize, toLang } from '../../../../i18n/ui';
+import { iterationsOf, currentOf, introducedIn } from '../../../../lib/iterations';
+
+/**
+ * One published iteration, at a stable citable URL: /en/case-studies/wurzel/0.1.0
+ *
+ * That URL is the point. "0.1.0 stays available when 0.2.0 is described" means exactly
+ * this page keeps existing, unchanged, forever — it is the link you can put in an
+ * application. Chosen over anchors on one long page for that reason.
+ *
+ * The route loops over every case study's iterations; it never mentions a project.
+ */
+export async function getStaticPaths() {
+  const cases = await getCollection('case-studies');
+  const all = await getCollection('iterations');
+  return Object.keys(languages).flatMap((lang) =>
+    cases.flatMap((caseEntry) =>
+      iterationsOf(all, caseEntry.id).map((iteration) => ({
+        params: { lang, slug: caseEntry.id, version: iteration.data.version },
+        props: { caseEntry, iteration },
+      }))
+    )
+  );
+}
+
+const lang = toLang(Astro.params.lang);
+const t = useTranslations(lang);
+const { caseEntry, iteration } = Astro.props;
+const { Content } = await render(iteration);
+
+const all = await getCollection('iterations');
+const isCurrent = currentOf(all, caseEntry.id)?.id === iteration.id;
+
+// What this iteration introduced. Every versioned collection, so nothing is silently
+// left out of the record of what a level actually published.
+const groups = [
+  { key: 'requirements', label: t('iter.requirements'), items: introducedIn(await getCollection('requirements'), iteration.id) },
+  { key: 'stories', label: t('iter.stories'), items: introducedIn(await getCollection('user-stories'), iteration.id) },
+  { key: 'diagrams', label: t('iter.diagrams'), items: introducedIn(await getCollection('diagrams'), iteration.id) },
+  { key: 'adr', label: t('iter.adr'), items: introducedIn(await getCollection('adr'), iteration.id) },
+  { key: 'workflow', label: t('iter.workflow'), items: introducedIn(await getCollection('workflow'), iteration.id) },
+].filter((g) => g.items.length > 0);
+
+const corrects = await Promise.all((iteration.data.corrects ?? []).map((r) => getEntry(r)));
+const caseTitle = localize(caseEntry.data.title, lang) ?? caseEntry.id;
+const title = localize(iteration.data.title, lang) ?? iteration.id;
+const dateStr = iteration.data.date.toISOString().slice(0, 10);
+---
+<BaseLayout lang={lang} title={`${caseTitle} ${iteration.data.version}`} description={localize(iteration.data.summary, lang)}>
+  <Breadcrumbs items={[
+    { label: t('nav.cases'), href: `/${lang}/case-studies` },
+    { label: caseTitle, href: `/${lang}/case-studies/${caseEntry.id}` },
+    { label: iteration.data.version },
+  ]} />
+
+  <h1>{title}</h1>
+  <p class="small">
+    <span class="tag">v{iteration.data.version}</span>
+    {iteration.data.level !== undefined && <span class="tag" style="margin-left:.3rem">{t('iter.level')} {iteration.data.level}</span>}
+    {isCurrent && <span class="tag" style="margin-left:.3rem">{t('iter.current')}</span>}
+    <span class="muted" style="margin-left:.5rem">{dateStr}</span>
+  </p>
+
+  <p>{localize(iteration.data.summary, lang)}</p>
+  {(localize(iteration.data.intro, lang) ?? []).map((p: string) => <p>{p}</p>)}
+
+  {iteration.data.blocks.length > 0 && (
+    <p class="small muted">{t('iter.blocks')} {iteration.data.blocks.join(' · ')}</p>
+  )}
+
+  {/* The headline of the whole concept: not what shipped, but what changed in how you work. */}
+  {(localize(iteration.data.processChanges, lang) ?? []).length > 0 && (
+    <>
+      <h2>{t('iter.processChanges')}</h2>
+      <ul>{(localize(iteration.data.processChanges, lang) ?? []).map((c: string) => <li>{c}</li>)}</ul>
+    </>
+  )}
+
+  {corrects.filter(Boolean).length > 0 && (
+    <>
+      <h2>{t('iter.corrects')}</h2>
+      <ul>
+        {corrects.filter(Boolean).map((c: any) => (
+          <li><a href={`/${lang}/case-studies/${caseEntry.id}/${c.data.version}`}>{c.data.version}</a> — {localize(c.data.summary, lang)}</li>
+        ))}
+      </ul>
+    </>
+  )}
+
+  {(localize(iteration.data.lessons, lang) ?? []).length > 0 && (
+    <>
+      <h2>{t('iter.lessons')}</h2>
+      <ul>{(localize(iteration.data.lessons, lang) ?? []).map((l: string) => <li>{l}</li>)}</ul>
+    </>
+  )}
+
+  {iteration.data.aiContribution && (
+    <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(iteration.data.aiContribution, lang)}</p>
+  )}
+
+  <h2>{t('iter.introduced')}</h2>
+  {groups.length === 0 && <p class="muted">{t('iter.introducedEmpty')}</p>}
+  {groups.map((g) => (
+    <div class="card">
+      <strong>{g.label}</strong> <span class="muted small">({g.items.length})</span>
+      <ul class="small" style="margin:.4rem 0 0">
+        {g.items.map((e: any) => <li>{e.id} — {localize(e.data.title, lang)}</li>)}
+      </ul>
+    </div>
+  ))}
+
+  <Content />
+
+  {iteration.data.sourceUrl && (
+    <p class="small"><a href={iteration.data.sourceUrl}>{t('iter.source')}</a></p>
+  )}
+</BaseLayout>

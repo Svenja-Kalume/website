@@ -3,7 +3,8 @@ import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Mermaid from '../../../components/Mermaid.astro';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
-import { allIterations, resolveCodeUrl } from '../../../lib/iterations';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import { allIterations, resolveCodeUrl, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
 
 export async function getStaticPaths() {
   const cases = await getCollection('case-studies');
@@ -30,6 +31,8 @@ const diagrams = (await getCollection('diagrams')).filter(inCase);
 // the iteration that published the story. Unresolvable (no repoUrl yet) → show the path.
 const iterations = await allIterations();
 const tagOf = new Map(iterations.map((i) => [i.id, i.data.version]));
+const caseIterations = iterationsOf(iterations, caseId);
+const current = currentOf(iterations, caseId);
 
 // Resolve references so titles are shown instead of raw IDs.
 const storyRows = await Promise.all(
@@ -43,10 +46,13 @@ const storyRows = await Promise.all(
 );
 ---
 <BaseLayout lang={lang} title={localize(entry.data.title, lang) ?? entry.id} description={localize(entry.data.summary, lang)}>
-  <p class="small"><a href={`/${lang}/case-studies`}>{t('cases.back')}</a></p>
+  <Breadcrumbs items={[
+    { label: t('nav.cases'), href: `/${lang}/case-studies` },
+    { label: localize(entry.data.title, lang) ?? entry.id },
+  ]} />
   <h1>{localize(entry.data.title, lang)}</h1>
   <p>
-    <span class="tag">v{entry.data.version}</span>
+    <span class="tag">v{displayVersion(iterations, entry)}</span>
     <span class="tag">{entry.data.status}</span>
     {entry.data.demoUrl && <a class="button" style="margin-left:.6rem" href={entry.data.demoUrl}>{t('cases.openDemo')}</a>}
   </p>
@@ -56,6 +62,27 @@ const storyRows = await Promise.all(
       ? localize<string[]>(entry.data.intro, lang)!.map((p) => <p>{p}</p>)
       : <Content />}
   </div>
+
+  {/* The development-over-time view: every published iteration stays listed and reachable,
+      newest first. Each has its own stable URL — earlier ones never disappear. */}
+  {caseIterations.length > 0 && (
+    <>
+      <h2>{t('iter.h2')}</h2>
+      <ul class="reset">
+        {[...caseIterations].reverse().map((it) => (
+          <li class="card">
+            <a class="card-link" href={`/${lang}/case-studies/${caseId}/${it.data.version}`}>
+              <strong>{localize(it.data.title, lang)}</strong>
+            </a>
+            <span class="tag" style="margin-left:.5rem">v{it.data.version}</span>
+            {it.id === current?.id && <span class="tag" style="margin-left:.3rem">{t('iter.current')}</span>}
+            <span class="muted small" style="margin-left:.5rem">{it.data.date.toISOString().slice(0, 10)}</span>
+            <p class="muted small" style="margin:.4rem 0 0">{localize(it.data.summary, lang)}</p>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
 
   {stakeholders.length > 0 && (
     <>
