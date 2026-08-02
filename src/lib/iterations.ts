@@ -79,26 +79,33 @@ export function introducedIn<T extends { id: string; data: { introducedIn?: { id
 }
 
 /**
- * Resolve an artifact's `codeUrl` into something linkable.
+ * Resolve a repo-relative path (`codeUrl`, or `source` pointing into the project's docs)
+ * into something linkable.
  *
- * A repo-relative path is the preferred form: it can be written before the project repo
- * is reachable, and it resolves against the case study's `repoUrl` **pinned to the tag of
- * the iteration that published the artifact**. So the immutability rule holds by
- * construction rather than by convention — an L1 story keeps pointing at 0.1.0 code even
- * after 0.2.0 ships, without anyone typing a tag or editing a published file.
+ * The relative form is preferred: it can be written before the project repo is reachable,
+ * and it resolves against the case study's `repoUrl` **pinned to the tag of the iteration
+ * that published the artifact**. So the immutability rule holds by construction rather
+ * than by convention — an L1 story keeps pointing at 0.1.0 code even after 0.2.0 ships,
+ * without anyone typing a tag or editing a published file.
+ *
+ * This is also what makes the project's *documentation* safe to reorganise. A `source`
+ * recorded against 0.2.0 resolves into the repo AT 0.2.0, so later moving or renaming
+ * that file cannot rot the citation — git still holds the old state under the tag, and
+ * nothing has to be reverted to keep an older iteration honest.
  *
  * Returns undefined when it cannot be resolved (no repoUrl yet, or no iteration to take a
- * tag from). Callers render the raw path instead of a dead link.
+ * tag from). Callers render the raw path, or nothing, instead of a dead link.
  */
-export function resolveCodeUrl(
-  codeUrl: string | undefined,
+export function resolveRepoPath(
+  path: string | undefined,
   repoUrl: string | undefined,
   tag: string | undefined,
 ): string | undefined {
-  if (!codeUrl) return undefined;
-  if (/^https?:\/\//i.test(codeUrl)) return codeUrl; // full URL: outside the project repo
+  if (!path) return undefined;
+  if (/^https?:\/\//i.test(path)) return path; // full URL: outside the project repo
   if (!repoUrl || !tag) return undefined;
-  const base = repoUrl.replace(/\/+$/, '');
-  const path = codeUrl.replace(/^\/+/, '');
-  return `${base}/blob/${tag}/${path}`;
+  return `${repoUrl.replace(/\/+$/, '')}/blob/${tag}/${path.replace(/^\/+/, '')}`;
 }
+
+/** @deprecated use resolveRepoPath — kept so the name reads right at the call site. */
+export const resolveCodeUrl = resolveRepoPath;

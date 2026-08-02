@@ -85,6 +85,7 @@ export const ui = {
     'how.tools': 'Tools:',
     'how.ungrouped': 'Not yet assigned to an iteration',
 
+    'case.source': 'Working doc at this version',
     'iter.h2': 'Iterations',
     'iter.current': 'current',
     'iter.level': 'Level',
@@ -196,6 +197,7 @@ export const ui = {
     'how.tools': 'Tools:',
     'how.ungrouped': 'Noch keiner Iteration zugeordnet',
 
+    'case.source': 'Arbeitsdokument in dieser Version',
     'iter.h2': 'Iterationen',
     'iter.current': 'aktuell',
     'iter.level': 'Level',

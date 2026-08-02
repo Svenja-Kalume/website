@@ -4,7 +4,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Mermaid from '../../../components/Mermaid.astro';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
-import { allIterations, resolveCodeUrl, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
+import { allIterations, resolveRepoPath, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
 
 export async function getStaticPaths() {
   const cases = await getCollection('case-studies');
@@ -41,7 +41,10 @@ const storyRows = await Promise.all(
     requirement: await getEntry(s.data.requirement),
     adrs: await Promise.all(s.data.adr.map((r) => getEntry(r))),
     bpmn: s.data.bpmn ? await getEntry(s.data.bpmn) : undefined,
-    codeHref: resolveCodeUrl(s.data.codeUrl, entry.data.repoUrl, tagOf.get(s.data.introducedIn?.id ?? '')),
+    codeHref: resolveRepoPath(s.data.codeUrl, entry.data.repoUrl, tagOf.get(s.data.introducedIn?.id ?? '')),
+    // The vault doc this story was written from, pinned to its own iteration's tag — so
+    // reorganising the docs later cannot rot an older iteration's citation.
+    sourceHref: resolveRepoPath(s.data.source, entry.data.repoUrl, tagOf.get(s.data.introducedIn?.id ?? '')),
   }))
 );
 ---
@@ -116,7 +119,7 @@ const storyRows = await Promise.all(
   {storyRows.length > 0 && (
     <>
       <h2>{t('case.storiesTrace')}</h2>
-      {storyRows.map(({ story, requirement, adrs, bpmn, codeHref }) => (
+      {storyRows.map(({ story, requirement, adrs, bpmn, codeHref, sourceHref }) => (
         <div class="card">
           <strong>{story.id}: {localize(story.data.title, lang)}</strong>
           <span class="tag" style="margin-left:.5rem">{story.data.status}</span>
@@ -133,6 +136,7 @@ const storyRows = await Promise.all(
                 ? <a href={codeHref}>{t('case.github')}</a>
                 : <code>{story.data.codeUrl}</code>}</span>
             )}
+            {sourceHref && <span class="step"><a href={sourceHref}>{t('case.source')}</a></span>}
           </p>
           <details>
             <summary class="small">{t('case.acceptance')} ({localize<string[]>(story.data.acceptanceCriteria, lang)!.length})</summary>
