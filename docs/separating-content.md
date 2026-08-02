@@ -48,7 +48,7 @@ The site never reads a project's vault — it **cites** it, through two fields:
 
 | field | on | shape |
 |---|---|---|
-| `source` | user-stories, requirements, diagrams, adr, workflow, questions | a **vault-relative path**, e.g. `docs/user-stories/l2-block1-offer-pdf.md` |
+| `source` | user-stories, requirements, diagrams, adr, workflow, questions | a **repo-relative path**, e.g. `docs/user-stories/l2-block1-offer-pdf.md` — resolved exactly like `codeUrl` |
 | `codeUrl` | user-stories | a **repo-relative path** (preferred), e.g. `src/Customers/CustomerService.cs` — or a full URL for anything outside the project repo |
 | `repoUrl` | case-studies | the project repo base, set **once**, when it becomes reachable |
 | `sourceUrl` | iterations | absolute URL of the release tag |
@@ -74,10 +74,12 @@ Two rules follow from iterations being append-only, and they are the whole contr
    satisfies this **by construction** — the tag comes from the artifact's own iteration, so nobody
    types it and nobody can get it wrong. `re:check` warns only on hand-written full URLs that point
    at a moving branch.
-2. **Basenames must stay unique and paths must stay stable** *within one published state*. Moving a
-   vault file after it has been cited rots the `source` path. Reorganise **before** the citations
-   exist, or accept that older iterations point at the old layout — which is fine, and is exactly
-   why rule 1 pins to a tag.
+2. **The vault can be reorganised freely — that is the point of rule 1.** A `source` recorded against
+   `0.2.0` resolves into the repo *at tag `0.2.0`*, so moving, renaming or archiving that file later
+   cannot rot the citation: git still holds the old state under the tag. An older iteration keeps
+   pointing at the documentation as it stood when that iteration was published, which is what an
+   honest record of "how I worked then" requires. **Nothing ever has to be reverted** to publish an
+   older iteration faithfully — tag the delivery commit and cite against it.
 
 A vault that keeps its own house rules (unique basenames across the tree, no spaces in paths,
 `title` + `description` everywhere) satisfies this without extra work.

@@ -11,7 +11,7 @@ Drafted 2026-08-01. Captures what was decided in one long working session and wh
 | ✅ **Stage 5.1–5.3, 5.6** | `questions` collection, acceptance-criteria lints, `fitCriterion`, `harnessChange` |
 | ✅ **Page defects** | derived version on the home page; `how-i-work` and `traceability` scoped per project |
 | ✅ **7.1** | resolved by absorbing the content repo (amendment under *Repos involved*) |
-| ⏸️ **Stage 2** | rendering — **blocked on having a second iteration**, not on effort |
+| 🟡 **Stage 2** | iteration routes, timeline and breadcrumbs **shipped**; only the two *comparison* views still need a second iteration |
 | ⏸️ **Stage 4** | Level 2 content — yours to write |
 | ⏸️ **Stage 5.4, 5.5** | held deliberately, see the notes there |
 | ⏸️ **Stage 6** | vault-side, untouched |
@@ -37,8 +37,9 @@ The website side is finished until Level 2 content exists. The chain of next act
 2. **Tag `0.2.0`** in the app repo once accepted. Its date becomes the iteration's `date`.
    Tags for published states must never move or be deleted — citations pin to them.
 3. **Write `iterations/WZ-0.2.0.md`.** This is the moment two things happen:
-   - **Stage 2 unblocks.** It needs the *iteration entry*, not the full content pass — so the
-     rendering can be built while the 20 artifacts are still being written.
+   - **The remaining stage 2 views unblock** — the per-iteration `how-i-work` comparison and the
+     traceability filter. The routes, timeline and breadcrumbs already exist and already render
+     `0.1.0`, so this is the comparison only.
    - **Level 1 closes.** Until this file exists, `WZ-0.1.0` is still the *current* iteration and
      remains editable. After it, L1 is frozen and its gaps become the delta.
 4. **Decide before step 3**, because step 3 shuts the window: leave the 7 L1 requirements without
@@ -118,6 +119,15 @@ Neither repo has a remote today.
     uncleanable. A gap in an earlier iteration is **evidence of how the practice grew** — narrate it
     in the next iteration's `processChanges` instead of backfilling it. Errors still apply
     everywhere; coverage stays global.
+14. **An iteration documents the practice as it was at the time** (2026-08-02). Level 2 was delivered
+    under the *old* vault documentation; the vault has been reorganised since. Its `workflow` steps
+    and `processChanges` must describe how you worked **then**, awkward parts included — the
+    reorganisation belongs to a *later* iteration, where it reads as a response to a real problem.
+    Writing today's practice into `0.2.0` is the same error that keeps `WZ-01b-requirements.md`
+    stashed, and it deletes the delta that makes the iteration worth publishing.
+    **The vault never has to be reverted for this.** Tag the app repo at the delivery commit; every
+    `source` / `codeUrl` recorded against `0.2.0` resolves into the repo *at that tag*, old docs
+    included. Git holds the old state; reorganising later cannot rot an older citation.
 
 ## Corrections made during the session — do not re-litigate
 
@@ -316,16 +326,22 @@ Verified on a throwaway two-project dataset: two grouped step lists in the right
 two tables with case headings, and a second project whose stored `version: "9.9"` was correctly
 overridden by its iteration's `0.1.0`.
 
-**Still to do here:** grouping by *iteration* within a project (the above scopes by project only),
-the route segment, and breadcrumbs. All of it needs a second iteration to build against.
+✅ **The route segment and breadcrumbs shipped 2026-08-02** (`4e4cbc0`) — see stage 2 below.
+**Still to do here:** grouping by *iteration* within a project (the above scopes by project only).
+That one genuinely needs a second iteration, since it is a comparison.
 
 ## Stage 2 — rendering (website)
 
-Ordered so the differentiator lands first. **⏸️ Held until `iterations/WZ-0.2.0.md` exists** — note
-that is the *iteration entry only*, not the full L2 content pass, so this can be built while the 20
-artifacts are still being written. Building "L1's process beside L2's" against one iteration means
-building blind, and the honest fix is not a stub. The groundwork is in place: `src/lib/iterations.ts`
-already resolves the current iteration, an artifact's project, and a tag-pinned code link.
+Ordered so the differentiator lands first. **🟡 Partly shipped 2026-08-02 (`4e4cbc0`)** — the routes,
+timeline and breadcrumbs exist and already render `0.1.0`. Only the two *comparison* views need a
+second iteration, and they need the **iteration entry only**, not the full L2 content pass.
+
+✅ **Shipped:** `/[lang]/case-studies/[slug]/[version]` (summary, intro, level/blocks,
+`processChanges`, `corrects`, `lessons`, `aiContribution`, and what the iteration introduced across
+all five versioned collections — empty sections omitted, so an unwritten field shows as absence
+rather than an empty heading) · the case-study page as an index of its iterations, current one tagged
+· `Breadcrumbs.astro` · `case-studies/index.astro` fixed, it still read the retired
+`case-studies.version`.
 
 2.1 `how-i-work.astro` — render `workflow` steps **per iteration**, L1's process beside L2's. This is
 the progress view. (Per-*project* grouping is already done; per-iteration is what remains.)
@@ -368,6 +384,12 @@ with `iterations`, `workflow`, `questions` and `journal` checklists.
 
 Test failures are not a setback for the site: a story returning from `Done` is the gate working, and
 a failure with no answer in any artifact is an `OQ-` entry, not a defect.
+
+**Write it in the practice of its own time** (decision 14). Level 2 was delivered before the vault was
+reorganised, so describe *that* way of working — including what was awkward about it. Tag the app repo
+at the delivery commit and the citations resolve to the documentation as it stood; nothing needs
+reverting. Save the reorganisation for the next iteration's `processChanges`, where it reads as a
+response to a problem you had just described.
 
 The publication shape agreed for an iteration:
 
