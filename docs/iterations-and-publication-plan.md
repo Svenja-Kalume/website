@@ -25,6 +25,33 @@ home page read `case-studies.version`, the field decision 4 retires.
 The goal it serves: the site must show **development over time** — Level 1 stays visible when Level 2
 is published — and show **how the way of working changed**, not only which features shipped.
 
+## Where to pick up (read this first)
+
+The website side is finished until Level 2 content exists. The chain of next actions, in order:
+
+1. **Acceptance-test Level 2 in the app repo.** It is implemented (13 stories `Done`) but not yet
+   accepted, so it is not publishable — decision 5. Before testing, read
+   `docs/acceptance-checklist.md`'s **Level 2 criteria**, which have still never been read: if any
+   require issuing an invoice, the Level 2/3 re-cut is wrong and you would be testing the wrong
+   scope.
+2. **Tag `0.2.0`** in the app repo once accepted. Its date becomes the iteration's `date`.
+   Tags for published states must never move or be deleted — citations pin to them.
+3. **Write `iterations/WZ-0.2.0.md`.** This is the moment two things happen:
+   - **Stage 2 unblocks.** It needs the *iteration entry*, not the full content pass — so the
+     rendering can be built while the 20 artifacts are still being written.
+   - **Level 1 closes.** Until this file exists, `WZ-0.1.0` is still the *current* iteration and
+     remains editable. After it, L1 is frozen and its gaps become the delta.
+4. **Decide before step 3**, because step 3 shuts the window: leave the 7 L1 requirements without
+   `fitCriterion`? Recommendation — **yes, leave them**. The delta is worth more than uniform
+   coverage, and it is the same reasoning that keeps `WZ-01b-requirements.md` stashed. Say it in
+   `WZ-0.2.0`'s `processChanges` instead.
+5. **Then stage 4** (L2 content) and **stage 2** (rendering) in parallel.
+
+Independent of all of the above, whenever you want it: **hosting** (7.2–7.4). It blocks going live,
+and nothing else.
+
+Restore the stashed workflow step at step 3: `git stash pop` → stamp `introducedIn: WZ-0.2.0`.
+
 ## Repos involved
 
 | Name used here | Path | Role |
@@ -78,6 +105,19 @@ Neither repo has a remote today.
 10. **No level folders for plans.** Level is the fact that moves — it moved on 2026-08-01 — and a path
     is the most expensive place to encode a mutable fact. Group by level in a generated
     `plans/index.md` instead, and derive a plan's level from the story it names.
+11. **The vault is cited, never read** (2026-08-02). The site's content is `src/content/wurzel/` in
+    the website repo; nothing globs `C:\spielerei\wurzel\docs\`. So vault reorganisation cannot break
+    the build. The only coupling is `source` / `codeUrl` paths — reorganise the vault **before**
+    those are populated, not after.
+12. **Citations are relative and auto-pinned** (2026-08-02). `codeUrl` = repo-relative path;
+    `case-studies.repoUrl` = the repo base, set once. The tag comes from the artifact's own
+    iteration, so immutability holds *by construction* rather than by convention, and hosting no
+    longer gates authoring.
+13. **Advisory checks apply only to the current iteration** (2026-08-02). A published iteration
+    cannot be improved without editing a published file, so advisories against it are permanently
+    uncleanable. A gap in an earlier iteration is **evidence of how the practice grew** — narrate it
+    in the next iteration's `processChanges` instead of backfilling it. Errors still apply
+    everywhere; coverage stays global.
 
 ## Corrections made during the session — do not re-litigate
 
@@ -112,12 +152,15 @@ Neither repo has a remote today.
 - [ ] `acceptance-checklist.md` is authoritative for the Level axis and its Level 2 criteria were
       never read. If any of them require issuing an invoice, they must move to Level 3, or Level 2 can
       never be signed off.
-- [ ] Hosting: where the two repos live when not on this machine. Blocks all deployment — and more
-      than that, it blocks the end of the red thread. `codeUrl` is typed `z.string().url()`, so an
-      absolute URL is required and no code link can be written before the app repo is reachable.
-      Today **no artifact carries one**: `codeUrl`, `jiraKey`, `source`, `image`, `demoUrl` are all
-      unset across the 65 L1 files, so the published chain stops at ADR and the "→ Code → Tests"
-      stations exist only in the prose. Fixing this is the highest-value non-content work available.
+- [ ] Hosting: where the two repos live when not on this machine. **Blocks deployment only** —
+      corrected 2026-08-02. It was previously recorded here as blocking code citations too, because
+      `codeUrl` was typed `z.string().url()`. That was a self-inflicted schema constraint and it is
+      gone: `codeUrl` now takes a **repo-relative path**, resolved against `case-studies.repoUrl` and
+      pinned to the artifact's own iteration tag. Citations can be authored with no hosting at all,
+      and setting `repoUrl` later turns every path in every iteration into a live link **without
+      editing a published artifact**. See *The citation contract* in `docs/separating-content.md`.
+      Still true: `codeUrl`, `jiraKey`, `source`, `image`, `demoUrl` are unset across all 65 L1 files,
+      so the chain currently stops at ADR — but that is now a content decision, not a blocker.
 - [ ] Where the way-of-working timeline lives once a second project exists — a site-level `method`
       collection, or a comparison view over each project's `workflow` steps. See *Multi-project*.
       Not blocking until project two has content.
@@ -278,10 +321,11 @@ the route segment, and breadcrumbs. All of it needs a second iteration to build 
 
 ## Stage 2 — rendering (website)
 
-Ordered so the differentiator lands first. **⏸️ Held until a second iteration exists** — building
-"L1's process beside L2's" against one iteration means building blind, and the honest fix is not a
-stub L2. The groundwork it needs is in place: `src/lib/iterations.ts` already resolves the current
-iteration and an artifact's project.
+Ordered so the differentiator lands first. **⏸️ Held until `iterations/WZ-0.2.0.md` exists** — note
+that is the *iteration entry only*, not the full L2 content pass, so this can be built while the 20
+artifacts are still being written. Building "L1's process beside L2's" against one iteration means
+building blind, and the honest fix is not a stub. The groundwork is in place: `src/lib/iterations.ts`
+already resolves the current iteration, an artifact's project, and a tag-pinned code link.
 
 2.1 `how-i-work.astro` — render `workflow` steps **per iteration**, L1's process beside L2's. This is
 the progress view. (Per-*project* grouping is already done; per-iteration is what remains.)
@@ -314,9 +358,16 @@ with `iterations`, `workflow`, `questions` and `journal` checklists.
 ## Stage 4 — Level 2 content, when you decide it is ready
 
 ⏸️ **Yours to write.** The website side is ready: the schema accepts it, the generator scaffolds it,
-`re:check` validates it. Two things gate it — the **exemplar-selection criterion** (open, above) and
-the **`acceptance-checklist.md` Level 2 criteria**, which have still never been read and could force
-the Level 2/3 re-cut to be redone.
+`re:check` validates it. Three things gate it:
+
+- **Acceptance testing.** Level 2 is implemented (13 stories `Done`) but not accepted. Decision 5 —
+  publish only Done work — means accepted, not merely built. No tag until it passes.
+- **The `acceptance-checklist.md` Level 2 criteria**, still never read; they could force the
+  Level 2/3 re-cut to be redone, so read them *before* testing rather than after.
+- **The exemplar-selection criterion** (open, above).
+
+Test failures are not a setback for the site: a story returning from `Done` is the gate working, and
+a failure with no answer in any artifact is an `OQ-` entry, not a defect.
 
 The publication shape agreed for an iteration:
 
