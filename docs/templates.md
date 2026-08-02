@@ -5,9 +5,12 @@
 > ```bash
 > npm run content:new -- <collection> <project> [id] [options]
 > npm run content:new -- requirement wurzel --prefix WZ --priority must   # auto-numbers the ID
-> npm run content:new -- story wurzel WZ-US-01 --requirement WZ-R-01
+> npm run content:new -- story wurzel WZ-US-01 --requirement WZ-R-01 --iteration WZ-0.2.0
+> npm run content:new -- iteration wurzel WZ-0.2.0 --version 0.2.0 --level 2 --order 2 --date 2026-08-01
 > npm run content:new -- list wurzel                                      # what already exists
 > ```
+> Pass `--iteration <id>` on every versioned artifact so `introducedIn` is stamped by the tool
+> rather than typed twenty times by hand.
 > It never invents content — you replace the TODOs with the real thing (linked, not made up),
 > then run `npm run re:check && npm run build`. `node scripts/new-content.mjs --help` lists all
 > options. The blocks below are the reference for what each stub contains.
@@ -48,7 +51,62 @@ The site is bilingual. The rule is: **IDs and links stay language-neutral, prose
 
 ---
 
-## Case study → `src/content/case-studies/<name>.md`
+## Versioning fields (on every artifact that sits on the timeline)
+
+`user-stories`, `requirements`, `diagrams`, `adr` and `workflow` all carry these. Add them to the
+blocks below rather than treating them as a separate template:
+
+```yaml
+introducedIn: WZ-0.2.0        # the iteration that FIRST publishes this artifact
+source: docs/user-stories/l2-block1-offer-pdf.md   # the vault file it cites (a path, not a URL)
+changes: [WZ-US-05]           # ids in the SAME collection that this artifact changes
+supersedes: WZ-ADR-003        # adr only — same idea, one ADR
+```
+
+**The change pointer always sits on the newer artifact.** There is deliberately no `changedIn` and no
+`supersededBy`: publishing an iteration must never require editing a file an earlier one published.
+`re:check` errors if `changes` / `supersedes` points at something introduced *later*.
+
+## Iteration → `src/content/<project>/iterations/<PREFIX>-<version>.md`
+
+One published increment of a case study. The id **is** the release tag, so there is no
+auto-numbering: `WZ-0.2.0`.
+
+```markdown
+---
+title:
+  en: Level 2 — offer documents
+  de: Level 2 — Angebotsdokumente
+case: wurzel
+version: "0.2.0"         # the app-repo release tag — the identity
+level: 2                 # optional: a number, or post-mvp
+blocks: ["1", "2a"]      # optional, and always quoted — "1" is a string, not a number
+order: 2                 # unique within this case study; the CURRENT iteration is the highest
+date: 2026-08-01         # the tag date, not today
+summary:
+  en: What this iteration published.
+  de: Was diese Iteration veröffentlicht hat.
+intro:                   # optional
+  en: [Paragraph one., Paragraph two.]
+  de: [Absatz eins., Absatz zwei.]
+processChanges:          # the headline: what changed in HOW you work
+  en: [The readiness gate now splits formal defects from business questions.]
+  de: [Das Readiness-Gate trennt jetzt formale Mängel von fachlichen Fragen.]
+corrects: [WZ-0.1.0]     # optional; only ever points BACKWARDS
+lessons:                 # optional
+  en: [What you would do differently.]
+  de: [Was du anders machen würdest.]
+sourceUrl: https://github.com/…/releases/tag/0.2.0   # optional
+aiContribution:          # optional
+  en: What the AI proposed about this iteration, and what you changed.
+  de: Was die KI zu dieser Iteration vorschlug und was du geändert hast.
+---
+```
+
+There is no `status: current | superseded` field on purpose — the current iteration is *derived* from
+the highest `order`, so publishing a new one never edits the old one.
+
+## Case study → `src/content/<project>/case-studies/<name>.md`
 
 ```markdown
 ---
@@ -59,7 +117,7 @@ summary:
   en: One sentence describing the problem.
   de: Ein Satz, der das Problem beschreibt.
 status: in-progress      # draft | in-progress | active | archived
-version: "0.1"           # for the freeze/versioning concept
+version: "0.1"           # DEPRECATED — derived from the current iteration instead
 demoUrl: https://demo.example.com/mvp   # optional: frozen demo
 order: 1
 ---
@@ -68,7 +126,7 @@ order: 1
 Prose …
 ```
 
-## Requirement → `src/content/requirements/R-01.md`
+## Requirement → `src/content/<project>/requirements/R-01.md`
 
 ```markdown
 ---
@@ -89,7 +147,7 @@ aiContribution:                  # optional
 Description of the requirement.
 ```
 
-## Epic → `src/content/epics/EP-01.md`
+## Epic → `src/content/<project>/epics/EP-01.md`
 
 ```markdown
 ---
@@ -103,7 +161,7 @@ description:
 ---
 ```
 
-## User story → `src/content/user-stories/US-01.md`
+## User story → `src/content/<project>/user-stories/US-01.md`
 
 ```markdown
 ---
@@ -140,7 +198,7 @@ aiContribution:                  # REQUIRED — make the AI contribution transpa
 ---
 ```
 
-## ADR → `src/content/adr/ADR-001.md`
+## ADR → `src/content/<project>/adr/ADR-001.md`
 
 ```markdown
 ---
@@ -161,7 +219,7 @@ relatedRequirements: [R-02]
 …
 ```
 
-## Diagram → `src/content/diagrams/<name>.md`
+## Diagram → `src/content/<project>/diagrams/<name>.md`
 
 Two variants:
 
@@ -206,7 +264,7 @@ aiContribution:                  # optional
 ---
 ```
 
-## Stakeholder → `src/content/stakeholders/<name>.md`
+## Stakeholder → `src/content/<project>/stakeholders/<name>.md`
 
 ```markdown
 ---
@@ -222,7 +280,7 @@ interests:                       # optional
 ---
 ```
 
-## Glossary → `src/content/glossary/<term>.md`
+## Glossary → `src/content/<project>/glossary/<term>.md`
 
 ```markdown
 ---
@@ -235,7 +293,7 @@ case: greenworks                 # optional
 Definition …
 ```
 
-## How-I-work step → `src/content/workflow/01-stakeholders.md`
+## How-I-work step → `src/content/<project>/workflow/01-stakeholders.md`
 
 ```markdown
 ---
@@ -250,7 +308,7 @@ aiRole:
 ---
 ```
 
-## Journal → `src/content/journal/<slug>.md`
+## Journal → `src/content/<project>/journal/<slug>.md`
 
 A dated working-log entry, not a polished article: a decision, a dead-end, or what
 the AI proposed vs. what you changed. `summary` and `case` are optional; set `case`

@@ -16,10 +16,12 @@
  *   node scripts/new-content.mjs list <project>
  *
  * Collection accepts aliases: requirement|req|r, story|user-story|us, epic|ep,
- *   adr, diagram|bpmn, case|case-study, stakeholder, glossary|term, workflow|step, journal.
+ *   adr, diagram|bpmn, case|case-study, stakeholder, glossary|term, workflow|step,
+ *   journal, iteration|it.
  *
  * Auto-id (when [id] is omitted): pass --prefix <XX> and the next number is chosen,
  *   e.g.  new-content.mjs requirement wurzel --prefix WZ   ->  WZ-R-03
+ *   Iterations are NOT auto-numbered: their id is the release tag, e.g. WZ-0.2.0.
  *
  * Common options (all language-neutral; prose stays TODO):
  *   --case <id>           case study this belongs to (default: <project>)
@@ -29,10 +31,27 @@
  *   --status <enum>       collection-specific status
  *   --type <enum>         (diagrams) bpmn|c4|uml|mermaid|event-storming
  *   --tool <name>         (diagrams) e.g. Mermaid, Camunda Modeler
- *   --order <n>           (workflow, case-studies)
- *   --date YYYY-MM-DD     (adr, journal) -- required, no clock is read for you
+ *   --order <n>           (workflow, case-studies, iterations)
+ *   --date YYYY-MM-DD     (adr, journal, iterations) -- required, no clock is read for you
  *   --code-url <url> --jira <key> --demo-url <url>
  *   --force               overwrite if the file exists
+ *
+ * Versioning (user-stories, requirements, diagrams, adr, workflow):
+ *   --iteration <id>      the iteration that first publishes this artifact -> introducedIn.
+ *                         Omitting it is allowed but re:check will warn.
+ *   --source <path>       the vault file this artifact cites (a path, not a URL)
+ *   --changes <ids>       comma-separated ids in the SAME collection that this artifact
+ *                         changes. The pointer always sits on the NEWER artifact, so a
+ *                         published file is never edited.
+ *   --supersedes <id>     (adr only) same idea, one ADR
+ *
+ * Iterations (--version, --order and --date are required):
+ *   --version <tag>       the app-repo release tag, e.g. 0.2.0 -- the identity
+ *   --order <n>           position within THIS case study; unique (the current
+ *                         iteration is derived as the highest order)
+ *   --level <n|post-mvp>  optional; wurzel's scheduling vocabulary, not the site's
+ *   --blocks <a,b>        optional; blocks grouped inside this iteration
+ *   --corrects <ids>      earlier iterations this one corrects
  *
  * Then: fill the TODOs, run `npm run re:check` and `npm run build`.
  */
@@ -54,7 +73,10 @@ const ALIASES = {
   diagrams: 'diagrams', diagram: 'diagrams', bpmn: 'diagrams',
   workflow: 'workflow', step: 'workflow',
   journal: 'journal',
+  iterations: 'iterations', iteration: 'iterations', it: 'iterations',
 };
+// Collections that live on the iteration timeline (see content.config.ts `versioned`).
+const VERSIONED = new Set(['user-stories', 'requirements', 'diagrams', 'adr', 'workflow']);
 // Collections whose IDs auto-number, and the code used in the generated ID.
 const CODE = { requirements: 'R', epics: 'EP', 'user-stories': 'US', adr: 'ADR', diagrams: 'D' };
 
@@ -220,7 +242,7 @@ switch (collection) {
       `tool: ${q(opts.tool || 'Mermaid')}`,
     ];
     if (opts.image) fm.push(`image: ${opts.image}`);
-    if (opts.source) fm.push(`source: ${opts.source}`);
+    // `source` is added below with the other versioned fields.
     // Mermaid variant → body is raw Mermaid; real BPMN/C4 → link image+source, no body.
     if (!opts.image) body = '\nflowchart TD\n  A[TODO] --> B[TODO]\n';
     break;
@@ -253,6 +275,31 @@ switch (collection) {
     ];
     break;
 
+  case 'iterations':
+    if (!has('case-studies', caseId)) warn(`case "${caseId}" has no case-studies/${caseId}.md yet — build fails until it exists.`);
+    if (!opts.version) die('iterations require --version <tag> (the app-repo release tag, e.g. --version 0.2.0 — it is the identity).');
+    if (opts.order === undefined) die('iterations require --order <n>, unique within the case study (the current iteration is derived from the highest order).');
+    if (!opts.date) die('iterations require --date YYYY-MM-DD (use the date of the app-repo tag, not today).');
+    fm = [
+      loc('title', 'title'),
+      `case: ${caseId}`,
+      `version: "${opts.version}"`,
+      opts.level ? `level: ${opts.level}` : null,
+      // Blocks are strings ("1", "2a"), so quote them — an unquoted 1 parses as a number
+      // and fails the schema.
+      opts.blocks ? `blocks: [${String(opts.blocks).split(',').map((b) => q(b.trim())).join(', ')}]` : null,
+      `order: ${opts.order}`,
+      `date: ${opts.date}`,
+      loc('summary', 'what this iteration published, in one paragraph'),
+      'processChanges:',
+      `  en:\n    - ${TODO('what changed in HOW you work (en)')}`,
+      `  de:\n    - ${TODO('what changed in HOW you work (de)')}`,
+      opts.corrects ? `corrects: [${opts.corrects}]` : null,
+    ];
+    body = '\nTODO — the commentary only you can write: intro, lessons, aiContribution,\n'
+      + 'and sourceUrl once the app repo has a public remote. Delete this body when done.\n';
+    break;
+
   case 'journal':
     if (!opts.date) die('journal entries require --date YYYY-MM-DD.');
     fm = [
@@ -265,6 +312,25 @@ switch (collection) {
     ];
     body = '\nTODO: what happened, what you decided and why — what the AI suggested and what you changed.\n';
     break;
+}
+
+// ---- versioning fields (append-only model, see content.config.ts) ----
+// The change pointer always sits on the NEWER artifact, so publishing an iteration
+// never requires editing a file an earlier iteration published.
+if (VERSIONED.has(collection)) {
+  if (opts.iteration) {
+    if (!has('iterations', opts.iteration))
+      warn(`iteration "${opts.iteration}" not found — build fails until iterations/${opts.iteration}.md exists.`);
+    fm.push(`introducedIn: ${opts.iteration}`);
+  } else {
+    warn('no --iteration given: re:check will warn until introducedIn is set. Which iteration first publishes this?');
+  }
+  if (opts.source) fm.push(`source: ${opts.source}`);
+  if (opts.changes) fm.push(`changes: [${opts.changes}]`);
+  if (opts.supersedes) {
+    if (collection !== 'adr') die('--supersedes applies to adr only; use --changes for the other collections.');
+    fm.push(`supersedes: ${opts.supersedes}`);
+  }
 }
 
 const content = `---\n${fm.filter(Boolean).join('\n')}\n---\n${body}`;

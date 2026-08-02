@@ -38,6 +38,31 @@ At each station: the **artifact**, the **reasoning** ("why did I decide this way
 3–5 ADRs · a **small** demo (2–3 workflows, no registration/password reset).
 `npm run re:check` warns when a limit is exceeded.
 
+Everything except the project count is counted **per project per iteration**, and diagrams and ADRs
+read as "N *new* per iteration" — they are cumulative and never deleted, so a total-based limit would
+fire forever from the second iteration on, and a warning you can never clear is one you learn to skip.
+
+## Iterations (development over time)
+
+The site must show Level 1 *still standing* when Level 2 is published, and show how the **way of
+working** changed — not only which features shipped. That is modelled as data, in the `iterations`
+collection. Full reasoning: **`docs/iterations-and-publication-plan.md`**.
+
+- **The publication unit is the iteration**, identified by the **app-repo release tag** (`WZ-0.1.0`).
+  `level` and `blocks` are optional — that is wurzel's scheduling vocabulary, not the site's contract.
+- **Published iterations are append-only.** Never edit a file a published iteration shipped. This is
+  enforced by the schema shape, not by discipline: the change pointer lives on the **newer** artifact
+  (`changes`, `supersedes`), there is no `changedIn` / `supersededBy`, and the current iteration is
+  **derived** (highest `order`) rather than stored. `re:check` errors on a pointer that points
+  *forward* in time. If a field would force an edit to a published artifact, it is a design bug.
+- **Every versioned artifact carries `introducedIn`** (`user-stories`, `requirements`, `diagrams`,
+  `adr`, `workflow`) — plus `source`, the vault file it cites. Let the generator stamp it:
+  `npm run content:new -- story wurzel --requirement WZ-R-01 --iteration WZ-0.2.0`.
+- **Publish only `Done` work.** Shipping `Ready`/`Placeholder` stories advertises features that do not
+  exist — the simulation this site refuses.
+- `case-studies.version` is **deprecated**; the displayed version must be derived from the current
+  iteration.
+
 ## Commands
 
 ```bash
@@ -57,9 +82,12 @@ Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanl
 - **`src/content.config.ts`** — the core: schemas for all artifact types. Links run through
   `reference()` fields; Astro verifies at build time that referenced IDs exist. Change the
   frontmatter shape → update the schema here. Content location is configurable via `CONTENT_DIR`.
-- **`src/content/<collection>/`** — content as Markdown. Collections: `case-studies`, `stakeholders`,
-  `glossary`, `requirements`, `epics`, `user-stories`, `adr`, `diagrams`, `workflow`, `journal`.
+- **`src/content/<project>/<collection>/`** — content as Markdown. Collections: `case-studies`,
+  `iterations`, `stakeholders`, `glossary`, `requirements`, `epics`, `user-stories`, `adr`,
+  `diagrams`, `workflow`, `journal`.
   Empty collections are fine (the "collection is empty" messages at build time are harmless).
+  `workflow` deliberately has **no `case` field**: its project is derived through
+  `introducedIn → iteration → case`, so there is one source of truth rather than two that can disagree.
 - **`src/pages/[lang]/`** — one set of pages, generated per locale (`getStaticPaths` returns
   `en`/`de`); each reads `Astro.params.lang` and computes the links itself:
   - `index.astro` (manifesto + red thread), `case-studies/[slug].astro` (pulls together a case
@@ -96,8 +124,13 @@ Rule: raw artifacts (code, `.bpmn`, `.puml`) stay in the project repo and are **
 A new artifact = **one Markdown file with frontmatter** in the right collection. Fastest way to
 create one: **`npm run content:new -- <collection> <project> [id] [options]`** (scaffolds a
 schema-correct stub with `TODO` placeholders — it does not invent content; `--help` lists options).
+Pass **`--iteration <id>`** on every versioned artifact so `introducedIn` is stamped by the tool.
 Or copy a block from **`docs/templates.md`** by hand. Do not maintain navigation/link lists by
 hand — just set IDs in the `reference()` fields, the page computes the rest.
+
+**Publishing adds files; it never overwrites one.** After writing an iteration's content, `git status`
+should show only additions. A modified file from an earlier iteration is the signal that something is
+being expressed on the wrong side of the link — put it on the new artifact via `changes:` instead.
 
 When a full example project is ready to be published as a case study and go live, follow the
 step-by-step checklist in **`docs/launch-plan.md`**.
