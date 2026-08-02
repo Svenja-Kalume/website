@@ -1,9 +1,26 @@
 # Iterations & publication plan — remaining steps
 
 Drafted 2026-08-01. Captures what was decided in one long working session and what is left to do.
-Status: **stages 1–6 not started.** Done so far: the reverts noted below, and on 2026-08-02 the
-content-repo submodule was absorbed into the website repo (see the amendment under *Repos involved*),
-which resolved step 7.1 and shrank 7.2 and 7.4.
+
+**Status as of 2026-08-02 — everything doable without content or the vault is done.**
+
+| | |
+|---|---|
+| ✅ **Stage 1** | versioning foundation — schema, `WZ-0.1.0`, 46 artifacts backfilled, `re:check` upgrades |
+| ✅ **Stage 3** | authoring ergonomics — generator, templates, `CLAUDE.md`, post-write hook |
+| ✅ **Stage 5.1–5.3, 5.6** | `questions` collection, acceptance-criteria lints, `fitCriterion`, `harnessChange` |
+| ✅ **Page defects** | derived version on the home page; `how-i-work` and `traceability` scoped per project |
+| ✅ **7.1** | resolved by absorbing the content repo (amendment under *Repos involved*) |
+| ⏸️ **Stage 2** | rendering — **blocked on having a second iteration**, not on effort |
+| ⏸️ **Stage 4** | Level 2 content — yours to write |
+| ⏸️ **Stage 5.4, 5.5** | held deliberately, see the notes there |
+| ⏸️ **Stage 6** | vault-side, untouched |
+| ⏸️ **7.2–7.4** | deployment, blocked on hosting |
+
+**Three things turned out to be broken rather than merely missing**, found while doing the above:
+the post-write hook had silently stopped firing for *every* artifact (it matched a pre-multi-project
+path); `how-i-work` sorted all workflow steps globally, which would interleave two projects; and the
+home page read `case-studies.version`, the field decision 4 retires.
 
 The goal it serves: the site must show **development over time** — Level 1 stays visible when Level 2
 is published — and show **how the way of working changed**, not only which features shipped.
@@ -78,9 +95,17 @@ Neither repo has a remote today.
 
 - [x] Decision 1 — settled 2026-08-02, and in a stronger form than drafted: one curated content
       *folder* per project, in this repo. See the amendment under *Repos involved*.
-- [ ] Confirm decision 6 and the backfill in step 2.2 — recommended, never explicitly agreed.
+- [x] Decision 6 — confirmed 2026-08-02 and implemented in `re:check`: guardrails per project per
+      iteration, ADRs and diagrams as "N new per iteration".
+- [ ] The backfill in step 2.2 — recommended, never explicitly agreed. (Not the `introducedIn`
+      backfill, which is done; this is the *rendering* question of regrouping the case-study page.)
 - [ ] Exemplar-selection criterion: richest **AI-override** story, or most **business-critical**
-      feature? They are rarely the same story.
+      feature? They are rarely the same story. **Blocks stage 4.**
+- [ ] Is Given/When/Then or EARS the house style for acceptance criteria? Measured 2026-08-02:
+      **109 of 118** existing criteria are declarative-testable instead ("CustomerNumber is generated
+      as yyyy-nnn"), which is a legitimate third style. `re:check` therefore reports shape as a
+      **count, not a warning** — warning on all of them would be red on day one. Adopting GWT/EARS
+      means a 109-criterion rewrite; that is a deliberate decision, not one a linter should make.
 - [ ] `harness/` as its own folder vs folding those records into the existing `process/`.
       Recommendation: separate — `process/` describes how it works now, `harness/` records how it
       changed, which is the reference-versus-ADR distinction already made elsewhere.
@@ -97,7 +122,21 @@ Neither repo has a remote today.
       collection, or a comparison view over each project's `workflow` steps. See *Multi-project*.
       Not blocking until project two has content.
 
-## Stage 1 — versioning foundation (schema + content, one repo)
+## Stage 1 — versioning foundation (schema + content, one repo) — ✅ DONE 2026-08-02
+
+Shipped in `0c33f30` as one atomic commit (schema + backfill together, which only the single-repo
+layout allows). The spec below is kept as the record. **Deltas from what was drafted:**
+
+- `workflow` deliberately gained **no `case` field**: a step's project is derived through
+  `introducedIn → iteration → case`, so there is one source of truth rather than two that can
+  disagree. This also fixes the `how-i-work` interleaving defect at the data layer.
+- `case-studies.version` is marked deprecated in place rather than removed — the pages read the
+  derived value now (`src/lib/iterations.ts`), and the field is the fallback while a project has no
+  iterations.
+- `re:check` gained more than 1.5 asked for: it prints the timeline and the derived current version,
+  and its new checks were each verified against a scratch dataset (order tie, forward pointer,
+  6-new-ADRs limit — and 5 + 5 ADRs across two iterations correctly *not* firing, where the old
+  total-based limit would have).
 
 1.1 **website** `src/content.config.ts` — add the `iterations` collection:
 
@@ -217,44 +256,67 @@ Consequences:
 - **Do not add a top-level nav item.** Six is already the ceiling for chrome this minimal; the
   iteration timeline belongs inside the case study, and "How I Work" stays the method entry point.
   Adding nav for content that does not exist yet is the easy wrong move.
-- **`index.astro:35` renders `v{c.data.version}`** from `case-studies.version` — the field decision 4
-  retires. It must read the current iteration instead, or the home page shows a stale version the day
-  L2 publishes.
+- ✅ **`index.astro` version tag** — fixed 2026-08-02 (`a279e00`). Derived from the current iteration
+  via `src/lib/iterations.ts`, falling back to `case-studies.version` while a project has none.
+  Invisible today (both read `0.1.0`); it would have shown a stale version the day L2 published.
 
-**Two defects that already exist and will bite when project two arrives** — worth fixing in this pass
-since the pages are open anyway:
+**Two defects that already existed and would bite when project two arrives** — ✅ both fixed
+2026-08-02 (`a279e00`), since they were the same root cause and needed no content:
 
-- `how-i-work.astro:13` — `getCollection('workflow')` sorted globally by `order`. With a second
-  project, its steps **interleave** with wurzel's into one nonsensical list. Needs scoping by project
-  (and then by iteration).
-- `traceability.astro:13-14` — all requirements and all stories across every project in one flat
-  table. It shows a case column, so it is not wrong, but at two projects × two iterations it becomes
-  unreadable. Needs grouping/filtering by project, then by iteration.
+- ✅ `how-i-work.astro` — workflow steps were sorted globally by `order`, which interleaves two
+  projects into one nonsensical list. Now grouped by project (derived through
+  `introducedIn → iteration → case`); a single project still renders as a plain list with no heading.
+- ✅ `traceability.astro` — one flat table across every project. Now one table per case study, and
+  the Case column is dropped when there is only one project, where it was pure redundancy.
 
-Neither is caused by iterations; both are the same root cause — pages written when one project and one
-iteration existed.
+Verified on a throwaway two-project dataset: two grouped step lists in the right per-project order,
+two tables with case headings, and a second project whose stored `version: "9.9"` was correctly
+overridden by its iteration's `0.1.0`.
+
+**Still to do here:** grouping by *iteration* within a project (the above scopes by project only),
+the route segment, and breadcrumbs. All of it needs a second iteration to build against.
 
 ## Stage 2 — rendering (website)
 
-Ordered so the differentiator lands first.
+Ordered so the differentiator lands first. **⏸️ Held until a second iteration exists** — building
+"L1's process beside L2's" against one iteration means building blind, and the honest fix is not a
+stub L2. The groundwork it needs is in place: `src/lib/iterations.ts` already resolves the current
+iteration and an artifact's project.
 
 2.1 `how-i-work.astro` — render `workflow` steps **per iteration**, L1's process beside L2's. This is
-the progress view.
+the progress view. (Per-*project* grouping is already done; per-iteration is what remains.)
 2.2 `case-studies/[slug].astro` — group artifacts by iteration (current expanded, earlier collapsed),
 and by block inside an iteration.
 2.3 An iteration timeline: per entry the summary, `processChanges`, `corrects`, `lessons`.
-2.4 `traceability.astro` — iteration filter.
-2.5 `src/i18n/ui.ts` — every new label in **both** locales.
+2.4 `traceability.astro` — iteration filter. (Per-case grouping is already done.)
+2.5 `src/i18n/ui.ts` — every new label in **both** locales. Note the `ui` dictionary is
+type-checked across locales: adding a key to one locale only is a compile error, not a silent gap.
 
-## Stage 3 — authoring ergonomics (website)
+## Stage 3 — authoring ergonomics (website) — ✅ DONE 2026-08-02
 
-3.1 `scripts/new-content.mjs` — `iteration|it` alias; `--iteration` on artifact scaffolds so the field
-is stamped by the tool, not typed by hand.
-3.2 `docs/templates.md` — the iteration block and the new fields.
-3.3 `CLAUDE.md` — document `iterations`, the per-iteration guardrails, the append-only rule.
-3.4 `.claude/harness/post-write.mjs` — `introducedIn` and `source` in the checklists.
+Shipped in `cf8983d`.
+
+3.1 ✅ `scripts/new-content.mjs` — `iteration|it` alias; `--iteration`, `--source`, `--changes`,
+`--supersedes` on artifact scaffolds. Iterations are never auto-numbered (the id is the tag).
+**A bug was caught here by building the generated stub rather than reading it:** `--blocks "1,2a"`
+emitted `blocks: [1, 2a]`, and an unquoted `1` parses as a number against `z.array(z.string())`.
+It would have failed on the first L2 iteration.
+3.2 ✅ `docs/templates.md` — iteration block, a shared *versioning fields* section, and the project
+segment restored in every template path (`src/content/<project>/…`, stale since the multi-project
+layout landed).
+3.3 ✅ `CLAUDE.md` — `iterations`, per-iteration guardrails, the append-only rule and why there is no
+`changedIn` / `supersededBy` / `status`.
+3.4 ✅ `.claude/harness/post-write.mjs` — **the hook was dead.** It matched
+`src/content/<collection>/`, which stopped being the layout when content moved to
+`src/content/<project>/<collection>/`, so it had silently fired for nothing. Repaired, and extended
+with `iterations`, `workflow`, `questions` and `journal` checklists.
 
 ## Stage 4 — Level 2 content, when you decide it is ready
+
+⏸️ **Yours to write.** The website side is ready: the schema accepts it, the generator scaffolds it,
+`re:check` validates it. Two things gate it — the **exemplar-selection criterion** (open, above) and
+the **`acceptance-checklist.md` Level 2 criteria**, which have still never been read and could force
+the Level 2/3 re-cut to be redone.
 
 The publication shape agreed for an iteration:
 
@@ -287,28 +349,45 @@ neither — too shallow for a peer, too jargon-heavy for a recruiter.
 ## Stage 5 — later website-harness phases
 
 Deliberately after stage 1, because they are all schema work and stage 1 sets the schema.
+**5.1, 5.2, 5.3 and 5.6 are done; 5.4 and 5.5 are held, each for a stated reason.**
 
-5.1 **Open questions** — a `questions` collection (`OQ-01`): the question, `askedOf` a stakeholder,
-`askedOn`, `answer`, `answeredOn`, `status`, what it blocks, `consequence`. Then `re:check` errors when
-a story moves past `backlog` while an open question blocks it. This is the readiness gate with teeth,
-and it is the missing home for the business questions the gate raises — today they live in a chat and
-evaporate. There is no established acronym for this artifact; RE literature calls it an open-issues
-list or decision log.
-5.2 **Acceptance-criteria lints** — weasel words (*fast, user-friendly, appropriate, robust, einfach,
-angemessen*), and criteria in neither Given/When/Then nor EARS shape. Ship as **warnings** until the
-existing stories are clean; a check that is red on day one gets ignored.
-5.3 **`requirements.fitCriterion`** — how you would prove the business goal is met (Volere's term).
-Retires the "businessGoal measurable?" checklist item, which is currently a hope, not a field.
-5.4 **Tests as data** — `user-stories.tests[]`, warn when a `done` story has no test link. The chain
-`R-xx → US-xx → BPMN → ADR → Code → Tests` currently ends in a station that exists in the process but
-not in the model.
-5.5 **Structured AI contribution** — `{ proposed, changed, rejected }`, accepted as a union during
+5.1 ✅ **Open questions** — `questions` collection (`OQ-01`), shipped 2026-08-02 (`555442e`):
+`question`, `askedOf`, `askedOn`, `status`, `answer`, `answeredOn`, `blocks`, `consequence`.
+`re:check` **errors** when a story listed in `blocks` moves past `backlog` while the question is open —
+that error is the signal someone is about to synthesise an answer only a stakeholder has. Also warns
+on an open question with no `askedOf`, and errors on `answered` with no answer. Verified both
+directions on a scratch copy.
+
+5.2 ✅ **Acceptance-criteria lints** — shipped (`555442e`), but with severities chosen by **measuring
+the existing 118 criteria first**, which overturned the drafted plan:
+- **weasel words are a warning.** All 118 are currently clean, so it stays green and guards future
+  content rather than accruing a backlog.
+- **shape is NOT a warning.** 109 of 118 are declarative-testable, a legitimate third style — not 109
+  defects. Warning on them would be red on day one, the exact failure this step's own note names.
+  Reported as one counted line; `npm run re:check -- --lint-ac` lists them. Whether to adopt GWT/EARS
+  is now an open decision above, not a linter's call.
+
+5.3 ✅ **`requirements.fitCriterion`** (Volere) — shipped (`555442e`). Retires the checklist item
+"businessGoal measurable?", which was a hope rather than a field. All 7 requirements currently lack
+one; reported as info, since filling them is retrospective work on published artifacts.
+
+5.4 ⏸️ **Tests as data** — `user-stories.tests[]`, warn when a `done` story has no test link.
+**Held deliberately.** Every story is `done` and none can carry a link until the app repo is
+reachable, so it would emit 20 warnings on day one — the failure mode 5.2 was corrected for.
+Do it *after* hosting (7.2), not before.
+
+5.5 ⏸️ **Structured AI contribution** — `{ proposed, changed, rejected }`, accepted as a union during
 migration. Then `re:check` can print *"human changed or rejected the AI proposal in X of Y stories"* —
-the only claim on the site backed by a countable figure. Last, because it rewrites ~30 files.
-5.6 **`journal.harnessChange`** — warn when a `retro`-tagged entry names no harness change, so
-"the retrospective improves the process" is enforced rather than drawn.
+the only claim on the site backed by a countable figure. Last, because it rewrites ~30 content files;
+that makes it content work, and it belongs with a content pass rather than a harness pass.
+
+5.6 ✅ **`journal.harnessChange`** — shipped 2026-08-02 (`f1aefb9`). Warns on a `retro`-tagged entry
+that names no change. Green today (no entry is tagged `retro`); verified on a scratch copy that it
+fires and clears.
 
 ## Stage 6 — vault-side track (app repo)
+
+⏸️ **Untouched — deliberately out of scope for the website-side work of 2026-08-02.**
 
 6.1 Rewrite the harness plan against the **real** harness — 6 agents, `groom-story`/`deliver-story`,
 5 workflow scripts, 8 rules, 10 skills, and the existing `C:\spielerei\wurzel\docs\harness\harness-improvements.md`
@@ -338,7 +417,9 @@ What it should pin down:
 - **What is delegated**: drafting, grooming, parallel planning, implementation, test-first execution,
   review.
 - **Where each gate sits and who owns it**: readiness gate, plan approval, acceptance — and the rule
-  that a *business* question never gets an AI-synthesised answer.
+  that a *business* question never gets an AI-synthesised answer. The website now **enforces** that
+  rule in data (5.1: `questions` + the `re:check` error), so the vault document and the site agree
+  rather than the site merely asserting it.
 - **How intent is captured** so it survives the session: which artifact holds it (`docs/` records) and
   which does not (chat).
 
