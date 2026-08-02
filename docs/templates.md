@@ -357,8 +357,14 @@ summary:                 # optional — one line for the log stream
   de: Eine Zeile für den Log-Stream.
 case: greenworks        # optional — links the entry to a case study
 tags: [ddd, ai]
+harnessChange:          # REQUIRED in practice when tagged `retro` — re:check warns
+  en: The readiness gate now sends business questions to a stakeholder instead of the AI.
+  de: Das Readiness-Gate schickt fachliche Fragen jetzt an einen Stakeholder statt an die KI.
 draft: false
 ---
 
 What happened, what I decided, and why. What the AI suggested — and what I changed.
 ```
+
+Tag an entry `retro` and `re:check` warns until `harnessChange` names what it changed. "The
+retrospective improves the process" is a claim the site makes — this is what backs it.

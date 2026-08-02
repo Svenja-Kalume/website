@@ -152,6 +152,17 @@ for (const d of diagrams) {
   if (!locHasContent(d.data.aiContribution)) infos.push(`${d.file}: no AI contribution documented.`);
 }
 
+// ---- Retrospectives must name what they changed ----
+// "The retrospective improves the process" is a claim the site makes. A retro-tagged
+// entry that names no harness change is a status update wearing the label.
+for (const j of load('journal')) {
+  const tags = (j.data.tags ?? []).map((t) => String(t).toLowerCase());
+  if (tags.includes('retro') || tags.includes('retrospective')) {
+    if (!locHasContent(j.data.harnessChange))
+      warnings.push(`${j.file}: tagged as a retrospective but names no harnessChange — what did it actually change in how you work?`);
+  }
+}
+
 // ---- Open questions: the readiness gate with teeth ----
 // A business question has no answer in any artifact — only a stakeholder has it. So a
 // story it blocks must not be in flight. This is an ERROR, not a warning: proceeding

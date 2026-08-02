@@ -333,6 +333,10 @@ switch (collection) {
       loc('summary', 'one line for the log stream'),
       `case: ${caseId}`,
       `tags: [${opts.tags || ''}]`,
+      // A retrospective has to name what it changed, or it is a status update.
+      /retro/i.test(String(opts.tags || ''))
+        ? loc('harnessChange', 'what this retro CHANGED in the way of working')
+        : null,
       `draft: ${opts.draft ? 'true' : 'false'}`,
     ];
     body = '\nTODO: what happened, what you decided and why — what the AI suggested and what you changed.\n';

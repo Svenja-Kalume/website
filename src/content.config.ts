@@ -303,6 +303,11 @@ const journal = defineCollection({
     body: locArr.optional(),
     case: reference('case-studies').optional(),
     tags: z.array(z.string()).default([]),
+    // What this retrospective actually CHANGED in the way of working. The site claims
+    // "the retrospective improves the process"; without this field that claim is drawn on
+    // a diagram rather than evidenced. re:check warns on a `retro`-tagged entry that
+    // names no change — a retro that changed nothing is a status update.
+    harnessChange: loc.optional(),
     draft: z.boolean().default(false),
   }),
 });

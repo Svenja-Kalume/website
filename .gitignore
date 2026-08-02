@@ -11,6 +11,8 @@ npm-debug.log*
 .env.production
 # macOS / editor
 .DS_Store
+# Obsidian per-vault workspace state (open panes, cursor positions) — machine-local noise
+.obsidian/
 # Claude Code: local (per-machine) settings and worktrees — keep the shared harness
 .claude/settings.local.json
 .claude/worktrees/

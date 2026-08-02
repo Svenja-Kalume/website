@@ -74,6 +74,10 @@ const checklists = {
     'processChanges filled in — what changed in HOW you work is the headline.',
     'corrects only ever points BACKWARDS at an earlier iteration.',
   ],
+  journal: [
+    'tagged `retro`? Then harnessChange must name what it changed in how you work.',
+    'what the AI suggested and what you changed — not a polished essay after the fact.',
+  ],
   'case-studies': [
     'version is deprecated — the displayed version is derived from the current iteration.',
     'demoUrl for a frozen state?',
