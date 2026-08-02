@@ -92,6 +92,40 @@ const iterationIds = ids(iterations);
 
 const refId = (v) => (typeof v === 'string' ? v : v && typeof v === 'object' ? v.id ?? v.slug : undefined);
 
+// ---- Frozen vs. current ----
+// A published iteration is append-only: its artifacts cannot be improved without editing
+// a published file. So ADVISORY checks (missing optional fields, style) apply only to the
+// CURRENT iteration and to artifacts not yet assigned to one. Otherwise every advisory
+// accrues permanently against history and turns frozen work into a to-do list that can
+// never be cleared — the same failure the acceptance-criteria shape lint was corrected for.
+//
+// ERRORS still apply everywhere: a broken reference or a blocked story is wrong whenever
+// it happened, and coverage stays global because a later story may cover an older
+// requirement.
+const currentIterationIds = new Set();
+{
+  const byCase = new Map();
+  for (const it of iterations) {
+    const c = refId(it.data.case) ?? '(no case)';
+    if (!byCase.has(c)) byCase.set(c, []);
+    byCase.get(c).push(it);
+  }
+  for (const list of byCase.values()) {
+    const newest = [...list].sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0)).pop();
+    if (newest) currentIterationIds.add(newest.id);
+  }
+}
+const isFrozen = (e) => {
+  const it = refId(e.data.introducedIn);
+  return it !== undefined && !currentIterationIds.has(it);
+};
+let suppressed = 0;
+// Record an advisory only for work that can still be changed.
+const advise = (bucket, entry, message) => {
+  if (isFrozen(entry)) { suppressed++; return; }
+  bucket.push(message);
+};
+
 // Localized prose is stored as { en, de }. A field "has content" if it is a
 // non-empty string (single-language draft) or an object whose present locales
 // are all non-empty strings.
@@ -143,13 +177,13 @@ const coveredReq = new Set(stories.map((s) => refId(s.data.requirement)).filter(
 for (const r of requirements) {
   checkRef(r.file, 'case', r.data.case, caseIds);
   if (!coveredReq.has(r.id)) warnings.push(`${r.file}: requirement ${r.id} has no linked user story (coverage gap).`);
-  if (!locHasContent(r.data.aiContribution)) infos.push(`${r.file}: no AI contribution documented.`);
+  if (!locHasContent(r.data.aiContribution)) advise(infos, r, `${r.file}: no AI contribution documented.`);
   if (!locHasContent(r.data.fitCriterion))
-    infos.push(`${r.file}: no fitCriterion — how would you prove this business goal is met?`);
+    advise(infos, r, `${r.file}: no fitCriterion — how would you prove this business goal is met?`);
 }
 for (const d of diagrams) {
   checkRef(d.file, 'case', d.data.case, caseIds);
-  if (!locHasContent(d.data.aiContribution)) infos.push(`${d.file}: no AI contribution documented.`);
+  if (!locHasContent(d.data.aiContribution)) advise(infos, d, `${d.file}: no AI contribution documented.`);
 }
 
 // ---- Citations out of a published iteration must be immutable ----
@@ -248,7 +282,7 @@ for (const s of stories) {
       acTotal++;
       const found = c.match(weaselRe);
       if (found)
-        warnings.push(`${s.file} [${locale}]: acceptance criterion uses unmeasurable wording (${[...new Set(found.map((x) => x.toLowerCase()))].join(', ')}) — how would you test it? "${c.slice(0, 70)}…"`);
+        advise(warnings, s, `${s.file} [${locale}]: acceptance criterion uses unmeasurable wording (${[...new Set(found.map((x) => x.toLowerCase()))].join(', ')}) — how would you test it? "${c.slice(0, 70)}…"`);
       if (!isShaped(c)) acUnshaped.push(`${s.file} [${locale}]: "${c.slice(0, 70)}…"`);
     }
   }
@@ -380,6 +414,12 @@ if (warnings.length) {
 if (infos.length) {
   console.log(`ℹ️  Optional fields not filled in (${infos.length}):`);
   infos.forEach((i) => console.log('   - ' + i));
+  console.log('');
+}
+if (suppressed) {
+  const frozen = [...iterations].filter((i) => !currentIterationIds.has(i.id)).map((i) => i.data.version ?? i.id);
+  console.log(`🔒 ${suppressed} advisor${suppressed === 1 ? 'y' : 'ies'} suppressed on published iteration${frozen.length === 1 ? '' : 's'} ${frozen.join(', ')} — append-only: what is published is history, not a to-do list.`);
+  console.log('   (a gap there is evidence of how the practice grew; say so in the next iteration\'s processChanges instead of backfilling it)');
   console.log('');
 }
 if (acTotal) {
