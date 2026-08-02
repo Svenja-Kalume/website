@@ -27,4 +27,5 @@ status: done
 aiContribution:
   en: The AI spotted that the old Estimation field and per-unit price branches were redundant and proposed one rule; I approved removing Estimation entirely and keeping Duration as an inert, informational field.
   de: Die KI erkannte, dass das alte Schätzungs-Feld und die einheitsspezifischen Preiszweige redundant waren, und schlug eine Regel vor; ich stimmte zu, die Schätzung ganz zu entfernen und die Arbeitszeit als inertes, informatives Feld zu behalten.
+introducedIn: WZ-0.1.0
 ---

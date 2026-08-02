@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI reused the create form for editing with the identity fields locked; I confirmed leaving delete out of Level 1 to keep the data model safe.
   de: Die KI verwendete das Anlege-Formular fürs Bearbeiten wieder, mit gesperrten Identitätsfeldern; ich bestätigte, Löschen aus Level 1 herauszulassen, um das Datenmodell sicher zu halten.
+introducedIn: WZ-0.1.0
 ---

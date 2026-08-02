@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI suggested the column set and empty-state text; I kept the list read-only (no inline edit) to match the docs-like simplicity.
   de: Die KI schlug den Spaltensatz und den Leerzustandstext vor; ich hielt die Liste schreibgeschützt (keine Inline-Bearbeitung), passend zur schlichten Anmutung.
+introducedIn: WZ-0.1.0
 ---

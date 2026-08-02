@@ -27,4 +27,5 @@ status: done
 aiContribution:
   en: The AI proposed deferred-create so a mere peek persists nothing; I accepted the trade-off that an unchanged default offer needs one touch to persist. A later regression where it silently stopped saving was caught and fixed with tests.
   de: Die KI schlug das verzögerte Erstellen vor, sodass ein bloßer Blick nichts speichert; ich akzeptierte den Kompromiss, dass ein unverändertes Standard-Angebot eine Berührung zum Speichern braucht. Eine spätere Regression, bei der es still nicht mehr speicherte, wurde gefunden und mit Tests behoben.
+introducedIn: WZ-0.1.0
 ---

@@ -7,7 +7,12 @@
  *  - required fields per user story: acceptanceCriteria (>=1), aiContribution (non-empty)
  *  - coverage gaps: requirements with no linked story
  *  - missing AI contribution on requirements/diagrams (info, not an error)
- *  - scope guardrails (upper limits from the concept) as a reminder
+ *  - iterations: `order` unique within a case study (the current iteration is derived
+ *    from it, so a tie is ambiguous), and a missing `introducedIn` on any artifact
+ *  - append-only rule: `changes` / `supersedes` / `corrects` may only point BACKWARDS
+ *    in time. A later iteration may correct an earlier one, never the reverse.
+ *  - scope guardrails PER PROJECT PER ITERATION (decision 6): counting totals is
+ *    meaningless for artifacts that are cumulative and never deleted.
  *
  * Exit code 1 on real errors (broken references, missing required fields).
  * Usage: npm run re:check
@@ -23,11 +28,17 @@ const CONTENT_ROOT = process.env.CONTENT_DIR
   : join(process.cwd(), 'src', 'content');
 
 // Scope guardrails from the concept (deliberate upper limits).
-const LIMITS = {
+// `case-studies` is a global limit (3–5 core projects across the whole site).
+// The rest are counted PER PROJECT PER ITERATION — decision 6: ADRs and diagrams are
+// cumulative and never deleted, so a total-based limit fires forever from the second
+// iteration on, and a warning you can never clear is one you learn to skip.
+const GLOBAL_LIMITS = {
   'case-studies': 5, // 3–5 core projects
+};
+const PER_ITERATION_LIMITS = {
   'user-stories': 25, // 15–25 stories
-  diagrams: 10, // 5–10 BPMN etc.
-  adr: 5, // 3–5 ADRs
+  diagrams: 10, // 5–10 new BPMN etc. per iteration
+  adr: 5, // 3–5 new ADRs per iteration
 };
 
 const errors = [];
@@ -54,7 +65,7 @@ function load(collection) {
       const raw = readFileSync(join(dir, f), 'utf8');
       const { data, content } = matter(raw);
       const base = f.split(/[\\/]/).pop();
-      out.push({ id: base.replace(/\.(md|mdx)$/, ''), data, body: content, file: `${project}/${collection}/${f}` });
+      out.push({ id: base.replace(/\.(md|mdx)$/, ''), data, body: content, project, file: `${project}/${collection}/${f}` });
     }
   }
   return out;
@@ -66,6 +77,8 @@ const epics = load('epics');
 const stories = load('user-stories');
 const adrs = load('adr');
 const diagrams = load('diagrams');
+const workflow = load('workflow');
+const iterations = load('iterations');
 
 const ids = (arr) => new Set(arr.map((e) => e.id));
 const reqIds = ids(requirements);
@@ -73,6 +86,8 @@ const epicIds = ids(epics);
 const adrIds = ids(adrs);
 const diagramIds = ids(diagrams);
 const caseIds = ids(cases);
+const workflowIds = ids(workflow);
+const iterationIds = ids(iterations);
 
 const refId = (v) => (typeof v === 'string' ? v : v && typeof v === 'object' ? v.id ?? v.slug : undefined);
 
@@ -134,15 +149,102 @@ for (const d of diagrams) {
   if (!locHasContent(d.data.aiContribution)) infos.push(`${d.file}: no AI contribution documented.`);
 }
 
-// Scope guardrails
-const counts = {
-  'case-studies': cases.length,
-  'user-stories': stories.length,
-  diagrams: diagrams.length,
-  adr: adrs.length,
-};
-for (const [k, limit] of Object.entries(LIMITS)) {
-  if (counts[k] > limit) warnings.push(`Scope guardrail: ${k} = ${counts[k]} exceeds the agreed upper limit (${limit}). Decide deliberately instead of expanding.`);
+// ---- Iterations: the versioning backbone ----
+const iterById = new Map(iterations.map((i) => [i.id, i]));
+const orderOf = (iterationId) => iterById.get(iterationId)?.data?.order;
+
+for (const it of iterations) {
+  checkRef(it.file, 'case', it.data.case, caseIds);
+  if (typeof it.data.order !== 'number')
+    errors.push(`${it.file}: order is missing or not a number — the current iteration is derived from it.`);
+  for (const c of it.data.corrects ?? []) checkRef(it.file, 'corrects', c, iterationIds);
+}
+
+// `order` must be unique WITHIN ONE case study. The current iteration is derived as the
+// highest order, so a tie makes "which version is live" ambiguous rather than merely ugly.
+const iterationsByCase = new Map();
+for (const it of iterations) {
+  const c = refId(it.data.case) ?? '(no case)';
+  if (!iterationsByCase.has(c)) iterationsByCase.set(c, []);
+  iterationsByCase.get(c).push(it);
+}
+for (const [c, list] of iterationsByCase) {
+  const seen = new Map();
+  for (const it of list) {
+    const o = it.data.order;
+    if (seen.has(o))
+      errors.push(`${it.file}: order ${o} is already used by "${seen.get(o)}" in case "${c}". The current iteration is derived from the highest order, so a tie is ambiguous.`);
+    else seen.set(o, it.id);
+  }
+}
+
+// Append-only rule: a change pointer sits on the NEWER artifact and may only point
+// BACKWARDS in time. Pointing forward would mean an earlier iteration knew about a
+// later one — i.e. a published file was edited after the fact.
+function checkBackwards(where, label, fromIter, toId, toIter) {
+  const a = orderOf(fromIter);
+  const b = orderOf(toIter);
+  if (a === undefined || b === undefined) return; // unversioned; already warned about
+  if (b > a)
+    errors.push(`${where}: ${label} points at "${toId}", introduced LATER (${toIter}, order ${b}) than this artifact (${fromIter}, order ${a}). A later iteration may correct an earlier one, never the reverse.`);
+  else if (b === a)
+    warnings.push(`${where}: ${label} points at "${toId}" from the same iteration (${fromIter}) — a change pointer within one iteration records nothing. Edit the artifact instead.`);
+}
+
+for (const it of iterations) {
+  for (const c of it.data.corrects ?? []) {
+    const toId = refId(c);
+    if (iterById.has(toId) && orderOf(toId) > it.data.order)
+      errors.push(`${it.file}: corrects points at "${toId}", which comes later (order ${orderOf(toId)} > ${it.data.order}). An iteration may only correct an earlier one.`);
+  }
+}
+
+// Every versioned artifact: introducedIn present and resolvable, change pointers backwards.
+const VERSIONED = [
+  ['user-stories', stories, ids(stories)],
+  ['requirements', requirements, reqIds],
+  ['diagrams', diagrams, diagramIds],
+  ['adr', adrs, adrIds],
+  ['workflow', workflow, workflowIds],
+];
+for (const [, entries, sameCollection] of VERSIONED) {
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  for (const e of entries) {
+    const intro = refId(e.data.introducedIn);
+    if (intro === undefined) {
+      warnings.push(`${e.file}: no introducedIn — it cannot be placed on the timeline and counts against the "(no iteration)" scope bucket.`);
+    } else {
+      checkRef(e.file, 'introducedIn', e.data.introducedIn, iterationIds);
+    }
+    const pointers = (e.data.changes ?? []).map((t) => ['changes', t]);
+    if (e.data.supersedes) pointers.push(['supersedes', e.data.supersedes]);
+    for (const [label, t] of pointers) {
+      checkRef(e.file, label, t, sameCollection);
+      const toId = refId(t);
+      const target = byId.get(toId);
+      if (target) checkBackwards(e.file, label, intro, toId, refId(target.data.introducedIn));
+    }
+  }
+}
+
+// ---- Scope guardrails ----
+// Global: the number of core projects on the site.
+if (cases.length > GLOBAL_LIMITS['case-studies'])
+  warnings.push(`Scope guardrail: case-studies = ${cases.length} exceeds the agreed upper limit (${GLOBAL_LIMITS['case-studies']}). Decide deliberately instead of expanding.`);
+
+// Per project per iteration (decision 6). For diagrams and ADRs this reads as
+// "N NEW per iteration" — they are cumulative and never deleted.
+const bucketOf = (e) => `${e.project} · ${refId(e.data.introducedIn) ?? '(no iteration)'}`;
+const PER_ITERATION_COLLECTIONS = { 'user-stories': stories, diagrams, adr: adrs };
+for (const [k, entries] of Object.entries(PER_ITERATION_COLLECTIONS)) {
+  const limit = PER_ITERATION_LIMITS[k];
+  const counts = new Map();
+  for (const e of entries) counts.set(bucketOf(e), (counts.get(bucketOf(e)) ?? 0) + 1);
+  const noun = k === 'user-stories' ? k : `new ${k}`;
+  for (const [bucket, n] of counts) {
+    if (n > limit)
+      warnings.push(`Scope guardrail: ${bucket} — ${noun} = ${n} exceeds the agreed upper limit (${limit} per iteration). Decide deliberately instead of expanding.`);
+  }
 }
 
 // Output
@@ -150,7 +252,12 @@ const line = '─'.repeat(60);
 console.log(line);
 console.log('Traceability & scope check');
 console.log(line);
-console.log(`Artifacts: ${cases.length} case studies · ${requirements.length} requirements · ${stories.length} stories · ${adrs.length} ADRs · ${diagrams.length} diagrams`);
+console.log(`Artifacts: ${cases.length} case studies · ${iterations.length} iterations · ${requirements.length} requirements · ${stories.length} stories · ${adrs.length} ADRs · ${diagrams.length} diagrams · ${workflow.length} workflow steps`);
+for (const [c, list] of iterationsByCase) {
+  const sorted = [...list].sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+  const current = sorted[sorted.length - 1];
+  console.log(`  ${c}: ${sorted.map((i) => i.data.version ?? i.id).join(' → ')}   (current: ${current?.data?.version ?? '—'})`);
+}
 console.log('');
 
 if (errors.length) {

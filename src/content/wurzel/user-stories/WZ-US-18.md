@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI designed the autosave engine (arm on typing, 10s idle save, validity-gated save-or-prompt on leave) and removed the Save and Reset buttons; I required that autosave never navigates on its own.
   de: Die KI entwarf die Autosave-Engine (Scharfschalten beim Tippen, Speichern nach 10s Inaktivität, gültigkeitsgeprüftes Speichern-oder-Nachfragen beim Verlassen) und entfernte die Speichern- und Zurücksetzen-Knöpfe; ich verlangte, dass Autosave nie von selbst navigiert.
+introducedIn: WZ-0.1.0
 ---

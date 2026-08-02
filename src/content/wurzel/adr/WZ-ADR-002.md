@@ -6,6 +6,7 @@ case: wurzel
 status: accepted
 date: 2026-06-12
 relatedRequirements: [WZ-R-01, WZ-R-07]
+introducedIn: WZ-0.1.0
 ---
 
 ## Context

@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI proposed a compact read-only preview embedded in the project view so the owner never loses context; I decided the exact field set and when the „Neu" action may appear.
   de: Die KI schlug eine kompakte, schreibgeschützte Vorschau in der Projektansicht vor, damit der Inhaber nie den Kontext verliert; ich legte den genauen Feldsatz fest und wann die „Neu"-Aktion erscheinen darf.
+introducedIn: WZ-0.1.0
 ---

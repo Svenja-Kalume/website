@@ -11,6 +11,7 @@ caption:
 aiContribution:
   en: The AI proposed deferred-create plus the validity-gated save-or-prompt on leave; I accepted the trade-off that an unchanged default offer needs one touch to persist. This flow also fixed a silent no-save regression.
   de: Die KI schlug das verzögerte Erstellen plus das gültigkeitsgeprüfte Speichern-oder-Nachfragen beim Verlassen vor; ich akzeptierte den Kompromiss, dass ein unverändertes Standard-Angebot eine Berührung zum Speichern braucht. Dieser Ablauf behob auch eine stille Nicht-Speichern-Regression.
+introducedIn: WZ-0.1.0
 ---
 flowchart TD
   A["Open offer draft (pre-filled: Betreff, positions)"] --> B{"Real change?"}

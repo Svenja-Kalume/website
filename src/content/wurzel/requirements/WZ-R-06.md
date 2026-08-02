@@ -11,4 +11,5 @@ status: done
 aiContribution:
   en: The AI proposed mirroring the browser history with in-app arrows and building the breadcrumb from the database hierarchy (Kunde › Projekt › Angebot); I set the rule that the app never auto-navigates after a save.
   de: Die KI schlug vor, die Browser-Historie mit In-App-Pfeilen zu spiegeln und das Breadcrumb aus der Datenbank-Hierarchie zu bauen (Kunde › Projekt › Angebot); ich setzte die Regel, dass die App nach einem Speichern nie automatisch navigiert.
+introducedIn: WZ-0.1.0
 ---

@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI proposed the auto-number with silent retry; I insisted the required address fields can always be entered manually so a customer is creatable without any external lookup.
   de: Die KI schlug die Auto-Nummer mit stillem Retry vor; ich bestand darauf, dass die Pflicht-Adressfelder stets manuell eingebbar sind, damit ein Kunde ohne externen Lookup anlegbar ist.
+introducedIn: WZ-0.1.0
 ---

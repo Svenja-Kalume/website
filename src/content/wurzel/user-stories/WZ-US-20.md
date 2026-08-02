@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The idea came from the recorded session ("Soll ich was einbauen, das automatisch groß schreibt? Ja."); the AI proposed the word- vs sentence-caps split and the field exclusions. I confirmed preserving inner capitals like GmbH.
   de: Die Idee kam aus der aufgezeichneten Session („Soll ich was einbauen, das automatisch groß schreibt? Ja."); die KI schlug die Aufteilung Wort- vs. Satz-Großschreibung und die Feld-Ausnahmen vor. Ich bestätigte den Erhalt der Binnengroßschreibung wie GmbH.
+introducedIn: WZ-0.1.0
 ---

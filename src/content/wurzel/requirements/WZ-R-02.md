@@ -11,4 +11,5 @@ status: done
 aiContribution:
   en: The AI flagged early that introducing Project before writing the offer stories would avoid a costly retrofit; I confirmed it as a Level-1 architecture decision (see the ADR).
   de: Die KI wies früh darauf hin, dass ein Projekt vor den Angebots-Stories ein teures Nachrüsten erspart; ich habe das als Level-1-Architekturentscheidung bestätigt (siehe ADR).
+introducedIn: WZ-0.1.0
 ---

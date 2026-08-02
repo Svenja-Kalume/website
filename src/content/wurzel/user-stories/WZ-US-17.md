@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI proposed mirroring the browser's own history via JS interop and building the breadcrumb from the database hierarchy; I set the rule that navigation is always explicit, never a side effect of saving.
   de: Die KI schlug vor, die Browser-Historie per JS-Interop zu spiegeln und das Breadcrumb aus der Datenbank-Hierarchie zu bauen; ich setzte die Regel, dass Navigation immer explizit ist, nie ein Nebeneffekt des Speicherns.
+introducedIn: WZ-0.1.0
 ---

@@ -11,6 +11,7 @@ caption:
 aiContribution:
   en: The AI drafted the entity set from the glossary; I added the snapshot entity and the rule that superseding an offer severs the live link. Invoices are intentionally absent at Level 1.
   de: Die KI entwarf den Entitätensatz aus dem Glossar; ich ergänzte die Snapshot-Entität und die Regel, dass das Ersetzen eines Angebots die Live-Verknüpfung trennt. Rechnungen fehlen auf Level 1 bewusst.
+introducedIn: WZ-0.1.0
 ---
 classDiagram
   Customer "1" --> "0..*" Project : owns

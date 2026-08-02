@@ -24,4 +24,5 @@ status: done
 aiContribution:
   en: The AI wired the live recompute (using the unified Quantity × UnitPrice rule); I confirmed no VAT at line level for Level 1 to keep tax handling out of the MVP.
   de: Die KI verdrahtete die Live-Neuberechnung (mit der vereinheitlichten Regel Menge × Einzelpreis); ich bestätigte keine MwSt. auf Positionsebene für Level 1, um die Steuerbehandlung aus dem MVP zu halten.
+introducedIn: WZ-0.1.0
 ---

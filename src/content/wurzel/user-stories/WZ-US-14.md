@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI surfaced the risk that editing a shared position silently changes other offers and added the warning tooltip; I confirmed that only the link is removed, never the underlying position.
   de: Die KI machte auf das Risiko aufmerksam, dass das Bearbeiten einer geteilten Position andere Angebote still verändert, und ergänzte den Warn-Tooltip; ich bestätigte, dass nur die Verknüpfung entfernt wird, nie die zugrunde liegende Position.
+introducedIn: WZ-0.1.0
 ---

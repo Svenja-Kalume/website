@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI traced the root cause — the browser number input validates against the OS locale, and the owner's PC is English-set — and proposed a text input with app-side parsing, reused for Menge. I confirmed the single-separator rule.
   de: Die KI führte die Ursache zurück — das Zahlen-Eingabefeld des Browsers validiert gegen das OS-Locale, und der PC des Inhabers ist englisch eingestellt — und schlug ein Text-Eingabefeld mit App-seitigem Parsen vor, wiederverwendet für die Menge. Ich bestätigte die Ein-Trennzeichen-Regel.
+introducedIn: WZ-0.1.0
 ---

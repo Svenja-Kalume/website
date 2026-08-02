@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI proposed the newest-first ordering by UpdatedAt so the owner lands on recent work; I confirmed reusing the same list component inside the customer view.
   de: Die KI schlug die Neueste-zuerst-Sortierung nach UpdatedAt vor, damit der Inhaber bei der jüngsten Arbeit landet; ich bestätigte die Wiederverwendung derselben Listen-Komponente in der Kundenansicht.
+introducedIn: WZ-0.1.0
 ---

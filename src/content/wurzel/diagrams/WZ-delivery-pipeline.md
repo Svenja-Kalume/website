@@ -11,6 +11,7 @@ caption:
 aiContribution:
   en: This diagram documents the way of working itself — the AI executes the delivery phases; the human owns intent, scope and every gate.
   de: Dieses Diagramm dokumentiert die Arbeitsweise selbst — die KI führt die Delivery-Phasen aus; der Mensch besitzt Absicht, Scope und jedes Gate.
+introducedIn: WZ-0.1.0
 ---
 flowchart TD
   subgraph Human["Human — Stakeholder & Product Owner"]

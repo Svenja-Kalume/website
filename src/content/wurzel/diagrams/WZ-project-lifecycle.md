@@ -11,6 +11,7 @@ caption:
 aiContribution:
   en: The AI derived the states from the lifecycle doc; I kept transitions free (no enforced order) and noted that awaiting a customer's answer is not a project state.
   de: Die KI leitete die Zustände aus dem Lifecycle-Dokument ab; ich hielt die Übergänge frei (keine erzwungene Reihenfolge) und hielt fest, dass „auf Kundenantwort warten" kein Projektzustand ist.
+introducedIn: WZ-0.1.0
 ---
 stateDiagram-v2
   [*] --> Open

@@ -11,6 +11,7 @@ caption:
 aiContribution:
   en: The AI proposed the three-project Hosted WASM layout; I confirmed Shared as the single home for DTOs so contracts are defined before implementation.
   de: Die KI schlug das Drei-Projekt-Hosted-WASM-Layout vor; ich bestätigte Shared als einzigen Ort für DTOs, damit Verträge vor der Umsetzung feststehen.
+introducedIn: WZ-0.1.0
 ---
 flowchart TD
   User["Owner (browser: Windows / Android)"]

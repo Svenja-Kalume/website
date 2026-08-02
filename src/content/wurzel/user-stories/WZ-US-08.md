@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: In the recorded session the owner described distance (km) as a special case; the AI generalised this into a fixed six-value unit enum, and I kept deeper transport pricing explicitly out of scope.
   de: In der aufgezeichneten Session beschrieb der Inhaber die Fahrstrecke (km) als Sonderfall; die KI verallgemeinerte das zu einem festen Sechs-Werte-Enum, und ich hielt tiefere Transportpreisbildung explizit außerhalb des Scopes.
+introducedIn: WZ-0.1.0
 ---

@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI built the inline picker filtering client-side (no per-keystroke API call); I specified the row format and made selection mandatory to avoid orphan projects.
   de: Die KI baute die Inline-Auswahl mit clientseitigem Filtern (kein API-Aufruf je Tastendruck); ich gab das Zeilenformat vor und machte die Auswahl verpflichtend, um verwaiste Projekte zu vermeiden.
+introducedIn: WZ-0.1.0
 ---

@@ -11,4 +11,5 @@ status: done
 aiContribution:
   en: The AI proposed the live-link model (an Open offer reads its positions live; a new version freezes the previous one to a snapshot) and deferred-create (the offer persists only on the first real change); I set the single-Open-offer invariant so a project view stays unambiguous.
   de: Die KI schlug das Live-Link-Modell vor (ein offenes Angebot liest seine Positionen live; eine neue Version friert das vorherige als Snapshot ein) und das verzögerte Erstellen (das Angebot wird erst bei der ersten echten Änderung gespeichert); ich setzte die Ein-offenes-Angebot-Invariante, damit die Projektansicht eindeutig bleibt.
+introducedIn: WZ-0.1.0
 ---

@@ -11,6 +11,7 @@ caption:
 aiContribution:
   en: Grooming found the live-read already worked via the OfferMapper, so the AI reframed the work as verification plus regression tests rather than new code; I confirmed the Open-only gate.
   de: Beim Grooming zeigte sich, dass das Live-Lesen über den OfferMapper bereits funktioniert, daher formulierte die KI die Arbeit als Verifikation plus Regressionstests statt neuem Code um; ich bestätigte das Nur-für-Offen-Gate.
+introducedIn: WZ-0.1.0
 ---
 flowchart TD
   A["Edit position (Beschreibung / Einheit / Menge / Einzelpreis)"] --> B["OfferMapper reads live"]

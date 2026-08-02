@@ -28,4 +28,5 @@ status: done
 aiContribution:
   en: The AI modelled versions as a self-referential chain with a snapshot on supersede; I set the single-Open-offer invariant so the project view stays unambiguous.
   de: Die KI modellierte Versionen als selbstreferenzielle Kette mit Snapshot bei Ersetzung; ich setzte die Ein-offenes-Angebot-Invariante, damit die Projektansicht eindeutig bleibt.
+introducedIn: WZ-0.1.0
 ---

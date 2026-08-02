@@ -26,4 +26,5 @@ status: done
 aiContribution:
   en: The AI proposed disabling instead of deleting positions so history stays intact; I accepted it as the basis for the live-link offer model.
   de: Die KI schlug Deaktivieren statt Löschen von Positionen vor, damit die Historie erhalten bleibt; ich übernahm das als Grundlage des Live-Link-Angebotsmodells.
+introducedIn: WZ-0.1.0
 ---

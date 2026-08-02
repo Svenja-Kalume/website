@@ -27,4 +27,5 @@ status: done
 aiContribution:
   en: The AI designed the snapshot entity and made the freeze atomic with the transition; I noted the read-back path (viewing a superseded offer from its snapshot) as a separate, later story.
   de: Die KI entwarf die Snapshot-Entität und machte das Einfrieren atomar mit dem Übergang; ich hielt den Lesepfad (ein ersetztes Angebot aus seinem Snapshot ansehen) als separate, spätere Story fest.
+introducedIn: WZ-0.1.0
 ---
