@@ -45,6 +45,12 @@
  *                         published file is never edited.
  *   --supersedes <id>     (adr only) same idea, one ADR
  *
+ * Open questions (question|oq) — the readiness gate's business-question half:
+ *   --asked-of <id>       the stakeholder who alone can answer it
+ *   --blocks <ids>        story ids that must not proceed until it is answered
+ *   --date YYYY-MM-DD     when it was asked
+ *   re:check ERRORS if a blocked story moves past `backlog` while it is open.
+ *
  * Iterations (--version, --order and --date are required):
  *   --version <tag>       the app-repo release tag, e.g. 0.2.0 -- the identity
  *   --order <n>           position within THIS case study; unique (the current
@@ -74,11 +80,12 @@ const ALIASES = {
   workflow: 'workflow', step: 'workflow',
   journal: 'journal',
   iterations: 'iterations', iteration: 'iterations', it: 'iterations',
+  questions: 'questions', question: 'questions', oq: 'questions',
 };
 // Collections that live on the iteration timeline (see content.config.ts `versioned`).
 const VERSIONED = new Set(['user-stories', 'requirements', 'diagrams', 'adr', 'workflow']);
 // Collections whose IDs auto-number, and the code used in the generated ID.
-const CODE = { requirements: 'R', epics: 'EP', 'user-stories': 'US', adr: 'ADR', diagrams: 'D' };
+const CODE = { requirements: 'R', epics: 'EP', 'user-stories': 'US', adr: 'ADR', diagrams: 'D', questions: 'OQ' };
 
 const die = (msg) => { console.error(`✖ ${msg}`); process.exit(1); };
 const q = (s) => `"${String(s).replace(/"/g, '\\"')}"`;
@@ -178,6 +185,7 @@ switch (collection) {
       loc('title', 'title'),
       `case: ${caseId}`,
       loc('businessGoal', 'business goal'),
+      loc('fitCriterion', 'how you would PROVE the goal is met — the measurement, not a restatement'),
       `priority: ${opts.priority || 'should'}      # must | should | could`,
       `status: ${opts.status || 'open'}         # open | in-progress | done`,
       loc('aiContribution', 'AI contribution — what did the AI propose, what did you change'),
@@ -298,6 +306,23 @@ switch (collection) {
     ];
     body = '\nTODO — the commentary only you can write: intro, lessons, aiContribution,\n'
       + 'and sourceUrl once the app repo has a public remote. Delete this body when done.\n';
+    break;
+
+  case 'questions':
+    if (!has('case-studies', caseId)) warn(`case "${caseId}" has no case-studies/${caseId}.md yet — build fails until it exists.`);
+    if (opts['asked-of'] && !has('stakeholders', opts['asked-of'])) warn(`stakeholder "${opts['asked-of']}" not found.`);
+    if (!opts['asked-of']) warn('no --asked-of given: a question nobody owns does not get answered.');
+    fm = [
+      loc('question', 'the question — one only a stakeholder can answer'),
+      `case: ${caseId}`,
+      opts['asked-of'] ? `askedOf: ${opts['asked-of']}` : null,
+      opts.date ? `askedOn: ${opts.date}` : null,
+      `status: ${opts.status || 'open'}          # open | answered | dropped`,
+      opts.blocks ? `blocks: [${opts.blocks}]` : 'blocks: []',
+      loc('consequence', 'what changes depending on the answer — why it is worth asking'),
+    ];
+    body = '\nTODO: context — where this came up, and what has already been ruled out.\n'
+      + 'Do NOT let the answer be synthesised: only the stakeholder has it.\n';
     break;
 
   case 'journal':

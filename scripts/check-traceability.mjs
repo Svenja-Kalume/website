@@ -79,6 +79,7 @@ const adrs = load('adr');
 const diagrams = load('diagrams');
 const workflow = load('workflow');
 const iterations = load('iterations');
+const questions = load('questions');
 
 const ids = (arr) => new Set(arr.map((e) => e.id));
 const reqIds = ids(requirements);
@@ -143,10 +144,79 @@ for (const r of requirements) {
   checkRef(r.file, 'case', r.data.case, caseIds);
   if (!coveredReq.has(r.id)) warnings.push(`${r.file}: requirement ${r.id} has no linked user story (coverage gap).`);
   if (!locHasContent(r.data.aiContribution)) infos.push(`${r.file}: no AI contribution documented.`);
+  if (!locHasContent(r.data.fitCriterion))
+    infos.push(`${r.file}: no fitCriterion — how would you prove this business goal is met?`);
 }
 for (const d of diagrams) {
   checkRef(d.file, 'case', d.data.case, caseIds);
   if (!locHasContent(d.data.aiContribution)) infos.push(`${d.file}: no AI contribution documented.`);
+}
+
+// ---- Open questions: the readiness gate with teeth ----
+// A business question has no answer in any artifact — only a stakeholder has it. So a
+// story it blocks must not be in flight. This is an ERROR, not a warning: proceeding
+// means someone is about to invent the answer, which is the one thing the gate exists
+// to prevent.
+const storyById = new Map(stories.map((s) => [s.id, s]));
+const stakeholderIds = ids(load('stakeholders'));
+for (const q of questions) {
+  checkRef(q.file, 'case', q.data.case, caseIds);
+  if (q.data.askedOf) checkRef(q.file, 'askedOf', q.data.askedOf, stakeholderIds);
+  const status = q.data.status ?? 'open';
+  if (status === 'answered' && !locHasContent(q.data.answer))
+    errors.push(`${q.file}: status is "answered" but there is no answer.`);
+  if (status === 'open' && !q.data.askedOf)
+    warnings.push(`${q.file}: open question with no askedOf — a question nobody owns does not get answered.`);
+  for (const ref of q.data.blocks ?? []) {
+    const id = refId(ref);
+    checkRef(q.file, 'blocks', ref, ids(stories));
+    const story = storyById.get(id);
+    if (!story) continue;
+    const st = story.data.status ?? 'backlog';
+    if (status === 'open' && st !== 'backlog')
+      errors.push(`${story.file}: story is "${st}" while open question ${q.id} blocks it. Only a stakeholder can answer it — do not let it be synthesised. Answer ${q.id} or move the story back to backlog.`);
+  }
+}
+
+// ---- Acceptance-criteria lints ----
+// Two lints with deliberately different severities, chosen by measuring the existing
+// stories rather than by assumption:
+//
+//  - WEASEL WORDS are a real defect: an unmeasurable criterion cannot be tested. All 118
+//    existing criteria are clean, so this ships as a warning and stays green until
+//    someone writes one.
+//  - SHAPE (Given/When/Then or EARS) is NOT shipped as a warning. 109 of the 118 existing
+//    criteria are declarative-testable instead ("CustomerNumber is generated as yyyy-nnn"),
+//    which is a legitimate third style, not 109 defects. Warning on all of them would be
+//    red on day one, and a check that is red on day one is one you learn to skip.
+//    It is reported as a single counted line; pass --lint-ac to list the individual ones.
+const WEASEL = [
+  'fast', 'quick', 'quickly', 'user-friendly', 'appropriate', 'appropriately', 'robust',
+  'simple', 'simply', 'easy', 'easily', 'efficient', 'efficiently', 'intuitive', 'seamless',
+  'reasonable', 'sufficient', 'adequate', 'optimal', 'as needed', 'and so on',
+  'einfach', 'schnell', 'benutzerfreundlich', 'angemessen', 'intuitiv', 'effizient',
+  'ausreichend', 'geeignet', 'sinnvoll', 'performant', 'komfortabel', 'optimal', 'usw',
+];
+const weaselRe = new RegExp(`\\b(${WEASEL.join('|')})\\b`, 'gi');
+// Given/When/Then in either locale, or EARS ("... shall ...", "... muss ...").
+const isShaped = (c) =>
+  /\b(given|when|then)\b/i.test(c) || /\b(angenommen|gegeben|wenn|dann)\b/i.test(c)
+  || /\bshall\b/i.test(c) || /\bmuss\b/i.test(c);
+
+const LIST_AC = process.argv.includes('--lint-ac');
+let acTotal = 0;
+const acUnshaped = [];
+for (const s of stories) {
+  for (const locale of ['en', 'de']) {
+    for (const c of acList(s.data.acceptanceCriteria, locale)) {
+      if (typeof c !== 'string') continue;
+      acTotal++;
+      const found = c.match(weaselRe);
+      if (found)
+        warnings.push(`${s.file} [${locale}]: acceptance criterion uses unmeasurable wording (${[...new Set(found.map((x) => x.toLowerCase()))].join(', ')}) — how would you test it? "${c.slice(0, 70)}…"`);
+      if (!isShaped(c)) acUnshaped.push(`${s.file} [${locale}]: "${c.slice(0, 70)}…"`);
+    }
+  }
 }
 
 // ---- Iterations: the versioning backbone ----
@@ -253,6 +323,8 @@ console.log(line);
 console.log('Traceability & scope check');
 console.log(line);
 console.log(`Artifacts: ${cases.length} case studies · ${iterations.length} iterations · ${requirements.length} requirements · ${stories.length} stories · ${adrs.length} ADRs · ${diagrams.length} diagrams · ${workflow.length} workflow steps`);
+const openQuestions = questions.filter((q) => (q.data.status ?? 'open') === 'open').length;
+if (questions.length) console.log(`Open questions: ${openQuestions} open of ${questions.length}`);
 for (const [c, list] of iterationsByCase) {
   const sorted = [...list].sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
   const current = sorted[sorted.length - 1];
@@ -271,8 +343,15 @@ if (warnings.length) {
   console.log('');
 }
 if (infos.length) {
-  console.log(`ℹ️  AI contribution (${infos.length}):`);
+  console.log(`ℹ️  Optional fields not filled in (${infos.length}):`);
   infos.forEach((i) => console.log('   - ' + i));
+  console.log('');
+}
+if (acTotal) {
+  const shaped = acTotal - acUnshaped.length;
+  console.log(`ℹ️  Acceptance criteria: ${acTotal} total · ${shaped} in Given/When/Then or EARS shape · ${acUnshaped.length} declarative.`);
+  if (acUnshaped.length && !LIST_AC) console.log('   (declarative is a valid style — run `npm run re:check -- --lint-ac` to list them)');
+  if (LIST_AC) acUnshaped.forEach((i) => console.log('   - ' + i));
   console.log('');
 }
 if (!errors.length && !warnings.length) console.log('✅ No errors or coverage gaps.');

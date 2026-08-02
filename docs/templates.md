@@ -106,6 +106,35 @@ aiContribution:          # optional
 There is no `status: current | superseded` field on purpose — the current iteration is *derived* from
 the highest `order`, so publishing a new one never edits the old one.
 
+## Open question → `src/content/<project>/questions/OQ-01.md`
+
+The readiness gate splits failures by owner. A **formal** defect (ambiguous, not testable, glossary
+term missing) loops back into the harness. A **business question** has no answer in any artifact —
+only a stakeholder has it, and the AI must never synthesise one. This is where that second kind lives
+instead of evaporating in a chat.
+
+```markdown
+---
+question:
+  en: Does the customer number reset per year, or run continuously?
+  de: Wird die Kundennummer jährlich zurückgesetzt oder läuft sie durch?
+case: wurzel
+askedOf: WZ-owner        # the stakeholder who alone can answer it
+askedOn: 2026-08-02
+status: open             # open | answered | dropped
+blocks: [WZ-US-03]       # stories that must not proceed until it is answered
+consequence:
+  en: A continuous number makes the yearly-reset retry logic unnecessary.
+  de: Eine durchlaufende Nummer macht die Retry-Logik für den Jahresreset überflüssig.
+---
+
+Context: where this came up, and what has already been ruled out.
+```
+
+Once answered, add `answer` (localized) and `answeredOn`, and set `status: answered`.
+**`re:check` errors** if a story listed in `blocks` moves past `backlog` while the question is open —
+that error means someone is about to invent the answer.
+
 ## Case study → `src/content/<project>/case-studies/<name>.md`
 
 ```markdown
@@ -137,6 +166,9 @@ case: greenworks                 # ID of the case study (language-neutral)
 businessGoal:
   en: Quotes should be created in under 15 minutes.
   de: Angebote sollen in unter 15 Minuten erstellt werden.
+fitCriterion:                    # how you would PROVE it — a measurement, not a restatement
+  en: Five quotes timed end to end, median under 15 minutes, no manual copy-paste step.
+  de: Fünf Angebote end-to-end gestoppt, Median unter 15 Minuten, ohne manuelles Copy-Paste.
 priority: must                   # must | should | could
 status: in-progress              # open | in-progress | done
 aiContribution:                  # optional

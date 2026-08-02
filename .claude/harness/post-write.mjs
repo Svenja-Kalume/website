@@ -36,7 +36,18 @@ const checklists = {
     'status is `done`? Only Done work gets published.',
     ...versioned,
   ],
-  requirements: ['businessGoal measurable?', 'priority set?', 'covered by a story?', ...versioned],
+  requirements: [
+    'fitCriterion filled in — how would you PROVE this goal is met? (a measurement, not a restatement)',
+    'priority set?',
+    'covered by a story?',
+    ...versioned,
+  ],
+  questions: [
+    'askedOf set — who alone can answer this?',
+    'blocks lists the stories that must not proceed until it is answered.',
+    'consequence: what changes depending on the answer?',
+    'NEVER let the answer be synthesised — a business question has no answer in any artifact.',
+  ],
   adr: [
     'status & date set?',
     'relatedRequirements linked?',

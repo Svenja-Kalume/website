@@ -156,6 +156,10 @@ const requirements = defineCollection({
     title: loc,
     case: reference('case-studies'),
     businessGoal: loc,
+    // How you would PROVE the business goal is met (Volere's "fit criterion"). Retires
+    // the "businessGoal measurable?" checklist item, which was a hope rather than a field:
+    // a goal nobody can measure cannot be shown to have been reached.
+    fitCriterion: loc.optional(),
     priority: z.enum(['must', 'should', 'could']).default('should'),
     status: z.enum(['open', 'in-progress', 'done']).default('open'),
     aiContribution: loc.optional(),
@@ -254,6 +258,37 @@ const workflow = defineCollection({
   }),
 });
 
+// Open questions: the home for the SECOND kind of readiness-gate failure.
+//
+// The gate splits failures by owner. A *formal* defect (ambiguous, not testable, glossary
+// term missing) loops back into the harness — you and the machine fix it. A *business
+// question* has no answer in any artifact; only a stakeholder has it. The AI must never
+// synthesise an answer to the second kind — so it needs somewhere to live, or it lives in
+// a chat and evaporates.
+//
+// There is no established acronym for this artifact; RE literature calls it an
+// open-issues list or a decision log. IDs: OQ-01.
+const questions = defineCollection({
+  loader: base('questions'),
+  schema: z.object({
+    question: loc,
+    case: reference('case-studies'),
+    // Who alone can answer it. A question nobody owns will not get answered.
+    askedOf: reference('stakeholders').optional(),
+    askedOn: z.coerce.date().optional(),
+    status: z.enum(['open', 'answered', 'dropped']).default('open'),
+    answer: loc.optional(),
+    answeredOn: z.coerce.date().optional(),
+    // What cannot proceed until this is answered. re:check errors when a story listed
+    // here has moved past `backlog` while the question is still open — the readiness
+    // gate with teeth rather than as a diagram.
+    blocks: z.array(reference('user-stories')).default([]),
+    // What happens if it is answered the other way — why it is worth asking at all.
+    consequence: loc.optional(),
+    ...versioned,
+  }),
+});
+
 // Journal: a running log of decisions, dead-ends and what the AI actually
 // contributed -- kept while working, not polished essays after the fact.
 // An entry may link back to the case study it belongs to (optional).
@@ -283,5 +318,6 @@ export const collections = {
   adr,
   diagrams,
   workflow,
+  questions,
   journal,
 };

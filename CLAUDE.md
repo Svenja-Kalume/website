@@ -42,6 +42,21 @@ Everything except the project count is counted **per project per iteration**, an
 read as "N *new* per iteration" — they are cumulative and never deleted, so a total-based limit would
 fire forever from the second iteration on, and a warning you can never clear is one you learn to skip.
 
+## The readiness gate, as data
+
+The gate splits failures by owner, and each half now has a home:
+- A **formal** defect (ambiguous, not testable, glossary term missing) loops back into the harness.
+  `re:check` catches part of it: unmeasurable wording in acceptance criteria is a **warning**, and
+  `requirements.fitCriterion` records how you would *prove* the business goal is met (Volere's term).
+- A **business question** has no answer in any artifact — only a stakeholder has it. It goes in the
+  **`questions`** collection (`OQ-01`) with `askedOf`, `blocks` and `consequence`. **`re:check` errors**
+  when a story it blocks moves past `backlog`. Never let the AI synthesise an answer to this kind;
+  that error is the signal someone is about to.
+
+Acceptance-criteria *shape* (Given/When/Then / EARS) is reported as a **count, not a warning** —
+the existing criteria are declarative-testable, which is a valid third style, and a check that is red
+on day one is one you learn to skip. `npm run re:check -- --lint-ac` lists them.
+
 ## Iterations (development over time)
 
 The site must show Level 1 *still standing* when Level 2 is published, and show how the **way of
@@ -84,7 +99,7 @@ Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanl
   frontmatter shape → update the schema here. Content location is configurable via `CONTENT_DIR`.
 - **`src/content/<project>/<collection>/`** — content as Markdown. Collections: `case-studies`,
   `iterations`, `stakeholders`, `glossary`, `requirements`, `epics`, `user-stories`, `adr`,
-  `diagrams`, `workflow`, `journal`.
+  `diagrams`, `workflow`, `questions`, `journal`.
   Empty collections are fine (the "collection is empty" messages at build time are harmless).
   `workflow` deliberately has **no `case` field**: its project is derived through
   `introducedIn → iteration → case`, so there is one source of truth rather than two that can disagree.
