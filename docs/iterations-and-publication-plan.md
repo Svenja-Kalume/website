@@ -357,24 +357,33 @@ means the site never discovers a break that could have been caught earlier.
 into the website repo. A clean clone now builds with full content, and there is no submodule pointer
 to keep in sync. (`C:\spielerei\wurzel-content` keeps the original history as a backup on branch
 `import-0.1.0` with tag `0.1.0`; nothing reads it.)
-7.2 A real remote for the website repo, and one for the app repo (`C:\spielerei\wurzel`) so the
-`codeUrl` / `source` links the content already carries actually resolve. One remote, not three.
+7.2 A real remote for the website repo, and one for the app repo (`C:\spielerei\wurzel`) — the latter
+is what makes `codeUrl` writable at all (`z.string().url()`), so it gates the "→ Code → Tests" end of
+the chain, not just deployment. Two remotes, not three.
 7.3 `astro.config.mjs` — set `site:` to the real domain.
 7.4 CI/IONOS — plain checkout, no submodule flag needed.
 
 ## Held back deliberately
 
-`src/content/wurzel/workflow/WZ-01b-requirements.md` sits **untracked** — a requirements stage missing
-from the six documented workflow steps, `order: 1.5`, `aiRole` derived from the seven requirement
-records rather than invented.
+`src/content/wurzel/workflow/WZ-01b-requirements.md` is **in the git stash** since 2026-08-02
+(`stash@{0}`, message "WZ-01b-requirements: needs introducedIn WZ-0.2.0 (stage 4)"). Restore it with
+`git stash pop` when writing Level 2. **A stash is local to this machine and is never pushed** — if
+the repo is cloned elsewhere before then, that file is gone; recover it from
+`git stash show -p stash@{0}` while it still exists, or accept rewriting it.
 
-**Do not commit it before step 1.2.** `workflow` has no `introducedIn` field yet, so committing it now
-would put it in the *current* step list and present a 7-step process as Level 1's way of working. It is
-Level 2 thinking — the `aiRole` was written with hindsight across all seven records. Nothing is broken
-by waiting: the `0.1.0` content tag does not contain it, and it was deliberately left out of the
-2026-08-02 absorb commit as well, so it is still untracked in the website repo. Commit it in stage 1 with
-`introducedIn: WZ-0.2.0`, and settle its `order` against Level 2's real step list instead of the `1.5`
-guessed at now.
+It is a requirements stage missing from the six documented workflow steps, `order: 1.5`, `aiRole`
+derived from the seven requirement records rather than invented.
+
+**Restore it in stage 4, not before.** `workflow` now *has* `introducedIn` (step 1.2, done), but
+`introducedIn` is a validated `reference('iterations')` — so the file cannot build until
+`iterations/WZ-0.2.0.md` exists. That is stage 4. The original plan said "commit it in stage 1"; that
+was off by one.
+
+Committing it without an iteration would be worse than a build error: it would land in the *current*
+step list and present a 7-step process as Level 1's way of working. It is Level 2 thinking — the
+`aiRole` was written with hindsight across all seven records. Nothing is broken by waiting: the
+`0.1.0` content tag does not contain it. When restoring, stamp `introducedIn: WZ-0.2.0` and settle its
+`order` against Level 2's real step list instead of the `1.5` guessed at now.
 
 For the same reason both site Mermaid diagrams and five workflow renames were **reverted** to the
 `0.1.0` state during the session: hand-editing them was papering over a versioning problem that data
