@@ -49,15 +49,31 @@ The site never reads a project's vault — it **cites** it, through two fields:
 | field | on | shape |
 |---|---|---|
 | `source` | user-stories, requirements, diagrams, adr, workflow, questions | a **vault-relative path**, e.g. `docs/user-stories/l2-block1-offer-pdf.md` |
-| `codeUrl` | user-stories | an **absolute URL**, so it needs the project repo to be reachable |
+| `codeUrl` | user-stories | a **repo-relative path** (preferred), e.g. `src/Customers/CustomerService.cs` — or a full URL for anything outside the project repo |
+| `repoUrl` | case-studies | the project repo base, set **once**, when it becomes reachable |
 | `sourceUrl` | iterations | absolute URL of the release tag |
+
+**Hosting does not gate authoring.** A repo-relative `codeUrl` resolves at render time against
+the case study's `repoUrl`, pinned to the tag of the iteration that published the artifact:
+
+```
+repoUrl            https://github.com/<user>/wurzel
+codeUrl            src/Customers/CustomerService.cs      (on a story introducedIn WZ-0.1.0)
+→ rendered link    https://github.com/<user>/wurzel/blob/0.1.0/src/Customers/CustomerService.cs
+```
+
+Until `repoUrl` is set, the path renders as plain text rather than a dead link. Set `repoUrl` once
+and every path in every iteration becomes a tag-pinned link — **without editing a single published
+artifact**, which is what the append-only rule requires.
 
 Two rules follow from iterations being append-only, and they are the whole contract:
 
 1. **Citations out of a published iteration must be immutable.** An artifact published in `0.1.0`
    still has to read the same in a year. A URL pointing at `…/blob/main/…` breaks that *silently*:
-   the artifact is never edited, but what it points at changes underneath it. Pin to the tag the
-   iteration is named after — `…/blob/0.1.0/…`. `re:check` warns on a moving-branch citation.
+   the artifact is never edited, but what it points at changes underneath it. The relative form
+   satisfies this **by construction** — the tag comes from the artifact's own iteration, so nobody
+   types it and nobody can get it wrong. `re:check` warns only on hand-written full URLs that point
+   at a moving branch.
 2. **Basenames must stay unique and paths must stay stable** *within one published state*. Moving a
    vault file after it has been cited rots the `source` path. Reorganise **before** the citations
    exist, or accept that older iterations point at the old layout — which is fine, and is exactly

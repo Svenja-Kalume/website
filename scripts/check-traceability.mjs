@@ -157,12 +157,22 @@ for (const d of diagrams) {
 // A citation pinned to a moving branch breaks that silently — the artifact stays
 // unedited while the thing it points at changes underneath it. Pin to the release tag
 // the iteration is named after.
+// A repo-relative `codeUrl` is the preferred form: it needs no hosting to author, and the
+// site resolves it against the case study's `repoUrl` pinned to the artifact's own
+// iteration tag — immutable by construction. A hand-written full URL has to be pinned by
+// hand, so it gets checked.
 const MOVING_REF = /\/(blob|tree|raw|src)\/(main|master|HEAD|develop)\//i;
+const repoUrlOf = new Map(cases.map((c) => [c.id, c.data.repoUrl]));
 for (const e of [...stories, ...requirements, ...diagrams, ...adrs, ...workflow, ...iterations]) {
   for (const field of ['codeUrl', 'sourceUrl']) {
     const url = e.data[field];
-    if (typeof url === 'string' && MOVING_REF.test(url))
-      warnings.push(`${e.file}: ${field} points at a moving branch. A published artifact must cite a tag (e.g. .../blob/0.1.0/...), or what it says changes underneath it.`);
+    if (typeof url !== 'string') continue;
+    if (/^https?:\/\//i.test(url)) {
+      if (MOVING_REF.test(url))
+        warnings.push(`${e.file}: ${field} points at a moving branch. A published artifact must cite a tag (e.g. .../blob/0.1.0/...), or what it says changes underneath it.`);
+    } else if (field === 'codeUrl' && !repoUrlOf.get(refId(e.data.case))) {
+      infos.push(`${e.file}: codeUrl is a repo-relative path, but case "${refId(e.data.case)}" has no repoUrl yet — it renders as text until you set one. Nothing to fix here; set repoUrl once and every path becomes a tag-pinned link.`);
+    }
   }
 }
 

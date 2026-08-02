@@ -33,7 +33,11 @@
  *   --tool <name>         (diagrams) e.g. Mermaid, Camunda Modeler
  *   --order <n>           (workflow, case-studies, iterations)
  *   --date YYYY-MM-DD     (adr, journal, iterations) -- required, no clock is read for you
- *   --code-url <url> --jira <key> --demo-url <url>
+ *   --code-url <path>     (user stories) PREFER a repo-relative path like
+ *                         src/Customers/CustomerService.cs — it needs no hosting and is
+ *                         auto-pinned to the artifact's iteration tag at render time.
+ *                         A full URL is for code outside the project repo.
+ *   --jira <key> --demo-url <url>
  *   --force               overwrite if the file exists
  *
  * Versioning (user-stories, requirements, diagrams, adr, workflow):

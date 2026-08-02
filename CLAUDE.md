@@ -75,10 +75,12 @@ collection. Full reasoning: **`docs/iterations-and-publication-plan.md`**.
   `npm run content:new -- story wurzel --requirement WZ-R-01 --iteration WZ-0.2.0`.
 - **Publish only `Done` work.** Shipping `Ready`/`Placeholder` stories advertises features that do not
   exist — the simulation this site refuses.
-- **Citations out of a published iteration must be immutable.** `codeUrl` / `sourceUrl` pin to the
-  release tag (`…/blob/0.1.0/…`), never to `main` — otherwise the artifact stays unedited while what
-  it points at changes underneath it, which defeats append-only silently. `re:check` warns.
-  Full contract with the project vault: `docs/separating-content.md`.
+- **Citations out of a published iteration must be immutable**, and **hosting does not gate writing
+  them.** Write `codeUrl` as a **repo-relative path**; it resolves against the case study's `repoUrl`
+  pinned to the tag of the artifact's own iteration, so the tag is never typed and never wrong. Until
+  `repoUrl` is set the path renders as text, and setting it later turns every path in every iteration
+  into a live link **without editing one published file**. A hand-written full URL must be pinned to a
+  tag itself — `re:check` warns on `…/blob/main/…`. Full contract: `docs/separating-content.md`.
 - `case-studies.version` is **deprecated**; the displayed version must be derived from the current
   iteration.
 

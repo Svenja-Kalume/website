@@ -3,6 +3,7 @@ import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Mermaid from '../../../components/Mermaid.astro';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
+import { allIterations, resolveCodeUrl } from '../../../lib/iterations';
 
 export async function getStaticPaths() {
   const cases = await getCollection('case-studies');
@@ -25,6 +26,11 @@ const stories = (await getCollection('user-stories')).filter(inCase);
 const adrs = (await getCollection('adr')).filter(inCase);
 const diagrams = (await getCollection('diagrams')).filter(inCase);
 
+// A repo-relative codeUrl resolves against the case study's repoUrl, pinned to the tag of
+// the iteration that published the story. Unresolvable (no repoUrl yet) → show the path.
+const iterations = await allIterations();
+const tagOf = new Map(iterations.map((i) => [i.id, i.data.version]));
+
 // Resolve references so titles are shown instead of raw IDs.
 const storyRows = await Promise.all(
   stories.map(async (s) => ({
@@ -32,6 +38,7 @@ const storyRows = await Promise.all(
     requirement: await getEntry(s.data.requirement),
     adrs: await Promise.all(s.data.adr.map((r) => getEntry(r))),
     bpmn: s.data.bpmn ? await getEntry(s.data.bpmn) : undefined,
+    codeHref: resolveCodeUrl(s.data.codeUrl, entry.data.repoUrl, tagOf.get(s.data.introducedIn?.id ?? '')),
   }))
 );
 ---
@@ -82,7 +89,7 @@ const storyRows = await Promise.all(
   {storyRows.length > 0 && (
     <>
       <h2>{t('case.storiesTrace')}</h2>
-      {storyRows.map(({ story, requirement, adrs, bpmn }) => (
+      {storyRows.map(({ story, requirement, adrs, bpmn, codeHref }) => (
         <div class="card">
           <strong>{story.id}: {localize(story.data.title, lang)}</strong>
           <span class="tag" style="margin-left:.5rem">{story.data.status}</span>
@@ -94,7 +101,11 @@ const storyRows = await Promise.all(
             <span class="step">{t('case.requirement')} {requirement ? <a href={`/${lang}/traceability`}>{requirement.id} — {localize(requirement.data.title, lang)}</a> : story.data.requirement.id}</span>
             {bpmn && <span class="step">{t('case.process')} {localize(bpmn.data.title, lang)}</span>}
             {adrs.length > 0 && <span class="step">{t('case.decisions')} {adrs.map((a) => a && localize(a.data.title, lang)).filter(Boolean).join('; ')}</span>}
-            {story.data.codeUrl && <span class="step">{t('case.code')} <a href={story.data.codeUrl}>{t('case.github')}</a></span>}
+            {story.data.codeUrl && (
+              <span class="step">{t('case.code')} {codeHref
+                ? <a href={codeHref}>{t('case.github')}</a>
+                : <code>{story.data.codeUrl}</code>}</span>
+            )}
           </p>
           <details>
             <summary class="small">{t('case.acceptance')} ({localize<string[]>(story.data.acceptanceCriteria, lang)!.length})</summary>

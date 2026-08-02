@@ -83,6 +83,12 @@ const caseStudies = defineCollection({
     // Kept until the pages read the iteration instead (stage 2 of the publication plan).
     version: z.string().default('0.1'),
     demoUrl: z.string().url().optional(),
+    // Base URL of the project's own repo, e.g. https://github.com/<user>/wurzel.
+    // Set it ONCE, when the repo becomes reachable. Every artifact's repo-relative
+    // `codeUrl` then resolves against it, pinned to its own iteration's tag — so code
+    // links can be authored today, with no hosting, and go live without editing a single
+    // published artifact.
+    repoUrl: z.string().url().optional(),
     order: z.number().default(0),
   }),
 });
@@ -195,7 +201,12 @@ const userStories = defineCollection({
     }),
     bpmn: reference('diagrams').optional(),
     adr: z.array(reference('adr')).default([]),
-    codeUrl: z.string().url().optional(),
+    // Either a repo-relative path (`src/Customers/CustomerService.cs`) or a full URL.
+    // PREFER THE PATH: it needs no hosting, and it resolves against the case study's
+    // `repoUrl` pinned to this artifact's iteration tag, which keeps a published citation
+    // immutable automatically instead of by convention. A full URL is accepted for
+    // anything outside the project repo.
+    codeUrl: z.string().optional(),
     jiraKey: z.string().optional(),
     status: z.enum(['backlog', 'in-progress', 'review', 'done']).default('backlog'),
     // Make the AI contribution transparent (north-star principle). Required.
