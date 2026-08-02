@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Mermaid from '../../components/Mermaid.astro';
 import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
+import { allIterations, groupByCase } from '../../lib/iterations';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -10,7 +11,25 @@ export function getStaticPaths() {
 const lang = toLang(Astro.params.lang);
 const t = useTranslations(lang);
 
-const steps = (await getCollection('workflow')).sort((a, b) => a.data.order - b.data.order);
+// Workflow steps are grouped BY PROJECT, resolved through introducedIn -> iteration ->
+// case. Sorting them globally by `order` would interleave two projects' processes into
+// one nonsensical list — `order` is a position within one project's step list, not a
+// site-wide rank.
+const iterations = await allIterations();
+const cases = await getCollection('case-studies');
+const caseTitle = new Map(cases.map((c) => [c.id, localize(c.data.title, lang)]));
+
+const grouped = groupByCase(iterations, await getCollection('workflow'));
+const groups = [...grouped.entries()]
+  .map(([caseId, steps]) => ({
+    caseId,
+    title: caseId ? caseTitle.get(caseId) ?? caseId : null,
+    steps: steps.sort((a, b) => a.data.order - b.data.order),
+  }))
+  .sort((a, b) => String(a.caseId ?? '￿').localeCompare(String(b.caseId ?? '￿')));
+const stepCount = groups.reduce((n, g) => n + g.steps.length, 0);
+// One project: keep the plain list, no redundant heading above it.
+const showGroupHeadings = groups.length > 1;
 
 const mcpFlow = `flowchart TD
   N[Workshop notes] --> L1[LLM drafts glossary]
@@ -41,14 +60,19 @@ const mcpFlow = `flowchart TD
   <Mermaid code={mcpFlow} />
 
   <h2>{t('how.steps')}</h2>
-  {steps.length === 0 && <p class="muted">{t('how.empty')}</p>}
-  <ol>
-    {steps.map((s) => (
-      <li class="card" style="list-style:none">
-        <strong>{localize(s.data.title, lang)}</strong>
-        {s.data.tools.length > 0 && <p class="small muted" style="margin:.3rem 0">{t('how.tools')} {s.data.tools.join(', ')}</p>}
-        <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(s.data.aiRole, lang)}</p>
-      </li>
-    ))}
-  </ol>
+  {stepCount === 0 && <p class="muted">{t('how.empty')}</p>}
+  {groups.map((g) => (
+    <>
+      {showGroupHeadings && <h3>{g.title ?? t('how.ungrouped')}</h3>}
+      <ol>
+        {g.steps.map((s) => (
+          <li class="card" style="list-style:none">
+            <strong>{localize(s.data.title, lang)}</strong>
+            {s.data.tools.length > 0 && <p class="small muted" style="margin:.3rem 0">{t('how.tools')} {s.data.tools.join(', ')}</p>}
+            <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(s.data.aiRole, lang)}</p>
+          </li>
+        ))}
+      </ol>
+    </>
+  ))}
 </BaseLayout>

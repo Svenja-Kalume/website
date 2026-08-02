@@ -83,6 +83,7 @@ export const ui = {
     'how.steps': 'Steps',
     'how.empty': 'No steps documented yet.',
     'how.tools': 'Tools:',
+    'how.ungrouped': 'Not yet assigned to an iteration',
 
     'trace.desc': 'Traceability from requirement to implementation.',
     'trace.h1': 'Traceability Explorer',
@@ -177,6 +178,7 @@ export const ui = {
     'how.steps': 'Schritte',
     'how.empty': 'Noch keine Schritte dokumentiert.',
     'how.tools': 'Tools:',
+    'how.ungrouped': 'Noch keiner Iteration zugeordnet',
 
     'trace.desc': 'Nachvollziehbarkeit von der Anforderung bis zur Umsetzung.',
     'trace.h1': 'Nachvollziehbarkeit',

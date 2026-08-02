@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Mermaid from '../../components/Mermaid.astro';
 import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
+import { allIterations, displayVersion } from '../../lib/iterations';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -11,6 +12,9 @@ const lang = toLang(Astro.params.lang);
 const t = useTranslations(lang);
 
 const cases = (await getCollection('case-studies')).sort((a, b) => a.data.order - b.data.order);
+// Derived from the current iteration, not read from case-studies.version — otherwise
+// this shows a stale version the day a new iteration publishes.
+const iterations = await allIterations();
 
 const redThread = `flowchart TD
   P[Problem] --> S[Stakeholders] --> W[Workshop] --> G[Glossary]
@@ -32,7 +36,7 @@ const redThread = `flowchart TD
     {cases.map((c) => (
       <li class="card">
         <a class="card-link" href={`/${lang}/case-studies/${c.id}`}><strong>{localize(c.data.title, lang)}</strong></a>
-        <span class="tag" style="margin-left:.5rem">v{c.data.version}</span>
+        <span class="tag" style="margin-left:.5rem">v{displayVersion(iterations, c)}</span>
         <span class="tag" style="margin-left:.3rem">{c.data.status}</span>
         <p class="muted small" style="margin:.4rem 0 0">{localize(c.data.summary, lang)}</p>
       </li>

@@ -10,6 +10,8 @@ const lang = toLang(Astro.params.lang);
 const t = useTranslations(lang);
 
 // Requirements explorer: computes the chain requirement → story → ADR/code from the references.
+// Grouped PER CASE STUDY — one flat table across every project becomes unreadable as soon
+// as there is more than one, and the projects have nothing to compare anyway.
 const requirements = (await getCollection('requirements')).sort((a, b) => a.id.localeCompare(b.id));
 const stories = await getCollection('user-stories');
 
@@ -20,37 +22,58 @@ const rows = await Promise.all(
     return { req, caseEntry, stories: linked };
   })
 );
+
+const byCase = new Map<string, typeof rows>();
+for (const row of rows) {
+  const key = row.req.data.case.id;
+  if (!byCase.has(key)) byCase.set(key, []);
+  byCase.get(key)!.push(row);
+}
+const groups = [...byCase.entries()]
+  .map(([caseId, items]) => ({
+    caseId,
+    title: items[0].caseEntry ? localize(items[0].caseEntry.data.title, lang) : caseId,
+    items,
+  }))
+  .sort((a, b) => a.caseId.localeCompare(b.caseId));
+// One project: the case heading and the case column are both redundant.
+const showCase = groups.length > 1;
 ---
 <BaseLayout lang={lang} title={t('trace.h1')} description={t('trace.desc')}>
   <h1>{t('trace.h1')}</h1>
   <p class="muted">{t('trace.intro')}</p>
-  <div class="table-scroll">
-    <table>
-      <thead>
-        <tr>
-          <th>{t('trace.th.req')}</th>
-          <th>{t('trace.th.case')}</th>
-          <th>{t('trace.th.priority')}</th>
-          <th>{t('trace.th.stories')}</th>
-          <th>{t('trace.th.status')}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map(({ req, caseEntry, stories }) => (
-          <tr>
-            <td><strong>{req.id}</strong><br /><span class="small">{localize(req.data.title, lang)}</span></td>
-            <td class="small">{caseEntry ? localize(caseEntry.data.title, lang) : req.data.case.id}</td>
-            <td class="small">{req.data.priority}</td>
-            <td class="small">
-              {stories.length === 0
-                ? <span class="tag">{t('trace.noStory')}</span>
-                : stories.map((s) => <div>{s.id}: {localize(s.data.title, lang)}</div>)}
-            </td>
-            <td class="small">{req.data.status}</td>
-          </tr>
-        ))}
-        {rows.length === 0 && <tr><td colspan="5" class="muted">{t('trace.empty')}</td></tr>}
-      </tbody>
-    </table>
-  </div>
+  {rows.length === 0 && <p class="muted">{t('trace.empty')}</p>}
+  {groups.map((g) => (
+    <>
+      {showCase && <h2>{g.title}</h2>}
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('trace.th.req')}</th>
+              {showCase && <th>{t('trace.th.case')}</th>}
+              <th>{t('trace.th.priority')}</th>
+              <th>{t('trace.th.stories')}</th>
+              <th>{t('trace.th.status')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {g.items.map(({ req, caseEntry, stories }) => (
+              <tr>
+                <td><strong>{req.id}</strong><br /><span class="small">{localize(req.data.title, lang)}</span></td>
+                {showCase && <td class="small">{caseEntry ? localize(caseEntry.data.title, lang) : req.data.case.id}</td>}
+                <td class="small">{req.data.priority}</td>
+                <td class="small">
+                  {stories.length === 0
+                    ? <span class="tag">{t('trace.noStory')}</span>
+                    : stories.map((s) => <div>{s.id}: {localize(s.data.title, lang)}</div>)}
+                </td>
+                <td class="small">{req.data.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  ))}
 </BaseLayout>
