@@ -1,7 +1,9 @@
 # Iterations & publication plan — remaining steps
 
 Drafted 2026-08-01. Captures what was decided in one long working session and what is left to do.
-Status: **not started** beyond the reverts noted below.
+Status: **stages 1–6 not started.** Done so far: the reverts noted below, and on 2026-08-02 the
+content-repo submodule was absorbed into the website repo (see the amendment under *Repos involved*),
+which resolved step 7.1 and shrank 7.2 and 7.4.
 
 The goal it serves: the site must show **development over time** — Level 1 stays visible when Level 2
 is published — and show **how the way of working changed**, not only which features shipped.
@@ -74,7 +76,9 @@ Neither repo has a remote today.
 
 ## Still open
 
-- [ ] Confirm decisions 1, 6 and the backfill in step 2.2 — recommended, never explicitly agreed.
+- [x] Decision 1 — settled 2026-08-02, and in a stronger form than drafted: one curated content
+      *folder* per project, in this repo. See the amendment under *Repos involved*.
+- [ ] Confirm decision 6 and the backfill in step 2.2 — recommended, never explicitly agreed.
 - [ ] Exemplar-selection criterion: richest **AI-override** story, or most **business-critical**
       feature? They are rarely the same story.
 - [ ] `harness/` as its own folder vs folding those records into the existing `process/`.
@@ -83,12 +87,14 @@ Neither repo has a remote today.
 - [ ] `acceptance-checklist.md` is authoritative for the Level axis and its Level 2 criteria were
       never read. If any of them require issuing an invoice, they must move to Level 3, or Level 2 can
       never be signed off.
-- [ ] Hosting: where the three repos live when not on this machine. Blocks all deployment.
+- [ ] Hosting: where the two repos live when not on this machine. Blocks all deployment. The website
+      repo needs a remote to build anywhere; the app repo needs one for `codeUrl` / `source` to
+      resolve at all — today every such link points at a path on this machine.
 - [ ] Where the way-of-working timeline lives once a second project exists — a site-level `method`
       collection, or a comparison view over each project's `workflow` steps. See *Multi-project*.
       Not blocking until project two has content.
 
-## Stage 1 — versioning foundation (website + content repo)
+## Stage 1 — versioning foundation (schema + content, one repo)
 
 1.1 **website** `src/content.config.ts` — add the `iterations` collection:
 
@@ -302,9 +308,10 @@ the only claim on the site backed by a countable figure. Last, because it rewrit
 ## Stage 6 — vault-side track (app repo)
 
 6.1 Rewrite the harness plan against the **real** harness — 6 agents, `groom-story`/`deliver-story`,
-5 workflow scripts, 8 rules, 10 skills, and the existing `docs/plans/harness-improvements.md`. The
-draft at `src/content/wurzel/docs/harness-improvement-plan.md` targets the *website's* harness and is
-misaimed; its still-valid parts are folded into stage 5 above, so that file should be deleted.
+5 workflow scripts, 8 rules, 10 skills, and the existing `C:\spielerei\wurzel\docs\harness\harness-improvements.md`
+(moved there by decision 9; the plan previously cited it under `docs/plans/`). The misaimed draft that
+targeted the *website's* harness no longer exists anywhere in the website repo — nothing to delete;
+its still-valid parts are folded into stage 5 above.
 6.2 **Document the intent-driven AI harness project-side, before the website uses the term.**
 `CLAUDE.md` in the website repo now names *Intent-driven AI Harness* as a station in the red thread,
 but the harness it names lives in the app repo — 6 agents, `groom-story`/`deliver-story`, 5 workflow
