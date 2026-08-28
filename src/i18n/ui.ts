@@ -45,9 +45,9 @@ export const ui = {
       'The visible documentation of an AI-assisted way of working in requirements engineering.',
     'home.h1': 'The process is the portfolio — not the result.',
     'home.p1':
-      'This site is not a résumé website but the visible documentation of a way of working: how a business problem turns, step by step, into a well-founded software system — AI-assisted, but always with human judgement.',
+      "This isn't a résumé, and it isn't a gallery of finished projects. It shows the way there: how a business problem becomes, step by step, a software system that holds up — AI-assisted, but with a human decision at every point. Precisely because AI makes building faster, it isn't the tool that decides whether a solution is good, but whether the real problem was understood.",
     'home.p2':
-      'At each station there is the artifact, the reasoning ("why did I decide this way?"), and the AI contribution ("what did the AI propose, what did I change?").',
+      'At each station you see both sides: the result and the road to it. Every artifact comes with the reasoning behind it — why did I decide this way? — and an open account of the AI\'s part: what did it propose, and what did I keep, change, or discard?',
     'home.redThread': 'The red thread',
 
     'cases.desc': 'Living case studies — a documented way of working, per project.',
@@ -78,7 +78,7 @@ export const ui = {
     'how.desc': 'The AI-assisted RE/BA workflow — practical, with real tools and MCP.',
     'how.h1': 'How I Work',
     'how.intro':
-      'The real differentiator: not "I use AI", but this is what my RE workflow with AI looks like, every step under human judgement.',
+      "The point isn't that I use AI — almost everyone does now. It's how: this is what a requirements-engineering workflow looks like when every step still runs through human judgement.",
     'how.mcp': 'Workflow (from a domain perspective)',
     'how.steps': 'Steps',
     'how.empty': 'No steps documented yet.',
@@ -158,9 +158,9 @@ export const ui = {
       'Die sichtbare Dokumentation einer KI-gestützten Arbeitsweise im Requirements Engineering.',
     'home.h1': 'Der Prozess ist das Portfolio — nicht das Ergebnis.',
     'home.p1':
-      'Diese Seite ist keine Lebenslauf-Website, sondern die sichtbare Dokumentation einer Arbeitsweise: wie aus einem fachlichen Problem Schritt für Schritt ein fundiertes Softwaresystem wird — KI-gestützt, aber immer mit menschlichem Urteilsvermögen.',
+      'Diese Seite ist kein Lebenslauf und keine Sammlung fertiger Projekte. Sie zeigt den Weg dorthin: wie aus einem fachlichen Problem Schritt für Schritt ein tragfähiges Softwaresystem wird — KI-gestützt, aber jede Entscheidung mit menschlichem Urteil. Gerade weil Umsetzung mit KI schneller wird, entscheidet nicht das Werkzeug über eine gute Lösung, sondern ob das eigentliche Problem verstanden wurde.',
     'home.p2':
-      'An jeder Station steht das Artefakt, die Begründung („Warum habe ich mich so entschieden?") und der KI-Anteil („Was hat die KI vorgeschlagen, was habe ich geändert?").',
+      'An jeder Station wird beides sichtbar: das Ergebnis und der Weg dahin. Zu jedem Artefakt gehört die Begründung — warum habe ich mich so entschieden? — und der offengelegte KI-Anteil: Was hat die KI vorgeschlagen, und was habe ich davon übernommen, geändert oder verworfen?',
     'home.redThread': 'Der rote Faden',
 
     'cases.desc': 'Lebendige Fallstudien — eine dokumentierte Arbeitsweise, pro Projekt.',
@@ -191,7 +191,7 @@ export const ui = {
     'how.desc': 'Der KI-gestützte RE/BA-Workflow — praxisnah, mit echten Tools und MCP.',
     'how.h1': 'Arbeitsweise',
     'how.intro':
-      'Der eigentliche Unterschied: nicht „ich nutze KI", sondern so sieht mein RE-Workflow mit KI aus, jeder Schritt unter menschlichem Urteil.',
+      'Der Unterschied liegt nicht darin, dass ich KI nutze — das tun inzwischen fast alle. Er liegt im Wie: So sieht ein Requirements-Engineering-Workflow aus, wenn jeder Schritt durch menschliches Urteil geht.',
     'how.mcp': 'Workflow (aus fachlicher Sicht)',
     'how.steps': 'Schritte',
     'how.empty': 'Noch keine Schritte dokumentiert.',
