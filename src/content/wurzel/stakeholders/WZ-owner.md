@@ -4,6 +4,7 @@ role:
   en: Landscaping business owner (end user)
   de: GaLaBau-Betriebsinhaber (Endnutzer)
 case: wurzel
+order: 1
 influence: high
 interests:
   en:

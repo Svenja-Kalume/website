@@ -78,6 +78,7 @@ const ALIASES = {
   glossary: 'glossary', term: 'glossary',
   requirements: 'requirements', requirement: 'requirements', req: 'requirements', r: 'requirements',
   epics: 'epics', epic: 'epics', ep: 'epics',
+  topics: 'topics', topic: 'topics',
   'user-stories': 'user-stories', 'user-story': 'user-stories', story: 'user-stories', us: 'user-stories',
   adr: 'adr',
   diagrams: 'diagrams', diagram: 'diagrams', bpmn: 'diagrams',
@@ -202,6 +203,24 @@ switch (collection) {
     fm = [loc('title', 'title'), `case: ${caseId}`, loc('description', 'what stories this epic groups')];
     break;
 
+  // A domain topic groups a level's artifacts into sub-chapters. Membership is derived
+  // from `requirements`; the explicit lists are for artifacts whose requirement spans
+  // topics, and keep the grouping off the (published, append-only) artifact itself.
+  case 'topics':
+    if (!has('case-studies', caseId)) warn(`case "${caseId}" has no case-studies/${caseId}.md yet — build fails until it exists.`);
+    fm = [
+      loc('title', 'topic name, e.g. the domain term'),
+      `case: ${caseId}`,
+      'order: 1',
+      `source: ${TODO('the repo doc this topic is taken from, e.g. docs/epics.md')}`,
+      'glossary: []',
+      'requirements: []',
+      'stories: []',
+      'diagrams: []',
+      'adr: []',
+    ];
+    break;
+
   case 'user-stories': {
     if (!has('case-studies', caseId)) warn(`case "${caseId}" has no case-studies/${caseId}.md yet — build fails until it exists.`);
     const reqRef = opts.requirement;
@@ -267,6 +286,7 @@ switch (collection) {
       loc('role', 'role'),
       `case: ${caseId}`,
       `influence: ${opts.influence || 'medium'}     # low | medium | high`,
+      'order: 99                # display order on the case study page (lower first)',
       'interests:',
       `  en: [${TODO('interest')}]`,
       `  de: [${TODO('interest')}]`,

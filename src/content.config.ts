@@ -162,6 +162,9 @@ const stakeholders = defineCollection({
     case: reference('case-studies'),
     interests: locArr.default({ en: [], de: [] }),
     influence: z.enum(['low', 'medium', 'high']).default('medium'),
+    // Display order on the case study page. Influence is not the same thing — two
+    // stakeholders can share it — so the sequence is stated rather than inferred.
+    order: z.number().default(99),
   }),
 });
 
@@ -198,6 +201,47 @@ const epics = defineCollection({
     title: loc,
     case: reference('case-studies'),
     description: loc,
+  }),
+});
+
+/**
+ * A DOMAIN TOPIC (Customer, Project, Position, Offer) — the sub-chapter a level's
+ * artifacts are grouped under.
+ *
+ * Membership is derived wherever the data already carries it: a story joins the topic
+ * that owns its `requirement`, a diagram joins through the story that cites it as
+ * `bpmn`, an ADR through its `relatedRequirements`. The explicit lists here are the
+ * exception, for artifacts whose requirement spans entities (a search requirement
+ * covering both customers and projects) — they are written on the TOPIC, never as a
+ * new field on a published artifact, so grouping never edits history.
+ *
+ * A topic is not versioned: it is a lens on the artifacts, not something a release
+ * ships. Artifacts no topic claims are still shown, under an "unassigned" group.
+ *
+ * The topics are NOT invented for the site: they are the project's own epic spine
+ * (`docs/epics.md` in the app repo — "WHAT: a flat spine; one epic spans several levels"),
+ * cited per topic in `source`.
+ */
+const topics = defineCollection({
+  loader: base('topics'),
+  schema: z.object({
+    title: loc,
+    case: reference('case-studies'),
+    // Sort order of the sub-chapters within a level.
+    order: z.number(),
+    summary: loc.optional(),
+    // The artifact in the project repo this topic is taken from (repo-relative path).
+    source: z.string().optional(),
+    // The domain terms this topic is about. A topic with none is TECHNICAL — that is
+    // derived, not declared: navigation, autosave or a test harness have no glossary
+    // entry because they are not part of the business vocabulary.
+    glossary: z.array(reference('glossary')).default([]),
+    // Everything tracing back to these requirements lands in this topic.
+    requirements: z.array(reference('requirements')).default([]),
+    // Explicit members, for artifacts the requirement rule assigns wrongly or not at all.
+    stories: z.array(reference('user-stories')).default([]),
+    diagrams: z.array(reference('diagrams')).default([]),
+    adr: z.array(reference('adr')).default([]),
   }),
 });
 
@@ -355,6 +399,7 @@ export const collections = {
   glossary,
   requirements,
   epics,
+  topics,
   'user-stories': userStories,
   adr,
   diagrams,

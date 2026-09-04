@@ -114,8 +114,17 @@ Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanl
   `reference()` fields; Astro verifies at build time that referenced IDs exist. Change the
   frontmatter shape → update the schema here. Content location is configurable via `CONTENT_DIR`.
 - **`src/content/<project>/<collection>/`** — content as Markdown. Collections: `case-studies`,
-  `iterations`, `stakeholders`, `glossary`, `requirements`, `epics`, `user-stories`, `adr`,
-  `diagrams`, `workflow`, `questions`, `journal`.
+  `iterations`, `stakeholders`, `glossary`, `requirements`, `epics`, `topics`, `user-stories`,
+  `adr`, `diagrams`, `workflow`, `questions`, `journal`.
+  `topics` groups a level's artifacts into domain sub-chapters. The set is **not invented for
+  the site**: it is the project's own epic spine (wurzel: `docs/epics.md` — Customers, Projects,
+  Positions, Offers, Administration, Navigation & UX, Platform), cited per topic in `source`.
+  Membership is **derived** — story via its `requirement`, diagram via the story citing it
+  as `bpmn`, ADR via `relatedRequirements` — so grouping never adds a field to a published
+  artifact; the explicit lists on the topic are the exception for requirements that span
+  topics. A topic is not versioned. Its `glossary` terms head the sub-chapter (the only
+  place the glossary is rendered); a topic with no term is shown as **technical** —
+  derived from the empty list, not a flag.
   Empty collections are fine (the "collection is empty" messages at build time are harmless).
   `workflow` deliberately has **no `case` field**: its project is derived through
   `introducedIn → iteration → case`, so there is one source of truth rather than two that can disagree.

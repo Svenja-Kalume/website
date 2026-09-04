@@ -4,6 +4,7 @@ import '@fontsource/manrope/500.css';
 import '@fontsource/manrope/600.css';
 import '@fontsource/manrope/700.css';
 import '../styles/global.css';
+import { getCollection } from 'astro:content';
 import { useTranslations, alternatePath, toLang, type Lang } from '../i18n/ui';
 
 interface Props { title?: string; description?: string; lang: Lang; }
@@ -16,9 +17,17 @@ const pageTitle = !title || title === SITE_TITLE ? SITE_TITLE : `${title} — ${
 const SITE_OWNER = 'Svenja Kalume';
 const year = new Date().getFullYear();
 
+// While there is exactly one case study, the nav links straight at it and
+// names it; the index page stays reachable but is not worth a click of its own.
+// Add a second case study and this falls back to the list without a code change.
+const caseStudies = await getCollection('case-studies');
+const onlyCase = caseStudies.length === 1 ? caseStudies[0] : undefined;
+
 const nav = [
   { href: '', key: 'nav.home' as const },
-  { href: '/case-studies', key: 'nav.cases' as const },
+  onlyCase
+    ? { href: `/case-studies/${onlyCase.id}`, key: 'nav.cases.only' as const }
+    : { href: '/case-studies', key: 'nav.cases' as const },
   { href: '/how-i-work', key: 'nav.how' as const },
   { href: '/traceability', key: 'nav.trace' as const },
   { href: '/journal', key: 'nav.journal' as const },

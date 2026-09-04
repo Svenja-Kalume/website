@@ -1,0 +1,40 @@
+---
+/**
+ * The domain terms a topic is about, with their definitions — the first place the
+ * glossary actually surfaces on the site. A topic sub-chapter that starts with its
+ * vocabulary is what makes the grouping a domain grouping rather than a label.
+ *
+ * References are resolved here, so callers pass the topic's `glossary` refs unchanged.
+ */
+import { getEntry, render } from 'astro:content';
+import { useTranslations, localize, type Lang } from '../i18n/ui';
+
+interface Props { refs: { id: string }[]; lang: Lang; }
+const { refs, lang } = Astro.props;
+const t = useTranslations(lang);
+
+const terms = await Promise.all(
+  refs.map(async (ref) => {
+    const entry = await getEntry('glossary', ref.id);
+    return entry ? { entry, Definition: (await render(entry)).Content } : undefined;
+  })
+);
+const resolved = terms.filter((x): x is NonNullable<typeof x> => Boolean(x));
+---
+{resolved.length > 0 && (
+  <dl class="glossary small">
+    <dt class="muted">{t('topic.glossary')}</dt>
+    {resolved.map(({ entry, Definition }) => (
+      <dd>
+        <strong>{localize(entry.data.term, lang)}</strong> — <Definition />
+      </dd>
+    ))}
+  </dl>
+)}
+
+<style>
+  .glossary { margin: .4rem 0 .8rem; }
+  .glossary dd { margin: .2rem 0 .2rem 0; }
+  /* The definition is a markdown paragraph; keep it on the term's line. */
+  .glossary dd :global(p) { display: inline; margin: 0; }
+</style>

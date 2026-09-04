@@ -1,0 +1,53 @@
+---
+/**
+ * One user story with its traceability chain (requirement → process → decisions → code
+ * → working doc). References are resolved here, so every page that shows a story shows
+ * the same chain rather than re-deriving it.
+ *
+ * `tag` is the release tag of the story's own iteration: repo-relative paths resolve
+ * against it, so a published story keeps citing the code as it stood at its level.
+ */
+import { getEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, localize, type Lang } from '../i18n/ui';
+import { resolveRepoPath } from '../lib/iterations';
+
+interface Props {
+  story: CollectionEntry<'user-stories'>;
+  lang: Lang;
+  repoUrl?: string;
+  tag?: string;
+}
+const { story, lang, repoUrl, tag } = Astro.props;
+const t = useTranslations(lang);
+
+const requirement = await getEntry(story.data.requirement);
+const adrs = await Promise.all(story.data.adr.map((r) => getEntry(r)));
+const bpmn = story.data.bpmn ? await getEntry(story.data.bpmn) : undefined;
+const codeHref = resolveRepoPath(story.data.codeUrl, repoUrl, tag);
+const sourceHref = resolveRepoPath(story.data.source, repoUrl, tag);
+---
+<div class="card">
+  <strong>{story.id}: {localize(story.data.title, lang)}</strong>
+  <span class="tag" style="margin-left:.5rem">{story.data.status}</span>
+  {story.data.jiraKey && <span class="tag" style="margin-left:.3rem">Jira {story.data.jiraKey}</span>}
+  <p class="small" style="margin:.5rem 0">
+    {t('case.asA')} <em>{localize(story.data.asA, lang)}</em> {t('case.iWant')} <em>{localize(story.data.iWant, lang)}</em>, {t('case.soThat')} <em>{localize(story.data.soThat, lang)}</em>.
+  </p>
+  <p class="small flow">
+    <span class="step">{t('case.requirement')} {requirement ? <a href={`/${lang}/traceability`}>{requirement.id} — {localize(requirement.data.title, lang)}</a> : story.data.requirement.id}</span>
+    {bpmn && <span class="step">{t('case.process')} {localize(bpmn.data.title, lang)}</span>}
+    {adrs.length > 0 && <span class="step">{t('case.decisions')} {adrs.map((a) => a && localize(a.data.title, lang)).filter(Boolean).join('; ')}</span>}
+    {story.data.codeUrl && (
+      <span class="step">{t('case.code')} {codeHref
+        ? <a href={codeHref}>{t('case.github')}</a>
+        : <code>{story.data.codeUrl}</code>}</span>
+    )}
+    {sourceHref && <span class="step"><a href={sourceHref}>{t('case.source')}</a></span>}
+  </p>
+  <details>
+    <summary class="small">{t('case.acceptance')} ({localize<string[]>(story.data.acceptanceCriteria, lang)!.length})</summary>
+    <ul>{localize<string[]>(story.data.acceptanceCriteria, lang)!.map((c) => <li class="small">{c}</li>)}</ul>
+  </details>
+  <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(story.data.aiContribution, lang)}</p>
+</div>

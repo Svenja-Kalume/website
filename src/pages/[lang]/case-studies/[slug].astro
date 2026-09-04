@@ -1,11 +1,13 @@
 ---
-import { getCollection, getEntry, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import Mermaid from '../../../components/Mermaid.astro';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import LevelNav from '../../../components/LevelNav.astro';
-import { allIterations, resolveRepoPath, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
+import DiagramFigure from '../../../components/DiagramFigure.astro';
+import StoryCard from '../../../components/StoryCard.astro';
+import AdrCard from '../../../components/AdrCard.astro';
+import { allIterations, iterationsOf, currentOf, introducedIn, displayVersion } from '../../../lib/iterations';
 
 export async function getStaticPaths() {
   const cases = await getCollection('case-studies');
@@ -23,37 +25,36 @@ const { Content } = await render(entry);
 
 const inCase = (e: { data: { case?: { id: string } } }) => e.data.case?.id === caseId;
 
-const stakeholders = (await getCollection('stakeholders')).filter(inCase);
+const stakeholders = (await getCollection('stakeholders'))
+  .filter(inCase)
+  .sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
 const stories = (await getCollection('user-stories')).filter(inCase);
 const adrs = (await getCollection('adr')).filter(inCase);
 const diagrams = (await getCollection('diagrams')).filter(inCase);
 
-// A repo-relative codeUrl resolves against the case study's repoUrl, pinned to the tag of
-// the iteration that published the story. Unresolvable (no repoUrl yet) → show the path.
 const iterations = await allIterations();
-const tagOf = new Map(iterations.map((i) => [i.id, i.data.version]));
 const caseIterations = iterationsOf(iterations, caseId);
 const current = currentOf(iterations, caseId);
 
-// Resolve references so titles are shown instead of raw IDs.
-const storyRows = await Promise.all(
-  stories.map(async (s) => ({
-    story: s,
-    requirement: await getEntry(s.data.requirement),
-    adrs: await Promise.all(s.data.adr.map((r) => getEntry(r))),
-    bpmn: s.data.bpmn ? await getEntry(s.data.bpmn) : undefined,
-    codeHref: resolveRepoPath(s.data.codeUrl, entry.data.repoUrl, tagOf.get(s.data.introducedIn?.id ?? '')),
-    // The vault doc this story was written from, pinned to its own iteration's tag — so
-    // reorganising the docs later cannot rot an older iteration's citation.
-    sourceHref: resolveRepoPath(s.data.source, entry.data.repoUrl, tagOf.get(s.data.introducedIn?.id ?? '')),
-  }))
+// Diagrams, stories and ADRs are shown on the level that introduced them, not here: this
+// page is the overview, and a flat dump of every artifact hides which increment produced
+// what. Each iteration card carries the counts and links to the level that renders them.
+const perIteration = new Map(
+  caseIterations.map((it) => [
+    it.id,
+    {
+      stories: introducedIn(stories, it.id).length,
+      diagrams: introducedIn(diagrams, it.id).length,
+      adrs: introducedIn(adrs, it.id).length,
+    },
+  ])
 );
 
-// The repo is not linked (see `repoAccess`): say why once, above the paths, so an
-// unresolved `codeUrl` reads as a client's decision rather than a missing link.
-const repoNote = !entry.data.repoUrl && storyRows.some((r) => r.story.data.codeUrl)
-  ? (entry.data.repoNote ? localize(entry.data.repoNote, lang) : t('case.repoPrivate'))
-  : undefined;
+// Fallback, not a second home: an artifact with no `introducedIn` has no level to move to,
+// so it stays visible here rather than disappearing from the site.
+const looseDiagrams = diagrams.filter((d) => !d.data.introducedIn);
+const looseStories = stories.filter((s) => !s.data.introducedIn);
+const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
 ---
 <BaseLayout lang={lang} title={localize(entry.data.title, lang) ?? entry.id} description={localize(entry.data.summary, lang)}>
   <Breadcrumbs items={[
@@ -89,6 +90,9 @@ const repoNote = !entry.data.repoUrl && storyRows.some((r) => r.story.data.codeU
             {it.id === current?.id && <span class="tag" style="margin-left:.3rem">{t('iter.current')}</span>}
             <span class="muted small" style="margin-left:.5rem">{it.data.date.toISOString().slice(0, 10)}</span>
             <p class="muted small" style="margin:.4rem 0 0">{localize(it.data.summary, lang)}</p>
+            <p class="muted small" style="margin:.3rem 0 0">
+              {perIteration.get(it.id)!.stories} {t('iter.stories')} · {perIteration.get(it.id)!.diagrams} {t('iter.diagrams')} · {perIteration.get(it.id)!.adrs} {t('iter.adr')}
+            </p>
           </li>
         ))}
       </ul>
@@ -112,62 +116,26 @@ const repoNote = !entry.data.repoUrl && storyRows.some((r) => r.story.data.codeU
     </>
   )}
 
-  {diagrams.map((d) => (
+  {looseDiagrams.length > 0 && (
     <>
-      <h2>{localize(d.data.title, lang)}</h2>
-      <p class="muted small">{d.data.type.toUpperCase()} · {t('case.madeWith')} {d.data.tool}</p>
-      {d.data.image
-        ? <img src={d.data.image} alt={localize(d.data.caption, lang) ?? localize(d.data.title, lang)} style="max-width:100%" />
-        : <Mermaid code={d.body ?? ''} />}
-      {d.data.caption && <p class="muted small">{localize(d.data.caption, lang)}</p>}
-      {d.data.aiContribution && <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(d.data.aiContribution, lang)}</p>}
+      <h2>{t('iter.diagrams')}</h2>
+      {looseDiagrams.map((d) => <DiagramFigure diagram={d} lang={lang} />)}
     </>
-  ))}
+  )}
 
-  {storyRows.length > 0 && (
+  {looseStories.length > 0 && (
     <>
       <h2>{t('case.storiesTrace')}</h2>
-      {repoNote && <p class="small">{repoNote}</p>}
-      {storyRows.map(({ story, requirement, adrs, bpmn, codeHref, sourceHref }) => (
-        <div class="card">
-          <strong>{story.id}: {localize(story.data.title, lang)}</strong>
-          <span class="tag" style="margin-left:.5rem">{story.data.status}</span>
-          {story.data.jiraKey && <span class="tag" style="margin-left:.3rem">Jira {story.data.jiraKey}</span>}
-          <p class="small" style="margin:.5rem 0">
-            {t('case.asA')} <em>{localize(story.data.asA, lang)}</em> {t('case.iWant')} <em>{localize(story.data.iWant, lang)}</em>, {t('case.soThat')} <em>{localize(story.data.soThat, lang)}</em>.
-          </p>
-          <p class="small flow">
-            <span class="step">{t('case.requirement')} {requirement ? <a href={`/${lang}/traceability`}>{requirement.id} — {localize(requirement.data.title, lang)}</a> : story.data.requirement.id}</span>
-            {bpmn && <span class="step">{t('case.process')} {localize(bpmn.data.title, lang)}</span>}
-            {adrs.length > 0 && <span class="step">{t('case.decisions')} {adrs.map((a) => a && localize(a.data.title, lang)).filter(Boolean).join('; ')}</span>}
-            {story.data.codeUrl && (
-              <span class="step">{t('case.code')} {codeHref
-                ? <a href={codeHref}>{t('case.github')}</a>
-                : <code>{story.data.codeUrl}</code>}</span>
-            )}
-            {sourceHref && <span class="step"><a href={sourceHref}>{t('case.source')}</a></span>}
-          </p>
-          <details>
-            <summary class="small">{t('case.acceptance')} ({localize<string[]>(story.data.acceptanceCriteria, lang)!.length})</summary>
-            <ul>{localize<string[]>(story.data.acceptanceCriteria, lang)!.map((c) => <li class="small">{c}</li>)}</ul>
-          </details>
-          <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(story.data.aiContribution, lang)}</p>
-        </div>
+      {looseStories.map((story) => (
+        <StoryCard story={story} lang={lang} repoUrl={entry.data.repoUrl} />
       ))}
     </>
   )}
 
-  {adrs.length > 0 && (
+  {looseAdrs.length > 0 && (
     <>
       <h2>{t('case.adr')}</h2>
-      <ul class="reset">
-        {adrs.map((a) => (
-          <li class="card">
-            <strong>{a.id}: {localize(a.data.title, lang)}</strong>
-            <span class="tag" style="margin-left:.5rem">{a.data.status}</span>
-          </li>
-        ))}
-      </ul>
+      {looseAdrs.map((a) => <AdrCard adr={a} lang={lang} />)}
     </>
   )}
 </BaseLayout>

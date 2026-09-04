@@ -4,6 +4,7 @@ role:
   en: Product Owner (grooming & readiness gate)
   de: Product Owner (Grooming & Readiness-Gate)
 case: wurzel
+order: 2
 influence: high
 interests:
   en:

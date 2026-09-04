@@ -204,6 +204,45 @@ description:
 ---
 ```
 
+## Domain topic → `src/content/<project>/topics/T-01-customer.md`
+
+A topic is the sub-chapter a level's artifacts are grouped under on the iteration page.
+**Do not invent the set** — take it from the project's own epic spine (wurzel: `docs/epics.md`,
+"WHAT: a flat spine; one epic spans several levels") and cite that file in `source`. Membership is **derived**: a story joins the topic that owns
+its `requirement`, a diagram joins through the story citing it as `bpmn`, an ADR through
+its `relatedRequirements`. The explicit lists are the exception, for artifacts whose
+requirement spans topics ("find a customer *or* project") — they are written **on the
+topic**, never as a new field on a published artifact, so grouping never edits history.
+Whatever no topic claims is still shown, under "Not tied to one topic".
+
+The topic's `glossary` terms are rendered with their definitions at the head of the
+sub-chapter — the one place the glossary surfaces on the site. A topic with **no** term is
+marked *technical* on the page: navigation, autosave or a test harness have no glossary
+entry because they are not business vocabulary. That is derived from the empty list, not
+declared with a flag.
+
+A topic is not versioned: it is a lens on the artifacts, not something a release ships.
+
+```markdown
+---
+title:
+  en: Customer
+  de: Kunde
+case: greenworks
+order: 1
+source: docs/epics.md   # the repo artifact this topic set comes from
+glossary: [kunde]    # the domain terms this topic is about; empty = a technical topic
+# Optional, one line on what the topic covers:
+# summary:
+#   en: …
+#   de: …
+requirements: [R-01]
+stories: [US-26]     # optional overrides
+diagrams: []         # optional; else derived from the stories citing them
+adr: []              # optional; else derived from relatedRequirements
+---
+```
+
 ## User story → `src/content/<project>/user-stories/US-01.md`
 
 ```markdown
@@ -317,6 +356,7 @@ role:
   de: Eigentümer & Entscheider
 case: greenworks
 influence: high                  # low | medium | high
+order: 1                         # display order on the case study page (lower first)
 interests:                       # optional
   en: [Faster quotes, Fewer pricing errors]
   de: [Schnellere Angebote, Weniger Preisfehler]

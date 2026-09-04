@@ -1,0 +1,43 @@
+---
+/**
+ * One architecture decision, with its body (Context / Decision / Consequences) — the
+ * reasoning is the point of an ADR, so it is rendered rather than listed by title.
+ * Shown on the level that introduced it; the case study page keeps only ADRs that
+ * carry no `introducedIn`.
+ */
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, localize, type Lang } from '../i18n/ui';
+
+interface Props { adr: CollectionEntry<'adr'>; lang: Lang; }
+const { adr, lang } = Astro.props;
+const t = useTranslations(lang);
+const { Content } = await render(adr);
+const dateStr = adr.data.date.toISOString().slice(0, 10);
+---
+<div class="card">
+  <strong>{adr.id}: {localize(adr.data.title, lang)}</strong>
+  <span class="tag" style="margin-left:.5rem">{adr.data.status}</span>
+  <span class="muted small" style="margin-left:.5rem">{dateStr}</span>
+  {adr.data.relatedRequirements.length > 0 && (
+    <p class="small" style="margin:.4rem 0 0">
+      {t('case.requirement')}{' '}
+      <a href={`/${lang}/traceability`}>{adr.data.relatedRequirements.map((r) => r.id).join(', ')}</a>
+    </p>
+  )}
+  {adr.data.supersedes && (
+    <p class="small muted" style="margin:.3rem 0 0">{t('adr.supersedes')} {adr.data.supersedes.id}</p>
+  )}
+  <div class="adr-body small"><Content /></div>
+</div>
+
+<style>
+  /* An ADR body uses `## Context / ## Decision / ## Consequences`. Inside a card those
+     are sub-headings of the section, not siblings of it — style them down rather than
+     rewriting published markdown. */
+  .adr-body :global(h2) {
+    font-size: 1rem;
+    margin: .8rem 0 .2rem;
+  }
+  .adr-body :global(p) { margin: .2rem 0; }
+</style>

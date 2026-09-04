@@ -1,0 +1,24 @@
+---
+/**
+ * One diagram, rendered whole (Mermaid body or exported SVG) with its caption and
+ * AI contribution. Used by the level page — a diagram belongs to the iteration that
+ * introduced it — and by the case study page for diagrams that carry no `introducedIn`.
+ */
+import Mermaid from './Mermaid.astro';
+import { useTranslations, localize, type Lang } from '../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { diagram: CollectionEntry<'diagrams'>; lang: Lang; titleTag?: 'h3' | 'h4'; }
+const { diagram: d, lang, titleTag = 'h3' } = Astro.props;
+const t = useTranslations(lang);
+// Inside a topic sub-chapter the diagram title sits one level deeper than on a page
+// that lists diagrams directly, so the caller says which level it is.
+const Title = titleTag;
+---
+<Title>{localize(d.data.title, lang)}</Title>
+<p class="muted small">{d.data.type.toUpperCase()} · {t('case.madeWith')} {d.data.tool}</p>
+{d.data.image
+  ? <img src={d.data.image} alt={localize(d.data.caption, lang) ?? localize(d.data.title, lang)} style="max-width:100%" />
+  : <Mermaid code={d.body ?? ''} />}
+{d.data.caption && <p class="muted small">{localize(d.data.caption, lang)}</p>}
+{d.data.aiContribution && <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(d.data.aiContribution, lang)}</p>}

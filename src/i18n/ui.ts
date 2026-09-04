@@ -27,6 +27,7 @@ export const ui = {
   en: {
     'nav.home': 'Home',
     'nav.cases': 'Case Studies',
+    'nav.cases.only': 'Case Study — Landscaping',
     'nav.how': 'How I Work',
     'nav.trace': 'Traceability',
     'nav.journal': 'Journal',
@@ -74,6 +75,7 @@ export const ui = {
     'case.github': 'GitHub',
     'case.acceptance': 'Acceptance criteria',
     'case.adr': 'Architecture Decisions (ADR)',
+    'adr.supersedes': 'Supersedes',
 
     'how.desc': 'The AI-assisted RE/BA workflow — practical, with real tools and MCP.',
     'how.h1': 'How I Work',
@@ -105,6 +107,10 @@ export const ui = {
     'iter.adr': 'Architecture decisions',
     'iter.workflow': 'Workflow steps',
     'iter.source': 'Release tag in the project repo',
+    'topic.unassigned': 'Not tied to one topic',
+    'topic.requirements': 'Requirements:',
+    'topic.glossary': 'Domain terms',
+    'topic.technical': 'technical — no domain term',
 
     'trace.desc': 'Traceability from requirement to implementation.',
     'trace.h1': 'Traceability Explorer',
@@ -143,6 +149,7 @@ export const ui = {
   de: {
     'nav.home': 'Start',
     'nav.cases': 'Fallstudien',
+    'nav.cases.only': 'Fallstudie — GaLaBau',
     'nav.how': 'Arbeitsweise',
     'nav.trace': 'Nachvollziehbarkeit',
     'nav.journal': 'Journal',
@@ -190,6 +197,7 @@ export const ui = {
     'case.github': 'GitHub',
     'case.acceptance': 'Akzeptanzkriterien',
     'case.adr': 'Architekturentscheidungen (ADR)',
+    'adr.supersedes': 'Ersetzt',
 
     'how.desc': 'Der KI-gestützte RE/BA-Workflow — praxisnah, mit echten Tools und MCP.',
     'how.h1': 'Arbeitsweise',
@@ -221,6 +229,10 @@ export const ui = {
     'iter.adr': 'Architekturentscheidungen',
     'iter.workflow': 'Workflow-Schritte',
     'iter.source': 'Release-Tag im Projekt-Repository',
+    'topic.unassigned': 'Keinem Thema zugeordnet',
+    'topic.requirements': 'Anforderungen:',
+    'topic.glossary': 'Fachbegriffe',
+    'topic.technical': 'technisch — kein Fachbegriff',
 
     'trace.desc': 'Nachvollziehbarkeit von der Anforderung bis zur Umsetzung.',
     'trace.h1': 'Nachvollziehbarkeit',

@@ -75,9 +75,12 @@ header.site nav {
   margin: 2rem auto 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 1.1rem;
+  /* Tightens as the row gets tight: a longer locale (German) then keeps the language
+     switch on the menu row instead of pushing it onto one of its own. */
+  gap: clamp(0.7rem, 1.8vw, 1.1rem);
   align-items: baseline;
 }
+header.site nav a { white-space: nowrap; }
 header.site nav a { color: var(--menu); font-size: 14px; font-weight: 500; line-height: 1; }
 header.site nav > a:not(.lang-switch):hover { color: var(--accent); text-decoration: none; }
 header.site .lang-switch {
