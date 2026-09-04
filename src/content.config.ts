@@ -89,6 +89,17 @@ const caseStudies = defineCollection({
     // links can be authored today, with no hosting, and go live without editing a single
     // published artifact.
     repoUrl: z.string().url().optional(),
+    // Whether the absence of `repoUrl` is a DECISION or a to-do. Repo visibility belongs to
+    // the client, not to this site: most projects have stakeholders who will not open their
+    // repo, so `private` is the default and the unresolved `codeUrl` paths are the expected
+    // end state, not a gap. `pending` is the opposite case — a repo meant to be opened —
+    // and only that one is reported by `re:check`. A warning you can never clear is one you
+    // learn to skip, so the deliberate case must not produce one.
+    repoAccess: z.enum(['private', 'pending']).default('private'),
+    // Why the code is not linked, in the project's own words (stakeholder decision, product
+    // plans, NDA). Optional: without it the page falls back to the generic i18n sentence.
+    // Only shown while `repoUrl` is unset.
+    repoNote: loc.optional(),
     order: z.number().default(0),
   }),
 });

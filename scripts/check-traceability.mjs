@@ -197,6 +197,10 @@ for (const d of diagrams) {
 // hand, so it gets checked.
 const MOVING_REF = /\/(blob|tree|raw|src)\/(main|master|HEAD|develop)\//i;
 const repoUrlOf = new Map(cases.map((c) => [c.id, c.data.repoUrl]));
+// Only a case study that MEANS to open its repo gets reminded. `private` is a decision —
+// the stakeholder owns repo visibility, not this site — so its unresolved paths are the
+// end state and must stay silent. Reporting them forever trains you to skim the info list.
+const repoPendingOf = new Map(cases.map((c) => [c.id, c.data.repoAccess === 'pending']));
 for (const e of [...stories, ...requirements, ...diagrams, ...adrs, ...workflow, ...iterations]) {
   for (const field of ['codeUrl', 'sourceUrl']) {
     const url = e.data[field];
@@ -204,7 +208,7 @@ for (const e of [...stories, ...requirements, ...diagrams, ...adrs, ...workflow,
     if (/^https?:\/\//i.test(url)) {
       if (MOVING_REF.test(url))
         warnings.push(`${e.file}: ${field} points at a moving branch. A published artifact must cite a tag (e.g. .../blob/0.1.0/...), or what it says changes underneath it.`);
-    } else if (field === 'codeUrl' && !repoUrlOf.get(refId(e.data.case))) {
+    } else if (field === 'codeUrl' && !repoUrlOf.get(refId(e.data.case)) && repoPendingOf.get(refId(e.data.case))) {
       infos.push(`${e.file}: codeUrl is a repo-relative path, but case "${refId(e.data.case)}" has no repoUrl yet — it renders as text until you set one. Nothing to fix here; set repoUrl once and every path becomes a tag-pinned link.`);
     }
   }

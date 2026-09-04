@@ -50,7 +50,9 @@ The site never reads a project's vault — it **cites** it, through two fields:
 |---|---|---|
 | `source` | user-stories, requirements, diagrams, adr, workflow, questions | a **repo-relative path**, e.g. `docs/user-stories/l2-block1-offer-pdf.md` — resolved exactly like `codeUrl` |
 | `codeUrl` | user-stories | a **repo-relative path** (preferred), e.g. `src/Customers/CustomerService.cs` — or a full URL for anything outside the project repo |
-| `repoUrl` | case-studies | the project repo base, set **once**, when it becomes reachable |
+| `repoUrl` | case-studies | the project repo base, set **once**, when it becomes reachable — **usually never** |
+| `repoAccess` | case-studies | `private` (default) or `pending` — is the missing `repoUrl` a decision or a to-do? |
+| `repoNote` | case-studies | optional, localized: why the code is not linked |
 | `sourceUrl` | iterations | absolute URL of the release tag |
 
 **Hosting does not gate authoring.** A repo-relative `codeUrl` resolves at render time against
@@ -65,6 +67,20 @@ codeUrl            src/Customers/CustomerService.cs      (on a story introducedI
 Until `repoUrl` is set, the path renders as plain text rather than a dead link. Set `repoUrl` once
 and every path in every iteration becomes a tag-pinned link — **without editing a single published
 artifact**, which is what the append-only rule requires.
+
+**The normal case is that it is never set.** Repository visibility belongs to the client, not to
+this site: most projects have stakeholders who will not open their repo, and a project of one's own
+may still be headed for release. So `repoAccess` defaults to **`private`** — the unresolved paths
+are the *end state*, and `re:check` says nothing about them. Only `repoAccess: pending`, a repo
+actually meant to be opened, is reported. A reminder you can never act on is one you learn to skim,
+and the whole info list goes with it.
+
+Private does not mean silent. A case study with no `repoUrl` prints one sentence above the story
+list saying why the code is not linked — `repoNote` in the project's own words, or a generic
+fallback from `src/i18n/ui.ts` (`case.repoPrivate`). An unexplained path reads as a broken link;
+the same path with the reason next to it reads as respecting a client's decision, which is the
+truth. **Keep writing the paths either way** — they are exact citations, verifiable in a
+walkthrough or an interview, and they cost nothing if a repo ever does open.
 
 Two rules follow from iterations being append-only, and they are the whole contract:
 

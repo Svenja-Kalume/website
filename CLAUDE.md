@@ -85,6 +85,12 @@ collection. Full reasoning: **`docs/iterations-and-publication-plan.md`**.
   `repoUrl` is set the path renders as text, and setting it later turns every path in every iteration
   into a live link **without editing one published file**. A hand-written full URL must be pinned to a
   tag itself — `re:check` warns on `…/blob/main/…`. Full contract: `docs/separating-content.md`.
+- **Repos are not linked from the site, as a rule.** Visibility belongs to the client: later projects
+  have stakeholders who will refuse, and wurzel's own repo may yet be released as a product. So
+  `repoAccess` defaults to **`private`**, unresolved `codeUrl` paths are the expected end state, and
+  `re:check` reports them only for `repoAccess: pending` — a repo actually meant to open. Never
+  propose making a repo public as the fix. The case study states the reason instead (`repoNote`, or
+  the `case.repoPrivate` fallback); write the paths regardless, they are exact citations.
 - `case-studies.version` is **deprecated**; the displayed version must be derived from the current
   iteration.
 

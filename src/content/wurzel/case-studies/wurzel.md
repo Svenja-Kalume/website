@@ -17,6 +17,10 @@ intro:
     - Die Anwendung ist real, und die Arbeitsweise ist der Punkt. Stories werden von einem menschlichen Product Owner gegen explizite Akzeptanzkriterien und ein Readiness-Gate gegroomt; die Umsetzung übernehmen dann KI-Technician-Subagenten (Backend, Frontend, Tester), die parallel planen und test-first implementieren. Der Mensch besitzt Absicht, Scope und jedes Gate; die KI beschleunigt die mechanische Mitte.
     - Der veröffentlichte Stand hat Level 2 erreicht (Tag 0.2.0) — Kunden, Projekte, bepreiste Positionen und versionierte Angebote aus Level 1, nun ergänzt um Firmen-Absenderdaten, eine Bildschirmvorschau und einen PDF-Export aus einem Dokumentmodell, eine exportausgelöste Sperre, die ein Angebot dauerhaft einfriert, sowie Logo-/Farb-/Textbranding. Rechnungen bleiben auf ein späteres Level verschoben. Level 1 bleibt in der Iterations-Timeline sichtbar — die Seite zeigt es weiterhin bestehend — und der lebende Stand entwickelt sich auf dem main-Branch weiter.
 status: active
+repoAccess: private
+repoNote:
+  en: The application's own repository is not public. Where it goes next is still open — it may yet be released as a product — so opening it is not a decision this case study makes. The code and working-doc paths below are cited exactly and stay verifiable in a walkthrough; they render as paths rather than links.
+  de: Das Repository der Anwendung ist nicht öffentlich. Wie es damit weitergeht, ist noch offen — sie könnte später als Produkt veröffentlicht werden —, deshalb trifft diese Fallstudie die Entscheidung zur Öffnung nicht. Die Code- und Arbeitsdokument-Pfade unten sind exakt zitiert und bleiben in einem Walkthrough nachprüfbar; sie erscheinen als Pfade statt als Links.
 version: "0.2.0"
 order: 1
 ---

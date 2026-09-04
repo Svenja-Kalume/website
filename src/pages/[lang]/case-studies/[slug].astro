@@ -47,6 +47,12 @@ const storyRows = await Promise.all(
     sourceHref: resolveRepoPath(s.data.source, entry.data.repoUrl, tagOf.get(s.data.introducedIn?.id ?? '')),
   }))
 );
+
+// The repo is not linked (see `repoAccess`): say why once, above the paths, so an
+// unresolved `codeUrl` reads as a client's decision rather than a missing link.
+const repoNote = !entry.data.repoUrl && storyRows.some((r) => r.story.data.codeUrl)
+  ? (entry.data.repoNote ? localize(entry.data.repoNote, lang) : t('case.repoPrivate'))
+  : undefined;
 ---
 <BaseLayout lang={lang} title={localize(entry.data.title, lang) ?? entry.id} description={localize(entry.data.summary, lang)}>
   <Breadcrumbs items={[
@@ -119,6 +125,7 @@ const storyRows = await Promise.all(
   {storyRows.length > 0 && (
     <>
       <h2>{t('case.storiesTrace')}</h2>
+      {repoNote && <p class="small">{repoNote}</p>}
       {storyRows.map(({ story, requirement, adrs, bpmn, codeHref, sourceHref }) => (
         <div class="card">
           <strong>{story.id}: {localize(story.data.title, lang)}</strong>

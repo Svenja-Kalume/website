@@ -86,6 +86,7 @@ export const ui = {
     'how.ungrouped': 'Not yet assigned to an iteration',
 
     'case.source': 'Working doc at this version',
+    'case.repoPrivate': 'The project repository is not public, so the code paths below are shown as paths rather than links. Repository visibility is the client\u2019s decision, not this site\u2019s; the paths stay exact and verifiable either way.',
     'iter.h2': 'Iterations',
     'iter.current': 'current',
     'iter.level': 'Level',
@@ -199,6 +200,7 @@ export const ui = {
     'how.ungrouped': 'Noch keiner Iteration zugeordnet',
 
     'case.source': 'Arbeitsdokument in dieser Version',
+    'case.repoPrivate': 'Das Projekt-Repository ist nicht \u00f6ffentlich, deshalb stehen die Code-Pfade unten als Pfade statt als Links. Die Sichtbarkeit des Repositorys entscheidet der Kunde, nicht diese Seite; die Pfade bleiben so oder so exakt und nachpr\u00fcfbar.',
     'iter.h2': 'Iterationen',
     'iter.current': 'aktuell',
     'iter.level': 'Level',

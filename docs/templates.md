@@ -153,6 +153,10 @@ summary:
   en: One sentence describing the problem.
   de: Ein Satz, der das Problem beschreibt.
 status: in-progress      # draft | in-progress | active | archived
+repoAccess: private      # private (default; the repo stays closed) | pending (it is meant to open)
+repoNote:                # optional: why the code is not linked, in this project's words
+  en: The client owns repository visibility; the paths below stay exact and verifiable.
+  de: Die Sichtbarkeit des Repositorys entscheidet der Kunde; die Pfade unten bleiben exakt und nachprüfbar.
 version: "0.1"           # DEPRECATED — derived from the current iteration instead
 demoUrl: https://demo.example.com/mvp   # optional: frozen demo
 order: 1
