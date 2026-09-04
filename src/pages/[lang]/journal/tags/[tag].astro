@@ -1,0 +1,41 @@
+---
+/**
+ * The log filtered to one tag, at its own URL: /en/journal/tags/ddd
+ *
+ * Static pages rather than a scripted filter — the filtered view is then citable, works
+ * without JavaScript, and the tag chips on an entry are already links to it.
+ */
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import JournalList from '../../../../components/JournalList.astro';
+import JournalTagFilter from '../../../../components/JournalTagFilter.astro';
+import { languages, useTranslations, toLang } from '../../../../i18n/ui';
+import { journalEntries, tagCounts } from '../../../../lib/journal';
+
+export async function getStaticPaths() {
+  const entries = await journalEntries();
+  return Object.keys(languages).flatMap((lang) =>
+    tagCounts(entries).map(({ tag }) => ({ params: { lang, tag }, props: { tag } }))
+  );
+}
+
+const lang = toLang(Astro.params.lang);
+const t = useTranslations(lang);
+const { tag } = Astro.props;
+
+const all = await journalEntries();
+const entries = all.filter((e) => e.data.tags.includes(tag));
+const tags = tagCounts(all);
+const heading = `${t('journal.taggedWith')} ${tag}`;
+---
+<BaseLayout lang={lang} title={heading} description={t('journal.desc')}>
+  <Breadcrumbs items={[
+    { label: t('journal.h1'), href: `/${lang}/journal` },
+    { label: tag },
+  ]} />
+  <h1>{heading}</h1>
+  <p class="muted">{entries.length} {entries.length === 1 ? t('journal.entry') : t('journal.entries')}</p>
+
+  <JournalTagFilter tags={tags} lang={lang} activeTag={tag} />
+  <JournalList entries={entries} lang={lang} activeTag={tag} />
+</BaseLayout>

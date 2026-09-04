@@ -1,0 +1,53 @@
+---
+/**
+ * The tag filter: every tag the log uses, with its entry count.
+ *
+ * A row of links to static per-tag pages rather than a scripted filter — the filtered
+ * view then has its own URL you can cite, and the page needs no JavaScript.
+ */
+import { useTranslations, type Lang } from '../i18n/ui';
+
+interface Props { tags: { tag: string; count: number }[]; lang: Lang; activeTag?: string; }
+const { tags, lang, activeTag } = Astro.props;
+const t = useTranslations(lang);
+---
+{tags.length > 0 && (
+  <nav class="tag-filter small" aria-label={t('journal.filter')}>
+    <span class="muted">{t('journal.filter')}</span>
+    <a href={`/${lang}/journal`} aria-current={activeTag === undefined ? 'page' : undefined}>
+      {t('journal.allTags')}
+    </a>
+    {tags.map(({ tag, count }) => (
+      <a
+        href={`/${lang}/journal/tags/${tag}`}
+        aria-current={tag === activeTag ? 'page' : undefined}
+      >{tag} <span class="count muted">({count})</span></a>
+    ))}
+  </nav>
+)}
+
+<style>
+  .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin: 0 0 1.6rem;
+  }
+  .tag-filter a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+  .tag-filter a:hover { color: var(--accent-strong); border-color: var(--accent); }
+  .tag-filter a[aria-current='page'] {
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .tag-filter a[aria-current='page'] .count { color: inherit; }
+  .tag-filter .count { font-variant-numeric: tabular-nums; }
+</style>

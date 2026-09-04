@@ -1,0 +1,77 @@
+---
+/**
+ * The dated log itself: entries grouped by year, newest first.
+ *
+ * Shared by the journal index and the per-tag pages, so a filtered view is the same
+ * list with fewer entries rather than a second rendering that can drift.
+ */
+import { getEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, localize, type Lang } from '../i18n/ui';
+import { allIterations, iterationLabel } from '../lib/iterations';
+
+type Entry = CollectionEntry<'journal'>;
+interface Props { entries: Entry[]; lang: Lang; activeTag?: string; }
+const { entries, lang, activeTag } = Astro.props;
+const t = useTranslations(lang);
+
+// Group by year so the log reads as a timeline, newest first.
+const byYear = new Map<number, Entry[]>();
+for (const e of entries) {
+  const y = e.data.date.getFullYear();
+  if (!byYear.has(y)) byYear.set(y, []);
+  byYear.get(y)!.push(e);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+
+const locale = lang === 'de' ? 'de-DE' : 'en-US';
+const fmt = (d: Date) => d.toLocaleDateString(locale, { day: '2-digit', month: 'short' });
+
+// Resolve the (optional) case study each entry links back to.
+const cases = new Map<string, string | undefined>();
+for (const e of entries) {
+  if (e.data.case) cases.set(e.id, localize((await getEntry(e.data.case))?.data.title, lang));
+}
+
+// The implementation level each entry belongs to. Loaded once for the whole list rather
+// than resolved per entry, and rendered as a link into that level's page.
+const iterationById = new Map((await allIterations()).map((i) => [i.id, i]));
+const levelOf = (e: Entry) => {
+  const it = e.data.iteration ? iterationById.get(e.data.iteration.id) : undefined;
+  return it && {
+    label: iterationLabel(it, t('iter.level')),
+    href: `/${lang}/case-studies/${it.data.case.id}/${it.data.version}`,
+    title: localize(it.data.title, lang),
+  };
+};
+---
+{years.map((year) => (
+  <section class="log-year">
+    <h2>{year}</h2>
+    <ol class="reset log">
+      {byYear.get(year)!.map((e) => (
+        <li class="log-entry">
+          <span class="log-date small muted">{fmt(e.data.date)}</span>
+          <div class="log-body">
+            <a class="card-link" href={`/${lang}/journal/${e.id}`}><strong>{localize(e.data.title, lang)}</strong></a>
+            {e.data.summary && <p class="small muted">{localize(e.data.summary, lang)}</p>}
+            <p class="small log-meta">
+              {e.data.case && cases.get(e.id) && <span class="tag">{cases.get(e.id)}</span>}
+              {levelOf(e) && (
+                <a class="tag" href={levelOf(e)!.href} title={levelOf(e)!.title}>{levelOf(e)!.label}</a>
+              )}
+              {/* Each tag is the filter: it links to the page listing that tag's entries. */}
+              {e.data.tags.map((tag) => (
+                <a
+                  class="tag"
+                  href={`/${lang}/journal/tags/${tag}`}
+                  aria-current={tag === activeTag ? 'page' : undefined}
+                >{tag}</a>
+              ))}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+))}

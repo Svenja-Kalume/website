@@ -8,7 +8,7 @@ summary:
   de: "Die native Farbeingabe und der Dateiauswähler versagten unter Android, daher wurden Farbwähler, Logo-Upload und eine Logo-Pipette von Hand gebaut, statt sie dem Browser oder einer Komponentenbibliothek zu überlassen."
 case: wurzel
 iteration: WZ-0.2.0
-tags: [frontend, ui, mobile]
+tags: [frontend, mobile]
 draft: false
 body:
   en:
