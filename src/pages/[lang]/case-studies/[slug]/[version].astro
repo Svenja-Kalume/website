@@ -2,6 +2,7 @@
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import LevelNav from '../../../../components/LevelNav.astro';
 import { languages, useTranslations, localize, toLang } from '../../../../i18n/ui';
 import { iterationsOf, currentOf, introducedIn } from '../../../../lib/iterations';
 
@@ -34,6 +35,8 @@ const { Content } = await render(iteration);
 
 const all = await getCollection('iterations');
 const isCurrent = currentOf(all, caseEntry.id)?.id === iteration.id;
+// Siblings, oldest first — the submenu that lets you walk the levels in order.
+const caseIterations = iterationsOf(all, caseEntry.id);
 
 // What this iteration introduced. Every versioned collection, so nothing is silently
 // left out of the record of what a level actually published.
@@ -57,6 +60,7 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
     { label: caseTitle, href: `/${lang}/case-studies/${caseEntry.id}` },
     { label: iteration.data.version },
   ]} />
+  <LevelNav lang={lang} caseId={caseEntry.id} iterations={caseIterations} currentVersion={iteration.data.version} />
 
   <h1>{title}</h1>
   <p class="small">

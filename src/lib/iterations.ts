@@ -107,5 +107,22 @@ export function resolveRepoPath(
   return `${repoUrl.replace(/\/+$/, '')}/blob/${tag}/${path.replace(/^\/+/, '')}`;
 }
 
+/**
+ * Short human label for an iteration: "Level 1" when the project uses levels, the
+ * version otherwise.
+ *
+ * `level` is wurzel's scheduling vocabulary and stays optional — the site's contract is
+ * the release tag. Every place that shows an iteration in one word goes through here, so
+ * a project that never sets `level` reads correctly without a second code path.
+ *
+ * `levelWord` is passed in (`t('iter.level')`) rather than looked up, to keep this module
+ * free of the i18n layer.
+ */
+export function iterationLabel(it: Iteration, levelWord: string): string {
+  return typeof it.data.level === 'number'
+    ? `${levelWord} ${it.data.level}`
+    : (it.data.level ?? `v${it.data.version}`);
+}
+
 /** @deprecated use resolveRepoPath — kept so the name reads right at the call site. */
 export const resolveCodeUrl = resolveRepoPath;

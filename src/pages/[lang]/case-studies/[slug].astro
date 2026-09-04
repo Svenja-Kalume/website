@@ -4,6 +4,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Mermaid from '../../../components/Mermaid.astro';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import LevelNav from '../../../components/LevelNav.astro';
 import { allIterations, resolveRepoPath, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
 
 export async function getStaticPaths() {
@@ -59,6 +60,7 @@ const repoNote = !entry.data.repoUrl && storyRows.some((r) => r.story.data.codeU
     { label: t('nav.cases'), href: `/${lang}/case-studies` },
     { label: localize(entry.data.title, lang) ?? entry.id },
   ]} />
+  <LevelNav lang={lang} caseId={caseId} iterations={caseIterations} />
   <h1>{localize(entry.data.title, lang)}</h1>
   <p>
     <span class="tag">v{displayVersion(iterations, entry)}</span>

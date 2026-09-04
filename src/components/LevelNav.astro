@@ -1,0 +1,86 @@
+---
+/**
+ * Submenu across a case study's published iterations.
+ *
+ * The site's claim is development over time — Level 1 still standing when Level 2 is
+ * published. That only reads as a claim if you can step between the levels; going back
+ * to the case study every time makes them feel like a list rather than a sequence.
+ *
+ * Ordered OLDEST FIRST, left to right, because the sequence is the argument: it is how
+ * the way of working grew. (The overview page lists them newest first — there you are
+ * looking for the current state, here you are walking the path.)
+ *
+ * Labels degrade with the schema: `level` is wurzel's scheduling vocabulary and stays
+ * optional, so a project without it is labelled by its version instead. Nothing here
+ * requires an iteration to be anything but published.
+ */
+import { useTranslations, localize, type Lang } from '../i18n/ui';
+import { iterationLabel, type Iteration } from '../lib/iterations';
+
+interface Props {
+  lang: Lang;
+  caseId: string;
+  /** Ascending by `order` — pass `iterationsOf(...)` straight in. */
+  iterations: Iteration[];
+  /** The version being shown, or undefined on the case study's own page. */
+  currentVersion?: string;
+}
+const { lang, caseId, iterations, currentVersion } = Astro.props;
+const t = useTranslations(lang);
+
+// A single iteration is not a sequence; the breadcrumbs already say where you are.
+const show = iterations.length > 1;
+
+const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
+---
+{show && (
+  <nav class="levels small" aria-label={t('iter.nav')}>
+    <a
+      href={`/${lang}/case-studies/${caseId}`}
+      aria-current={currentVersion === undefined ? 'page' : undefined}
+    >{t('iter.overview')}</a>
+    {iterations.map((it) => (
+      <a
+        href={`/${lang}/case-studies/${caseId}/${it.data.version}`}
+        aria-current={it.data.version === currentVersion ? 'page' : undefined}
+        title={localize(it.data.title, lang)}
+      >
+        {label(it)}
+        {typeof it.data.level === 'number' && <span class="ver">{it.data.version}</span>}
+      </a>
+    ))}
+  </nav>
+)}
+
+<style>
+  /* Docs-like, no animation: a row of quiet links, the current one filled in. */
+  .levels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 1.5rem;
+  }
+  .levels a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.25rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+  .levels a:hover {
+    color: var(--accent-strong);
+    border-color: var(--accent);
+  }
+  .levels a[aria-current='page'] {
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .levels .ver {
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 0.35rem;
+  }
+  .levels a[aria-current='page'] .ver { color: inherit; }
+</style>
