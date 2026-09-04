@@ -7,6 +7,7 @@ summary:
   en: "The native colour input and file picker broke down on Android, so the accent-colour picker, logo upload and a logo-sampling pipette were all hand-built rather than delegated to the browser or a component library."
   de: "Die native Farbeingabe und der Dateiauswähler versagten unter Android, daher wurden Farbwähler, Logo-Upload und eine Logo-Pipette von Hand gebaut, statt sie dem Browser oder einer Komponentenbibliothek zu überlassen."
 case: wurzel
+iteration: WZ-0.2.0
 tags: [frontend, ui, mobile]
 draft: false
 body:

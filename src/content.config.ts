@@ -330,6 +330,14 @@ const journal = defineCollection({
     // the Markdown body so the log entry is bilingual.
     body: locArr.optional(),
     case: reference('case-studies').optional(),
+    // The implementation level this entry belongs to — the iteration whose work it
+    // reports on. A REFERENCE, not a free-text tag, so the link is data: the entry can
+    // be listed under its level, and `re:check` errors if it points at another project's
+    // iteration. Optional, because an entry may be about the way of working rather than
+    // about one level.
+    // Deliberately NOT called `introducedIn`: an iteration does not *publish* a journal
+    // entry, so the append-only rules for versioned artifacts do not apply here.
+    iteration: reference('iterations').optional(),
     tags: z.array(z.string()).default([]),
     // What this retrospective actually CHANGED in the way of working. The site claims
     // "the retrospective improves the process"; without this field that claim is drawn on

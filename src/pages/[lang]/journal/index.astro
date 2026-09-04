@@ -2,6 +2,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
+import { allIterations, iterationLabel } from '../../../lib/iterations';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -33,6 +34,18 @@ const cases = new Map<string, string | undefined>();
 for (const e of entries) {
   if (e.data.case) cases.set(e.id, await caseTitle(e.data.case));
 }
+
+// The implementation level each entry belongs to. Loaded once for the whole list rather
+// than resolved per entry, and rendered as a link into that level's page.
+const iterationById = new Map((await allIterations()).map((i) => [i.id, i]));
+const levelOf = (e: (typeof entries)[number]) => {
+  const it = e.data.iteration ? iterationById.get(e.data.iteration.id) : undefined;
+  return it && {
+    label: iterationLabel(it, t('iter.level')),
+    href: `/${lang}/case-studies/${it.data.case.id}/${it.data.version}`,
+    title: localize(it.data.title, lang),
+  };
+};
 ---
 <BaseLayout lang={lang} title={t('journal.h1')} description={t('journal.desc')}>
   <h1>{t('journal.h1')}</h1>
@@ -53,6 +66,9 @@ for (const e of entries) {
               <p class="small log-meta">
                 {e.data.case && cases.get(e.id) && (
                   <span class="tag">{cases.get(e.id)}</span>
+                )}
+                {levelOf(e) && (
+                  <a class="tag" href={levelOf(e)!.href} title={levelOf(e)!.title}>{levelOf(e)!.label}</a>
                 )}
                 {e.data.tags.map((t) => <span class="tag">{t}</span>)}
               </p>

@@ -217,11 +217,25 @@ for (const e of [...stories, ...requirements, ...diagrams, ...adrs, ...workflow,
 // ---- Retrospectives must name what they changed ----
 // "The retrospective improves the process" is a claim the site makes. A retro-tagged
 // entry that names no harness change is a status update wearing the label.
+// A journal entry's `iteration` says which implementation level it belongs to. It is a
+// reference, so a typo cannot survive the build — but pointing at ANOTHER project's
+// iteration builds fine and reads as a lie, so that one is checked here. An entry with
+// no `case` is site-wide and may name any iteration.
+const caseOfIteration = new Map(iterations.map((i) => [i.id, refId(i.data.case)]));
 for (const j of load('journal')) {
   const tags = (j.data.tags ?? []).map((t) => String(t).toLowerCase());
   if (tags.includes('retro') || tags.includes('retrospective')) {
     if (!locHasContent(j.data.harnessChange))
       warnings.push(`${j.file}: tagged as a retrospective but names no harnessChange — what did it actually change in how you work?`);
+  }
+  const iterationRef = refId(j.data.iteration);
+  if (iterationRef) {
+    const owner = caseOfIteration.get(iterationRef);
+    const entryCase = refId(j.data.case);
+    if (entryCase && owner && owner !== entryCase)
+      errors.push(`${j.file}: iteration "${iterationRef}" belongs to case "${owner}", but the entry is filed under "${entryCase}".`);
+  } else if (j.data.case) {
+    infos.push(`${j.file}: no iteration — the entry names a case study but not which implementation level it belongs to.`);
   }
 }
 

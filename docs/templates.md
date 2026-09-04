@@ -355,7 +355,10 @@ aiRole:
 
 A dated working-log entry, not a polished article: a decision, a dead-end, or what
 the AI proposed vs. what you changed. `summary` and `case` are optional; set `case`
-to tie the entry back to the case study it belongs to.
+to tie the entry back to the case study it belongs to, and `iteration` to the
+implementation level whose work it reports on — the entry then carries that level as
+a tag linking to it. `iteration` is a reference, not a free-text tag, so it cannot
+drift; `re:check` errors if it names another project's iteration.
 
 ```markdown
 ---
@@ -367,6 +370,7 @@ summary:                 # optional — one line for the log stream
   en: One line for the log stream.
   de: Eine Zeile für den Log-Stream.
 case: greenworks        # optional — links the entry to a case study
+iteration: GW-0.2.0     # optional — the implementation level this entry belongs to
 tags: [ddd, ai]
 harnessChange:          # REQUIRED in practice when tagged `retro` — re:check warns
   en: The readiness gate now sends business questions to a stakeholder instead of the AI.

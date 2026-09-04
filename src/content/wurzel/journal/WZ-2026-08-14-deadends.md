@@ -7,6 +7,7 @@ summary:
   en: "A decimal-reformat fix that changed nothing observable, and a mobile-keyboard layout change that helped nothing on a real device — both reverted, and the underlying findings parked rather than chased narrowly."
   de: "Eine Dezimal-Reformatierung, die nichts Beobachtbares änderte, und eine Layout-Änderung für die Handytastatur, die am echten Gerät nichts brachte — beide zurückgesetzt und die zugrunde liegenden Befunde geparkt statt eng weiterverfolgt."
 case: wurzel
+iteration: WZ-0.2.0
 tags: [dead-end, mobile, testing]
 draft: false
 body:
