@@ -1,12 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <!--
-    The site's motif at tab size: a tangled thread that resolves into a single point.
-    Understanding before solving — the same figure the social preview draws in full
-    (scripts/make-og-image.mjs), reduced until it still reads at 16px.
+    The site's motif at tab size, stacked instead of sequential: a rough line above,
+    an ordered one below. Understanding before solving. The social preview draws the
+    same idea as one continuous thread (scripts/make-og-image.mjs); at 16px the
+    horizontal room for that is gone, so the two states sit one over the other.
     Light tile with an accent frame; for the solid variant, swap the two colours.
   -->
   <rect width="32" height="32" rx="6" fill="#fcfdfc" stroke="#1b5e3a" stroke-width="2"/>
-  <path d="M6.5 21c-1.6-5 2.2-8.6 5.9-7s3.2 7.5.5 8-4.8-3.2-1.6-5.9 6.4-2.7 9.6-2.7"
-        fill="none" stroke="#1b5e3a" stroke-width="3.2" stroke-linecap="round"/>
-  <circle cx="25" cy="13.4" r="3.1" fill="#1b5e3a"/>
+  <g fill="none" stroke="#1b5e3a" stroke-width="2.6" stroke-linecap="round">
+    <path d="M7 11.5c1.6-3.2 3.2 3.2 4.8 0s3.2 3.2 4.8 0 3.2 3.2 4.8 0"/>
+    <path d="M7 21h18"/>
+  </g>
 </svg>
