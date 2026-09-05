@@ -71,8 +71,6 @@ export const ui = {
     'case.requirement': 'Requirement:',
     'case.process': 'Process:',
     'case.decisions': 'Decisions:',
-    'case.code': 'Code:',
-    'case.github': 'GitHub',
     'case.acceptance': 'Acceptance criteria',
     'case.adr': 'Architecture Decisions (ADR)',
     'adr.supersedes': 'Supersedes',
@@ -127,6 +125,9 @@ export const ui = {
     'trace.th.stories': 'User Stories',
     'trace.th.status': 'Status',
     'trace.noStory': '⚠ no story',
+    'trace.filter': 'Level:',
+    'trace.filter.all': 'All',
+    'trace.filterEmpty': 'No requirement has a story in this level.',
     'trace.empty': 'No requirements captured yet.',
 
     'journal.desc':
@@ -207,8 +208,6 @@ export const ui = {
     'case.requirement': 'Anforderung:',
     'case.process': 'Prozess:',
     'case.decisions': 'Entscheidungen:',
-    'case.code': 'Code:',
-    'case.github': 'GitHub',
     'case.acceptance': 'Akzeptanzkriterien',
     'case.adr': 'Architekturentscheidungen (ADR)',
     'adr.supersedes': 'Ersetzt',
@@ -262,6 +261,9 @@ export const ui = {
     'trace.th.stories': 'User Stories',
     'trace.th.status': 'Status',
     'trace.noStory': '⚠ keine Story',
+    'trace.filter': 'Level:',
+    'trace.filter.all': 'Alle',
+    'trace.filterEmpty': 'Keine Anforderung hat eine Story in diesem Level.',
     'trace.empty': 'Noch keine Anforderungen erfasst.',
 
     'journal.desc':

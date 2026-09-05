@@ -196,6 +196,26 @@ table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
 th, td { border: 1px solid var(--border); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
 th { background: var(--code-bg); }
 .table-scroll { overflow-x: auto; }
+/* Fixed layout so the colgroup widths hold instead of being renegotiated by content
+   length. The min-width stays under main's usable 43.6rem (46rem max-width less its
+   1.2rem padding), so the table lines up with every other block on the page instead of
+   overflowing it; below that width .table-scroll takes over rather than crushing it. */
+.trace-table { table-layout: fixed; min-width: 32rem; }
+.trace-table td { overflow-wrap: anywhere; }
+.trace-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0 0 0.8rem; }
+.chip {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.1rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.chip:hover { color: var(--accent-strong); border-color: var(--accent); }
+.chip[aria-pressed='true'] { background: var(--accent-soft); border-color: transparent; color: var(--accent-strong); }
 
 /* KI-Anteil-Block: der Teil, den fast niemand zeigt */
 .ai-note {

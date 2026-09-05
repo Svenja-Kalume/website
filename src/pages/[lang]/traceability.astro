@@ -2,6 +2,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
+import { iterationLabel, byOrder } from '../../lib/iterations';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -14,6 +15,11 @@ const t = useTranslations(lang);
 // as there is more than one, and the projects have nothing to compare anyway.
 const requirements = (await getCollection('requirements')).sort((a, b) => a.id.localeCompare(b.id));
 const stories = await getCollection('user-stories');
+
+// The level a story shipped in, resolved once. It hangs off the story, not the requirement:
+// a requirement is worked across iterations, so a single level per row would be a lie as
+// soon as the second one touches it. Seeing which levels a requirement spans is the point.
+const iterations = new Map((await getCollection('iterations')).map((it) => [it.id, it]));
 
 const rows = await Promise.all(
   requirements.map(async (req) => {
@@ -34,6 +40,18 @@ const groups = [...byCase.entries()]
     caseId,
     title: items[0].caseEntry ? localize(items[0].caseEntry.data.title, lang) : caseId,
     items,
+    // The levels this case actually has stories in — derived, so the filter can never
+    // offer a level that would empty the table, and a third iteration adds its button
+    // by being published rather than by editing this page.
+    levels: [
+      ...new Map(
+        items
+          .flatMap((r) => r.stories)
+          .map((st) => (st.data.introducedIn ? iterations.get(st.data.introducedIn.id) : undefined))
+          .filter((it): it is NonNullable<typeof it> => Boolean(it))
+          .map((it) => [it.id, it])
+      ).values(),
+    ].sort(byOrder),
   }))
   .sort((a, b) => a.caseId.localeCompare(b.caseId));
 // One project: the case heading and the case column are both redundant.
@@ -44,10 +62,34 @@ const showCase = groups.length > 1;
   <p class="muted">{t('trace.intro')}</p>
   {rows.length === 0 && <p class="muted">{t('trace.empty')}</p>}
   {groups.map((g) => (
-    <>
+    <div class="trace-group" data-trace-group>
       {showCase && <h2>{g.title}</h2>}
+      {/* Filtering is presentation, so it happens in the browser and the page ships every
+          row: without JS the full table is what you get, which is the honest default for
+          a document. Hidden until the script runs, so a dead control is never shown. */}
+      {g.levels.length > 1 && (
+        <p class="trace-filter" hidden>
+          <span class="muted small">{t('trace.filter')}</span>
+          <button type="button" class="chip" data-level="" aria-pressed="true">{t('trace.filter.all')}</button>
+          {g.levels.map((it) => (
+            <button type="button" class="chip" data-level={it.data.version} aria-pressed="false">
+              {iterationLabel(it, t('iter.level'))}
+            </button>
+          ))}
+        </p>
+      )}
       <div class="table-scroll">
-        <table>
+        <table class="trace-table">
+          {/* Widths declared next to the conditional case column, so the two can never
+              disagree. The stories cell carries several lines and a level tag; the
+              requirement cell an id and one title — the space belongs to the stories. */}
+          <colgroup>
+            <col style={showCase ? 'width:18%' : 'width:20%'} />
+            {showCase && <col style="width:12%" />}
+            <col style="width:10%" />
+            <col style={showCase ? 'width:48%' : 'width:56%'} />
+            <col style={showCase ? 'width:12%' : 'width:14%'} />
+          </colgroup>
           <thead>
             <tr>
               <th>{t('trace.th.req')}</th>
@@ -59,14 +101,29 @@ const showCase = groups.length > 1;
           </thead>
           <tbody>
             {g.items.map(({ req, caseEntry, stories }) => (
-              <tr>
+              <tr data-levels={[...new Set(stories
+                    .map((s) => s.data.introducedIn && iterations.get(s.data.introducedIn.id)?.data.version)
+                    .filter(Boolean))].join(' ')}>
                 <td><strong>{req.id}</strong><br /><span class="small">{localize(req.data.title, lang)}</span></td>
                 {showCase && <td class="small">{caseEntry ? localize(caseEntry.data.title, lang) : req.data.case.id}</td>}
                 <td class="small">{req.data.priority}</td>
                 <td class="small">
                   {stories.length === 0
                     ? <span class="tag">{t('trace.noStory')}</span>
-                    : stories.map((s) => <div>{s.id}: {localize(s.data.title, lang)}</div>)}
+                    : stories.map((s) => {
+                        const it = s.data.introducedIn ? iterations.get(s.data.introducedIn.id) : undefined;
+                        return (
+                          <div data-level={it?.data.version ?? ''}>
+                            {s.id}: {localize(s.data.title, lang)}
+                            {it && (
+                              <a class="tag" style="margin-left:.4rem"
+                                 href={`/${lang}/case-studies/${it.data.case.id}/${it.data.version}`}>
+                                {iterationLabel(it, t('iter.level'))}
+                              </a>
+                            )}
+                          </div>
+                        );
+                      })}
                 </td>
                 <td class="small">{req.data.status}</td>
               </tr>
@@ -74,6 +131,37 @@ const showCase = groups.length > 1;
           </tbody>
         </table>
       </div>
-    </>
+      <p class="muted small trace-empty" hidden>{t('trace.filterEmpty')}</p>
+    </div>
   ))}
 </BaseLayout>
+
+<script>
+  // Show a requirement while any of its stories belongs to the chosen level, and hide the
+  // story lines that do not. A requirement with no story at all has no level to match, so
+  // it only appears under "all" — the gap it represents belongs to the unfiltered view.
+  for (const group of document.querySelectorAll<HTMLElement>('[data-trace-group]')) {
+    const bar = group.querySelector<HTMLElement>('.trace-filter');
+    if (!bar) continue;
+    const empty = group.querySelector<HTMLElement>('.trace-empty');
+    const buttons = [...bar.querySelectorAll<HTMLButtonElement>('button[data-level]')];
+
+    const apply = (level: string) => {
+      let shown = 0;
+      for (const row of group.querySelectorAll<HTMLElement>('tbody tr')) {
+        const levels = (row.dataset.levels ?? '').split(' ').filter(Boolean);
+        const match = !level || levels.includes(level);
+        row.hidden = !match;
+        if (match) shown++;
+        for (const line of row.querySelectorAll<HTMLElement>('[data-level]')) {
+          line.hidden = Boolean(level) && line.dataset.level !== level;
+        }
+      }
+      for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.level === level));
+      if (empty) empty.hidden = shown > 0;
+    };
+
+    bar.hidden = false;
+    for (const b of buttons) b.addEventListener('click', () => apply(b.dataset.level ?? ''));
+  }
+</script>

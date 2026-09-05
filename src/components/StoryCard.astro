@@ -1,11 +1,15 @@
 ---
 /**
- * One user story with its traceability chain (requirement → process → decisions → code
- * → working doc). References are resolved here, so every page that shows a story shows
+ * One user story with its traceability chain (requirement → process → decisions →
+ * working doc). References are resolved here, so every page that shows a story shows
  * the same chain rather than re-deriving it.
  *
+ * `codeUrl` is deliberately not rendered. The repos are never linked, so the path could
+ * only ever appear as inert text — a file name in a chain of titles, read as noise. It
+ * stays on the artifact as the exact citation it is, for the day a repo does open.
+ *
  * `tag` is the release tag of the story's own iteration: repo-relative paths resolve
- * against it, so a published story keeps citing the code as it stood at its level.
+ * against it, so a published story keeps citing its working doc as it stood at its level.
  */
 import { getEntry } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
@@ -24,7 +28,6 @@ const t = useTranslations(lang);
 const requirement = await getEntry(story.data.requirement);
 const adrs = await Promise.all(story.data.adr.map((r) => getEntry(r)));
 const bpmn = story.data.bpmn ? await getEntry(story.data.bpmn) : undefined;
-const codeHref = resolveRepoPath(story.data.codeUrl, repoUrl, tag);
 const sourceHref = resolveRepoPath(story.data.source, repoUrl, tag);
 ---
 <div class="card">
@@ -38,11 +41,6 @@ const sourceHref = resolveRepoPath(story.data.source, repoUrl, tag);
     <span class="step">{t('case.requirement')} {requirement ? <a href={`/${lang}/traceability`}>{requirement.id} — {localize(requirement.data.title, lang)}</a> : story.data.requirement.id}</span>
     {bpmn && <span class="step">{t('case.process')} {localize(bpmn.data.title, lang)}</span>}
     {adrs.length > 0 && <span class="step">{t('case.decisions')} {adrs.map((a) => a && localize(a.data.title, lang)).filter(Boolean).join('; ')}</span>}
-    {story.data.codeUrl && (
-      <span class="step">{t('case.code')} {codeHref
-        ? <a href={codeHref}>{t('case.github')}</a>
-        : <code>{story.data.codeUrl}</code>}</span>
-    )}
     {sourceHref && <span class="step"><a href={sourceHref}>{t('case.source')}</a></span>}
   </p>
   <details>
