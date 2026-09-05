@@ -1,4 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#1b5e3a"/>
-  <path d="M9 10h14M9 16h14M9 22h9" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+  <!--
+    The site's motif at tab size: a tangled thread that resolves into a single point.
+    Understanding before solving — the same figure the social preview draws in full
+    (scripts/make-og-image.mjs), reduced until it still reads at 16px.
+    Light tile with an accent frame; for the solid variant, swap the two colours.
+  -->
+  <rect width="32" height="32" rx="6" fill="#fcfdfc" stroke="#1b5e3a" stroke-width="2"/>
+  <path d="M6.5 21c-1.6-5 2.2-8.6 5.9-7s3.2 7.5.5 8-4.8-3.2-1.6-5.9 6.4-2.7 9.6-2.7"
+        fill="none" stroke="#1b5e3a" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="25" cy="13.4" r="3.1" fill="#1b5e3a"/>
 </svg>
