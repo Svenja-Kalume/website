@@ -107,7 +107,7 @@ export const ui = {
     'iter.adr': 'Architecture decisions',
     'iter.workflow': 'Workflow steps',
     'iter.source': 'Release tag in the project repo',
-    'topic.unassigned': 'Not tied to one topic',
+    'topic.unassigned': 'Artifacts',
     'topic.unassignedIntro':
       'Artifacts that describe the project as a whole rather than one domain topic — shown here once, not repeated per level.',
     'topic.requirements': 'Requirements:',
@@ -240,7 +240,7 @@ export const ui = {
     'iter.adr': 'Architekturentscheidungen',
     'iter.workflow': 'Workflow-Schritte',
     'iter.source': 'Release-Tag im Projekt-Repository',
-    'topic.unassigned': 'Keinem Thema zugeordnet',
+    'topic.unassigned': 'Artefakte',
     'topic.unassignedIntro':
       'Artefakte, die das Projekt als Ganzes beschreiben statt eines einzelnen Fachthemas — hier einmal gezeigt, nicht pro Level wiederholt.',
     'topic.requirements': 'Anforderungen:',
