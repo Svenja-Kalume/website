@@ -55,12 +55,14 @@ const adrs = introducedIn(await getCollection('adr'), iteration.id);
 // traceability chain, and decisions — so a level reads as "what happened to the customer,
 // then to the project", not as three long lists you have to cross-reference yourself.
 const topics = topicsOf(await getCollection('topics'), caseEntry.id);
-const { groups: topicGroups, unassigned } = groupByTopic(
+// Only the topic sub-chapters here. What no topic claims describes the project as a
+// whole, not this level, so it is rendered once on the case study overview instead.
+const { groups: topicGroups } = groupByTopic(
   topics,
   { diagrams, stories, adrs },
   allStories.filter((s) => s.data.case.id === caseEntry.id),
 );
-const sections = [...topicGroups, ...(unassigned ? [unassigned] : [])];
+const sections = topicGroups;
 
 // What this iteration introduced. Every versioned collection, so nothing is silently
 // left out of the record of what a level actually published.
@@ -176,10 +178,10 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
   {sections.map((g) => (
     <section class="topic">
       <h2>
-        {g.topic ? localize(g.topic.data.title, lang) : t('topic.unassigned')}
+        {localize(g.topic!.data.title, lang)}
         {/* Derived, not declared: a topic the glossary has no term for is a technical
             concern (navigation, autosave, a test harness), and says so. */}
-        {g.topic && g.topic.data.glossary.length === 0 && (
+        {g.topic!.data.glossary.length === 0 && (
           <span class="tag" style="margin-left:.5rem">{t('topic.technical')}</span>
         )}
       </h2>

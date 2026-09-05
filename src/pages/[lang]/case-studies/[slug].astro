@@ -7,7 +7,8 @@ import LevelNav from '../../../components/LevelNav.astro';
 import DiagramFigure from '../../../components/DiagramFigure.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import AdrCard from '../../../components/AdrCard.astro';
-import { allIterations, iterationsOf, currentOf, introducedIn, displayVersion } from '../../../lib/iterations';
+import { allIterations, iterationsOf, currentOf, introducedIn, displayVersion, iterationLabel } from '../../../lib/iterations';
+import { topicsOf, groupByTopic } from '../../../lib/topics';
 import { absoluteUrl, techArticleSchema } from '../../../lib/schema';
 
 export async function getStaticPaths() {
@@ -50,6 +51,27 @@ const perIteration = new Map(
     },
   ])
 );
+
+// Artifacts no topic claims — the context map, the delivery pipeline — describe the whole
+// project, not the level that happened to introduce them. They belong here, once, rather
+// than under a "not tied to one topic" heading on every level page. Each keeps a link back
+// to the level that introduced it, so the chronology is not lost.
+const topics = topicsOf(await getCollection('topics'), caseId);
+const published = <T extends { data: { introducedIn?: { id: string } | undefined } }>(list: T[]) =>
+  list.filter((e) => e.data.introducedIn);
+const { unassigned } = groupByTopic(
+  topics,
+  { diagrams: published(diagrams), stories: published(stories), adrs: published(adrs) },
+  stories,
+);
+const iterationById = new Map(caseIterations.map((it) => [it.id, it]));
+const levelOf = (e: { data: { introducedIn?: { id: string } | undefined } }) => {
+  const it = e.data.introducedIn ? iterationById.get(e.data.introducedIn.id) : undefined;
+  return it && {
+    label: iterationLabel(it, t('iter.level')),
+    href: `/${lang}/case-studies/${caseId}/${it.data.version}`,
+  };
+};
 
 // Fallback, not a second home: an artifact with no `introducedIn` has no level to move to,
 // so it stays visible here rather than disappearing from the site.
@@ -127,6 +149,49 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
         ))}
       </ul>
     </>
+  )}
+
+  {unassigned && (
+    <section class="topic">
+      <h2>{t('topic.unassigned')}</h2>
+      <p class="muted">{t('topic.unassignedIntro')}</p>
+
+      {unassigned.diagrams.length > 0 && (
+        <>
+          <h3>{t('iter.diagrams')}</h3>
+          {unassigned.diagrams.map((d) => (
+            <>
+              <DiagramFigure diagram={d} lang={lang} titleTag="h4" />
+              {levelOf(d) && <p class="small"><a class="tag" href={levelOf(d)!.href}>{levelOf(d)!.label}</a></p>}
+            </>
+          ))}
+        </>
+      )}
+
+      {unassigned.stories.length > 0 && (
+        <>
+          <h3>{t('case.storiesTrace')}</h3>
+          {unassigned.stories.map((story) => (
+            <>
+              <StoryCard story={story} lang={lang} repoUrl={entry.data.repoUrl} />
+              {levelOf(story) && <p class="small"><a class="tag" href={levelOf(story)!.href}>{levelOf(story)!.label}</a></p>}
+            </>
+          ))}
+        </>
+      )}
+
+      {unassigned.adrs.length > 0 && (
+        <>
+          <h3>{t('case.adr')}</h3>
+          {unassigned.adrs.map((a) => (
+            <>
+              <AdrCard adr={a} lang={lang} />
+              {levelOf(a) && <p class="small"><a class="tag" href={levelOf(a)!.href}>{levelOf(a)!.label}</a></p>}
+            </>
+          ))}
+        </>
+      )}
+    </section>
   )}
 
   {looseDiagrams.length > 0 && (
