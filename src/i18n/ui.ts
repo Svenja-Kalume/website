@@ -151,6 +151,8 @@ export const ui = {
       'Professionally, I have worked as a software engineer for over eleven years. My focus is increasingly moving towards requirements engineering, because that is where I rediscover the very things that have driven me since the start of my career: understanding problems, connecting people, and structuring complexity.',
     'about.contact': 'Contact',
 
+    'og.imageAlt':
+      'Understanding Before Solving — a tangled thread that resolves into an ordered line of steps.',
     'impressum.desc': 'Legal notice under § 5 DDG: who runs this site and how to reach them.',
     'datenschutz.desc': 'Privacy notice: what this site stores, and what it does not.',
   },
@@ -281,6 +283,8 @@ export const ui = {
       'Beruflich arbeite ich seit über elf Jahren als Software Engineer. Mein Schwerpunkt entwickelt sich zunehmend in Richtung Requirements Engineering, weil ich dort genau die Themen wiederfinde, die mich seit Beginn meiner Laufbahn antreiben: Probleme verstehen, Menschen verbinden und Komplexität strukturieren.',
     'about.contact': 'Kontakt',
 
+    'og.imageAlt':
+      'Verstehen kommt vor Lösen — ein verknoteter Faden, der sich zu einer geordneten Folge von Schritten auflöst.',
     'impressum.desc': 'Anbieterkennzeichnung nach § 5 DDG: wer diese Seite betreibt und wie man sie erreicht.',
     'datenschutz.desc': 'Datenschutzhinweis: was diese Seite speichert — und was nicht.',
   },
