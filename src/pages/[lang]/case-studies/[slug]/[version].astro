@@ -3,6 +3,7 @@ import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
 import LevelNav from '../../../../components/LevelNav.astro';
+import { absoluteUrl, techArticleSchema } from '../../../../lib/schema';
 import DiagramFigure from '../../../../components/DiagramFigure.astro';
 import StoryCard from '../../../../components/StoryCard.astro';
 import AdrCard from '../../../../components/AdrCard.astro';
@@ -80,7 +81,19 @@ const caseTitle = localize(caseEntry.data.title, lang) ?? caseEntry.id;
 const title = localize(iteration.data.title, lang) ?? iteration.id;
 const dateStr = iteration.data.date.toISOString().slice(0, 10);
 ---
-<BaseLayout lang={lang} title={`${caseTitle} ${iteration.data.version}`} description={localize(iteration.data.summary, lang)}>
+<BaseLayout
+  lang={lang}
+  title={`${caseTitle} ${iteration.data.version}`}
+  description={localize(iteration.data.summary, lang)}
+  jsonLd={techArticleSchema({
+    headline: `${caseTitle} — ${title}`,
+    description: localize(iteration.data.summary, lang),
+    url: absoluteUrl(`/${lang}/case-studies/${caseEntry.id}/${iteration.data.version}/`, Astro.site),
+    lang,
+    datePublished: iteration.data.date,
+    version: iteration.data.version,
+  })}
+>
   <Breadcrumbs items={[
     { label: t('nav.cases'), href: `/${lang}/case-studies` },
     { label: caseTitle, href: `/${lang}/case-studies/${caseEntry.id}` },

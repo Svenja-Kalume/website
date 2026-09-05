@@ -8,6 +8,7 @@ import DiagramFigure from '../../../components/DiagramFigure.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import AdrCard from '../../../components/AdrCard.astro';
 import { allIterations, iterationsOf, currentOf, introducedIn, displayVersion } from '../../../lib/iterations';
+import { absoluteUrl, techArticleSchema } from '../../../lib/schema';
 
 export async function getStaticPaths() {
   const cases = await getCollection('case-studies');
@@ -56,7 +57,19 @@ const looseDiagrams = diagrams.filter((d) => !d.data.introducedIn);
 const looseStories = stories.filter((s) => !s.data.introducedIn);
 const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
 ---
-<BaseLayout lang={lang} title={localize(entry.data.title, lang) ?? entry.id} description={localize(entry.data.summary, lang)}>
+<BaseLayout
+  lang={lang}
+  title={localize(entry.data.title, lang) ?? entry.id}
+  description={localize(entry.data.summary, lang)}
+  jsonLd={techArticleSchema({
+    headline: localize(entry.data.title, lang) ?? entry.id,
+    description: localize(entry.data.summary, lang),
+    url: absoluteUrl(`/${lang}/case-studies/${entry.id}/`, Astro.site),
+    lang,
+    datePublished: current?.data.date,
+    version: displayVersion(iterations, entry),
+  })}
+>
   <Breadcrumbs items={[
     { label: t('nav.cases'), href: `/${lang}/case-studies` },
     { label: localize(entry.data.title, lang) ?? entry.id },

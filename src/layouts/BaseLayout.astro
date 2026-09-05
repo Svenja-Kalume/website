@@ -87,6 +87,14 @@ const ogImage = abs(`/og/${lang}.png`);
     <meta name="twitter:title" content={pageTitle} />
     {description && <meta name="twitter:description" content={description} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${t('journal.h1')} — ${SITE_TITLE}`}
+      href={`/${lang}/journal/rss.xml`}
+    />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>

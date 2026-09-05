@@ -1,0 +1,14 @@
+{
+  "name": "Understanding Before Solving",
+  "short_name": "Understanding",
+  "description": "The visible documentation of an AI-assisted way of working in requirements engineering.",
+  "start_url": "/en/",
+  "display": "browser",
+  "background_color": "#fcfdfc",
+  "theme_color": "#1b5e3a",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "/icons/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icons/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}

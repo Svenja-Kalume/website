@@ -61,6 +61,35 @@ export function blogPostingSchema(opts: {
   };
 }
 
+/**
+ * A case study or one of its published levels. `TechArticle` rather than `Article`:
+ * these pages document a system and its reasoning, which is what the type is for.
+ */
+export function techArticleSchema(opts: {
+  headline: string;
+  description?: string;
+  url: string;
+  lang: Lang;
+  datePublished?: Date;
+  version?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: opts.headline,
+    inLanguage: opts.lang,
+    url: opts.url,
+    mainEntityOfPage: opts.url,
+    ...(opts.description ? { description: opts.description } : {}),
+    ...(opts.datePublished
+      ? { datePublished: opts.datePublished.toISOString().slice(0, 10) }
+      : {}),
+    ...(opts.version ? { version: opts.version } : {}),
+    author,
+    publisher: author,
+  };
+}
+
 export function breadcrumbSchema(items: { label: string; url?: string }[]) {
   return {
     '@context': 'https://schema.org',

@@ -130,7 +130,6 @@ export const ui = {
     'journal.intro':
       'A working log — decisions, dead-ends and what the AI actually contributed, written down as I go rather than polished into essays afterwards.',
     'journal.empty': 'No entries yet.',
-    'journal.back': '← Journal',
     'journal.filter': 'Filter by tag',
     'journal.allTags': 'all',
     'journal.taggedWith': 'Tagged',
@@ -262,7 +261,6 @@ export const ui = {
     'journal.intro':
       'Ein Arbeitsprotokoll — Entscheidungen, Sackgassen und der tatsächliche KI-Anteil, direkt beim Arbeiten notiert statt nachträglich zu Essays poliert.',
     'journal.empty': 'Noch keine Einträge.',
-    'journal.back': '← Journal',
     'journal.filter': 'Nach Tag filtern',
     'journal.allTags': 'alle',
     'journal.taggedWith': 'Getaggt mit',

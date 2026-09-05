@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { absoluteUrl, blogPostingSchema } from '../../../lib/schema';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
 import { iterationLabel } from '../../../lib/iterations';
@@ -38,7 +39,10 @@ const fmt = (d: Date) =>
     keywords: entry.data.tags,
   })}
 >
-  <p class="small"><a href={`/${lang}/journal`}>{t('journal.back')}</a></p>
+  <Breadcrumbs items={[
+    { label: t('journal.h1'), href: `/${lang}/journal` },
+    { label: localize(entry.data.title, lang) ?? entry.id },
+  ]} />
   <p class="log-date-full small muted">
     <time datetime={entry.data.date.toISOString().slice(0, 10)}>{fmt(entry.data.date)}</time>
   </p>
