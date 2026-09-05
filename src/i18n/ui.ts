@@ -150,6 +150,9 @@ export const ui = {
     'about.p4':
       'Professionally, I have worked as a software engineer for over eleven years. My focus is increasingly moving towards requirements engineering, because that is where I rediscover the very things that have driven me since the start of my career: understanding problems, connecting people, and structuring complexity.',
     'about.contact': 'Contact',
+
+    'impressum.desc': 'Legal notice under § 5 DDG: who runs this site and how to reach them.',
+    'datenschutz.desc': 'Privacy notice: what this site stores, and what it does not.',
   },
   de: {
     'nav.home': 'Start',
@@ -277,6 +280,9 @@ export const ui = {
     'about.p4':
       'Beruflich arbeite ich seit über elf Jahren als Software Engineer. Mein Schwerpunkt entwickelt sich zunehmend in Richtung Requirements Engineering, weil ich dort genau die Themen wiederfinde, die mich seit Beginn meiner Laufbahn antreiben: Probleme verstehen, Menschen verbinden und Komplexität strukturieren.',
     'about.contact': 'Kontakt',
+
+    'impressum.desc': 'Anbieterkennzeichnung nach § 5 DDG: wer diese Seite betreibt und wie man sie erreicht.',
+    'datenschutz.desc': 'Datenschutzhinweis: was diese Seite speichert — und was nicht.',
   },
 } as const;
 

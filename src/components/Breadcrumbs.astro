@@ -6,9 +6,15 @@
  * Deliberately NOT a nav item: the top-level nav stays six entries of chrome. The
  * iteration hierarchy lives inside the case study, where it belongs.
  */
+import { absoluteUrl, breadcrumbSchema } from '../lib/schema';
+
 interface Crumb { label: string; href?: string }
 interface Props { items: Crumb[] }
 const { items } = Astro.props;
+
+const jsonLd = breadcrumbSchema(
+  items.map((c) => ({ label: c.label, url: c.href ? absoluteUrl(c.href, Astro.site) : undefined }))
+);
 ---
 <nav class="crumbs small muted" aria-label="Breadcrumb">
   {items.map((c, i) => (
@@ -18,6 +24,7 @@ const { items } = Astro.props;
     </>
   ))}
 </nav>
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
 <style>
   .crumbs { margin: 0 0 1rem; }

@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { absoluteUrl, blogPostingSchema } from '../../../lib/schema';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
 import { iterationLabel } from '../../../lib/iterations';
 
@@ -24,9 +25,23 @@ const locale = lang === 'de' ? 'de-DE' : 'en-US';
 const fmt = (d: Date) =>
   d.toLocaleDateString(locale, { day: '2-digit', month: 'long', year: 'numeric' });
 ---
-<BaseLayout lang={lang} title={localize(entry.data.title, lang) ?? entry.id} description={localize(entry.data.summary, lang)}>
+<BaseLayout
+  lang={lang}
+  title={localize(entry.data.title, lang) ?? entry.id}
+  description={localize(entry.data.summary, lang)}
+  jsonLd={blogPostingSchema({
+    headline: localize(entry.data.title, lang) ?? entry.id,
+    description: localize(entry.data.summary, lang),
+    datePublished: entry.data.date,
+    url: absoluteUrl(`/${lang}/journal/${entry.id}/`, Astro.site),
+    lang,
+    keywords: entry.data.tags,
+  })}
+>
   <p class="small"><a href={`/${lang}/journal`}>{t('journal.back')}</a></p>
-  <p class="log-date-full small muted">{fmt(entry.data.date)}</p>
+  <p class="log-date-full small muted">
+    <time datetime={entry.data.date.toISOString().slice(0, 10)}>{fmt(entry.data.date)}</time>
+  </p>
   <h1>{localize(entry.data.title, lang)}</h1>
   <p class="log-meta small">
     {relatedCase && (

@@ -93,7 +93,7 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
     <span class="tag">v{iteration.data.version}</span>
     {iteration.data.level !== undefined && <span class="tag" style="margin-left:.3rem">{t('iter.level')} {iteration.data.level}</span>}
     {isCurrent && <span class="tag" style="margin-left:.3rem">{t('iter.current')}</span>}
-    <span class="muted" style="margin-left:.5rem">{dateStr}</span>
+    <time class="muted" datetime={dateStr} style="margin-left:.5rem">{dateStr}</time>
   </p>
 
   <p>{localize(iteration.data.summary, lang)}</p>

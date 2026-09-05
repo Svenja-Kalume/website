@@ -8,7 +8,7 @@ export function getStaticPaths() {
 const lang = toLang(Astro.params.lang);
 const t = useTranslations(lang);
 ---
-<BaseLayout lang={lang} title={t('footer.datenschutz')}>
+<BaseLayout lang={lang} title={t('footer.datenschutz')} description={t('datenschutz.desc')}>
   <h1>{t('footer.datenschutz')}</h1>
   {lang === 'de' ? (
     <>

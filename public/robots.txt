@@ -1,0 +1,7 @@
+# Crawling is open: this site is documentation meant to be found and read.
+# Deliberately no bot-specific rules -- if AI crawlers are ever to be treated
+# differently from search crawlers, that is a decision to write down here.
+User-agent: *
+Allow: /
+
+Sitemap: https://svenjakalume.dev/sitemap-index.xml

@@ -51,7 +51,7 @@ const levelOf = (e: Entry) => {
     <ol class="reset log">
       {byYear.get(year)!.map((e) => (
         <li class="log-entry">
-          <span class="log-date small muted">{fmt(e.data.date)}</span>
+          <time class="log-date small muted" datetime={e.data.date.toISOString().slice(0, 10)}>{fmt(e.data.date)}</time>
           <div class="log-body">
             <a class="card-link" href={`/${lang}/journal/${e.id}`}><strong>{localize(e.data.title, lang)}</strong></a>
             {e.data.summary && <p class="small muted">{localize(e.data.summary, lang)}</p>}

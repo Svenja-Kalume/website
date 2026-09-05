@@ -17,5 +17,15 @@ export default defineConfig({
       redirectToDefaultLocale: false,
     },
   },
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    sitemap({
+      // Emits xhtml:link alternates per URL, so the two locales are indexed as one
+      // cluster rather than as duplicates of each other.
+      i18n: { defaultLocale: 'en', locales: { en: 'en', de: 'de' } },
+      // The bare domain is a meta-refresh entry page that canonicalises to /en/;
+      // listing it would offer a redirect as if it were content.
+      filter: (page) => new URL(page).pathname !== '/',
+    }),
+  ],
 });

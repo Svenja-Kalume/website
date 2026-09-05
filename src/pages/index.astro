@@ -3,13 +3,15 @@
 // (/en/…, /de/…), so the bare domain redirects to the default locale.
 // Kept static-friendly (meta refresh) so it works on plain IONOS hosting.
 const target = '/en/';
+// Absolute: a relative canonical on the entry page is ignored by crawlers.
+const canonical = new URL(target, Astro.site ?? 'https://svenjakalume.dev').href;
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="refresh" content={`0; url=${target}`} />
-    <link rel="canonical" href={target} />
+    <link rel="canonical" href={canonical} />
     <title>Understanding Before Solving</title>
   </head>
   <body>
