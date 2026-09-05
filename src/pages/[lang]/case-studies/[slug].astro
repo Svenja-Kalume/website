@@ -64,6 +64,15 @@ const { unassigned } = groupByTopic(
   { diagrams: published(diagrams), stories: published(stories), adrs: published(adrs) },
   stories,
 );
+// Read order for the cross-cutting diagrams: process first, then the domain, and the
+// solution structure last — a reader wants what the business does before how it is
+// deployed. Derived from the `type` each diagram already declares, so no published file
+// gains an `order` field and a new C4 diagram sinks to the bottom on its own.
+const DIAGRAM_ORDER = ['bpmn', 'event-storming', 'uml', 'mermaid', 'c4'];
+const byDiagramType = (a: typeof diagrams[number], b: typeof diagrams[number]) =>
+  DIAGRAM_ORDER.indexOf(a.data.type) - DIAGRAM_ORDER.indexOf(b.data.type) ||
+  a.id.localeCompare(b.id);
+
 const iterationById = new Map(caseIterations.map((it) => [it.id, it]));
 const levelOf = (e: { data: { introducedIn?: { id: string } | undefined } }) => {
   const it = e.data.introducedIn ? iterationById.get(e.data.introducedIn.id) : undefined;
@@ -159,7 +168,7 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
       {unassigned.diagrams.length > 0 && (
         <>
           <h3>{t('iter.diagrams')}</h3>
-          {unassigned.diagrams.map((d) => (
+          {[...unassigned.diagrams].sort(byDiagramType).map((d) => (
             <>
               <DiagramFigure diagram={d} lang={lang} titleTag="h4" />
               {levelOf(d) && <p class="small"><a class="tag" href={levelOf(d)!.href}>{levelOf(d)!.label}</a></p>}
