@@ -19,5 +19,8 @@ managed PostgreSQL later; deploy to IONOS ASP.NET/Windows hosting via `dotnet pu
 derive the product version from git tags with MinVer.
 
 ## Consequences
-Cheap to start and operate; the version footer follows tags — this freeze is `0.1.0`. A
-managed-database migration is a known future step; no containers to maintain.
+Cheap to start and operate; a managed-database migration is a known future step, and there
+are no containers to maintain. Releases are tagged in git — this freeze is `0.1.0` — but
+the MinVer package and the version footer that would surface that tag inside the app are
+deliberately deferred until the first release is ready, so the deployed build's version is
+not yet confirmable from the running app.
