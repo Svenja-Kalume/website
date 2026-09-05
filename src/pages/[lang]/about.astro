@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languages, useTranslations, toLang } from '../../i18n/ui';
+import { absoluteUrl, personSchema } from '../../lib/schema';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -8,7 +9,12 @@ export function getStaticPaths() {
 const lang = toLang(Astro.params.lang);
 const t = useTranslations(lang);
 ---
-<BaseLayout lang={lang} title={t('about.title')} description={t('about.desc')}>
+<BaseLayout
+  lang={lang}
+  title={t('about.title')}
+  description={t('about.desc')}
+  jsonLd={personSchema(lang, absoluteUrl(`/${lang}/about/`, Astro.site))}
+>
   <h1>{t('about.h1')}</h1>
   <p>{t('about.p1')}</p>
   <p>{t('about.p2')}</p>

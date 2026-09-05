@@ -1,12 +1,27 @@
 ---
 // Client-side Mermaid rendering (light build, no headless browser needed).
 // Can be switched to build-time SVG (rehype-mermaid + Playwright) -- see CLAUDE.md.
-interface Props { code: string; }
-const { code } = Astro.props;
+//
+// The figure carries a caption: the written one where a diagram has it, otherwise the
+// path derived from the diagram's own labels (src/lib/mermaid-text.ts). Without it the
+// diagram is a script tag to a crawler and silence to a screen reader.
+import { describeMermaid } from '../lib/mermaid-text';
+
+interface Props { code: string; caption?: string; }
+const { code, caption } = Astro.props;
+const text = caption ?? describeMermaid(code);
 ---
-<div class="mermaid-wrap">
-  <pre class="mermaid">{code}</pre>
-</div>
+<figure class="mermaid-figure">
+  <div class="mermaid-wrap">
+    <pre class="mermaid">{code}</pre>
+  </div>
+  {text && <figcaption class="muted small">{text}</figcaption>}
+</figure>
+
+<style>
+  .mermaid-figure { margin: 0 0 1.4rem; }
+  .mermaid-figure figcaption { margin-top: .5rem; }
+</style>
 
 <script>
   import mermaid from 'mermaid';

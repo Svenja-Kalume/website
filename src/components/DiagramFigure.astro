@@ -17,8 +17,13 @@ const Title = titleTag;
 ---
 <Title>{localize(d.data.title, lang)}</Title>
 <p class="muted small">{d.data.type.toUpperCase()} · {t('case.madeWith')} {d.data.tool}</p>
-{d.data.image
-  ? <img src={d.data.image} alt={localize(d.data.caption, lang) ?? localize(d.data.title, lang)} style="max-width:100%" />
-  : <Mermaid code={d.body ?? ''} />}
-{d.data.caption && <p class="muted small">{localize(d.data.caption, lang)}</p>}
+{d.data.image ? (
+  <>
+    <img src={d.data.image} alt={localize(d.data.caption, lang) ?? localize(d.data.title, lang)} style="max-width:100%" />
+    {d.data.caption && <p class="muted small">{localize(d.data.caption, lang)}</p>}
+  </>
+) : (
+  /* The written caption if there is one, otherwise Mermaid derives it from the labels. */
+  <Mermaid code={d.body ?? ''} caption={localize(d.data.caption, lang)} />
+)}
 {d.data.aiContribution && <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(d.data.aiContribution, lang)}</p>}

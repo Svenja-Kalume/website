@@ -90,6 +90,63 @@ export function techArticleSchema(opts: {
   };
 }
 
+/**
+ * The person behind the site, for /about.
+ *
+ * `jobTitle` states what is true today — eleven years of software engineering — rather
+ * than the role the site is aimed at; a title that contradicts the prose beneath it is
+ * worse than a modest one. The direction lives in `description`, and `knowsAbout` carries
+ * the subject matter the site actually documents.
+ */
+const person = {
+  en: {
+    jobTitle: 'AI-assisted Software Engineer',
+    description:
+      'Software engineer of eleven years, moving into requirements engineering. This site documents that shift on a real project: requirements-first, AI-assisted, with a human decision at every step.',
+    knowsAbout: [
+      'Requirements engineering',
+      'Business analysis',
+      'BPMN',
+      'Domain-driven design',
+      'Architecture decision records',
+      'Requirements traceability',
+      'AI-assisted software development',
+    ],
+  },
+  de: {
+    jobTitle: 'KI-gestützte Software Engineerin',
+    description:
+      'Software Engineerin mit elf Jahren Erfahrung, auf dem Weg ins Requirements Engineering. Diese Seite dokumentiert diesen Weg an einem echten Projekt: anforderungsgetrieben, KI-gestützt, mit einer menschlichen Entscheidung an jedem Schritt.',
+    knowsAbout: [
+      'Requirements Engineering',
+      'Business-Analyse',
+      'BPMN',
+      'Domain-Driven Design',
+      'Architecture Decision Records',
+      'Nachvollziehbarkeit von Anforderungen',
+      'KI-gestützte Softwareentwicklung',
+    ],
+  },
+} as const;
+
+export function personSchema(lang: Lang, url: string) {
+  const p = person[lang];
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    inLanguage: lang,
+    url,
+    mainEntity: {
+      '@type': 'Person',
+      name: SITE_OWNER,
+      jobTitle: p.jobTitle,
+      description: p.description,
+      knowsAbout: [...p.knowsAbout],
+      url,
+    },
+  };
+}
+
 export function breadcrumbSchema(items: { label: string; url?: string }[]) {
   return {
     '@context': 'https://schema.org',
