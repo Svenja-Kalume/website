@@ -119,11 +119,29 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
       : <Content />}
   </div>
 
+  {/* Derived from what this page actually renders, so it cannot list a section that is not
+      there. The diagrams are named individually: they are the furthest down and the most
+      likely thing a reader came for. */}
+  <ul class="reset contents">
+    {caseIterations.length > 0 && <li><a href="#iterations">{t('iter.h2')}</a></li>}
+    {stakeholders.length > 0 && <li><a href="#stakeholders">{t('case.stakeholders')}</a></li>}
+    {unassigned && (
+      <li>
+        <a href="#artifacts">{t('topic.unassigned')}</a>
+        <ul class="reset contents-sub">
+          {[...unassigned.diagrams].sort(byDiagramType).map((d) => (
+            <li><a href={`#${d.id}`}>{localize(d.data.title, lang)}</a></li>
+          ))}
+        </ul>
+      </li>
+    )}
+  </ul>
+
   {/* The development-over-time view: every published iteration stays listed and reachable,
       newest first. Each has its own stable URL — earlier ones never disappear. */}
   {caseIterations.length > 0 && (
     <>
-      <h2>{t('iter.h2')}</h2>
+      <h2 id="iterations">{t('iter.h2')}</h2>
       <ul class="reset">
         {[...caseIterations].reverse().map((it) => (
           <li class="card">
@@ -145,7 +163,7 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
 
   {stakeholders.length > 0 && (
     <>
-      <h2>{t('case.stakeholders')}</h2>
+      <h2 id="stakeholders">{t('case.stakeholders')}</h2>
       <ul class="reset">
         {stakeholders.map((s) => (
           <li class="card">
@@ -161,7 +179,7 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
   )}
 
   {unassigned && (
-    <section class="topic">
+    <section class="topic" id="artifacts">
       <h2>{t('topic.unassigned')}</h2>
       <p class="muted">{t('topic.unassignedIntro')}</p>
 
@@ -169,10 +187,10 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
         <>
           <h3>{t('iter.diagrams')}</h3>
           {[...unassigned.diagrams].sort(byDiagramType).map((d) => (
-            <>
+            <div id={d.id}>
               <DiagramFigure diagram={d} lang={lang} titleTag="h4" />
               {levelOf(d) && <p class="small"><a class="tag" href={levelOf(d)!.href}>{levelOf(d)!.label}</a></p>}
-            </>
+            </div>
           ))}
         </>
       )}

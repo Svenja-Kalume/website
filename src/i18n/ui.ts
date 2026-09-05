@@ -106,6 +106,10 @@ export const ui = {
     'iter.adr': 'Architecture decisions',
     'iter.workflow': 'Workflow steps',
     'iter.source': 'Release tag in the project repo',
+    // Singular forms, for the counts in the contents list ("1 diagram", not "1 Diagrams").
+    'iter.story.one': 'User story',
+    'iter.diagram.one': 'Diagram',
+    'iter.adr.one': 'Architecture decision',
     'topic.unassigned': 'Artifacts',
     'topic.unassignedIntro':
       'Artifacts that describe the project as a whole rather than one domain topic — shown here once, not repeated per level.',
@@ -238,6 +242,9 @@ export const ui = {
     'iter.adr': 'Architekturentscheidungen',
     'iter.workflow': 'Workflow-Schritte',
     'iter.source': 'Release-Tag im Projekt-Repository',
+    'iter.story.one': 'User Story',
+    'iter.diagram.one': 'Diagramm',
+    'iter.adr.one': 'Architekturentscheidung',
     'topic.unassigned': 'Artefakte',
     'topic.unassignedIntro':
       'Artefakte, die das Projekt als Ganzes beschreiben statt eines einzelnen Fachthemas — hier einmal gezeigt, nicht pro Level wiederholt.',

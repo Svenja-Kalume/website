@@ -32,10 +32,10 @@ const dateStr = adr.data.date.toISOString().slice(0, 10);
 </div>
 
 <style>
-  /* An ADR body uses `## Context / ## Decision / ## Consequences`. Inside a card those
-     are sub-headings of the section, not siblings of it — style them down rather than
-     rewriting published markdown. */
-  .adr-body :global(h2) {
+  /* An ADR body uses `## Context / ## Decision / ## Consequences`. Inside a card those are
+     sub-headings of the section, not siblings of it: scripts/rehype-adr-headings.mjs moves
+     them to h4 in the outline, and this sizes them to match — neither touches the markdown. */
+  .adr-body :global(h4) {
     font-size: 1rem;
     margin: .8rem 0 .2rem;
   }

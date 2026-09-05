@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { sitemapDates } from './scripts/sitemap-dates.mjs';
+import rehypeAdrHeadings from './scripts/rehype-adr-headings.mjs';
 
 // lastmod comes from the content's own dates (iteration and journal), not from file
 // mtimes -- see scripts/sitemap-dates.mjs.
@@ -22,6 +23,8 @@ export default defineConfig({
       redirectToDefaultLocale: false,
     },
   },
+  // An ADR's own headings are h2; embedded in a level page they belong two levels deeper.
+  markdown: { rehypePlugins: [rehypeAdrHeadings] },
   integrations: [
     mdx(),
     sitemap({

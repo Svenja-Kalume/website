@@ -8,8 +8,8 @@ import DiagramFigure from '../../../../components/DiagramFigure.astro';
 import StoryCard from '../../../../components/StoryCard.astro';
 import AdrCard from '../../../../components/AdrCard.astro';
 import GlossaryTerms from '../../../../components/GlossaryTerms.astro';
-import { languages, useTranslations, localize, toLang } from '../../../../i18n/ui';
-import { iterationsOf, currentOf, introducedIn } from '../../../../lib/iterations';
+import { languages, useTranslations, localize, toLang, type UiKey } from '../../../../i18n/ui';
+import { iterationsOf, currentOf, introducedIn, iterationLabel } from '../../../../lib/iterations';
 import { topicsOf, groupByTopic } from '../../../../lib/topics';
 
 /**
@@ -77,6 +77,15 @@ const sameProcess = iteration.data.sameProcessAs ? await getEntry(iteration.data
 const caseTitle = localize(caseEntry.data.title, lang) ?? caseEntry.id;
 const title = localize(iteration.data.title, lang) ?? iteration.id;
 const dateStr = iteration.data.date.toISOString().slice(0, 10);
+// While there is exactly one case study the trail names it directly, as the navigation
+// does: "Case Study — Landscaping › Level 1" rather than a list, a long title and a
+// version number. The level is what the page is; the version is already a tag below.
+const onlyCase = (await getCollection('case-studies')).length === 1;
+const levelLabel = iterationLabel(iteration, t('iter.level'));
+// "1 diagram", not "1 Diagrams": the plural labels are section headings, so the count needs
+// its own singular form. Zero renders nothing at all.
+const count = (n: number, one: UiKey, many: UiKey) =>
+  n === 0 ? undefined : `${n} ${t(n === 1 ? one : many)}`;
 ---
 <BaseLayout
   lang={lang}
@@ -92,9 +101,13 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
   })}
 >
   <Breadcrumbs items={[
-    { label: t('nav.cases'), href: `/${lang}/case-studies` },
-    { label: caseTitle, href: `/${lang}/case-studies/${caseEntry.id}` },
-    { label: iteration.data.version },
+    ...(onlyCase
+      ? [{ label: t('nav.cases.only'), href: `/${lang}/case-studies/${caseEntry.id}` }]
+      : [
+          { label: t('nav.cases'), href: `/${lang}/case-studies` },
+          { label: caseTitle, href: `/${lang}/case-studies/${caseEntry.id}` },
+        ]),
+    { label: levelLabel },
   ]} />
   <LevelNav lang={lang} caseId={caseEntry.id} iterations={caseIterations} currentVersion={iteration.data.version} />
 
@@ -143,20 +156,27 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
     </>
   )}
 
-  {(localize(iteration.data.lessons, lang) ?? []).length > 0 && (
-    <>
-      <h2>{t('iter.lessons')}</h2>
-      <ul>{(localize(iteration.data.lessons, lang) ?? []).map((l: string) => <li>{l}</li>)}</ul>
-    </>
-  )}
-
-  {iteration.data.aiContribution && (
-    <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(iteration.data.aiContribution, lang)}</p>
-  )}
-
   <h2>{t('iter.introduced')}</h2>
   {groups.length === 0 && diagrams.length === 0 && stories.length === 0 && adrs.length === 0 && (
     <p class="muted">{t('iter.introducedEmpty')}</p>
+  )}
+  {/* The sub-chapters below, with what each holds — a contents list, derived from the same
+      grouping that renders them, so it cannot drift from the page it describes. */}
+  {sections.length > 0 && (
+    <ul class="reset contents">
+      {sections.map((g) => (
+        <li>
+          <a href={`#${g.topic!.id}`}>{localize(g.topic!.data.title, lang)}</a>
+          <span class="muted small">
+            {' '}{[
+              count(g.stories.length, 'iter.story.one', 'iter.stories'),
+              count(g.diagrams.length, 'iter.diagram.one', 'iter.diagrams'),
+              count(g.adrs.length, 'iter.adr.one', 'iter.adr'),
+            ].filter(Boolean).join(' · ')}
+          </span>
+        </li>
+      ))}
+    </ul>
   )}
   {groups.map((g) => (
     <div class="card">
@@ -168,7 +188,7 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
   ))}
 
   {sections.map((g) => (
-    <section class="topic">
+    <section class="topic" id={g.topic!.id}>
       <h2>
         {localize(g.topic!.data.title, lang)}
         {/* Derived, not declared: a topic the glossary has no term for is a technical
@@ -211,6 +231,17 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
       )}
     </section>
   ))}
+
+  {(localize(iteration.data.lessons, lang) ?? []).length > 0 && (
+    <>
+      <h2>{t('iter.lessons')}</h2>
+      <ul>{(localize(iteration.data.lessons, lang) ?? []).map((l: string) => <li>{l}</li>)}</ul>
+    </>
+  )}
+
+  {iteration.data.aiContribution && (
+    <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(iteration.data.aiContribution, lang)}</p>
+  )}
 
   <Content />
 
