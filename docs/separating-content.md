@@ -52,7 +52,7 @@ The site never reads a project's vault — it **cites** it, through two fields:
 | `codeUrl` | user-stories | a **repo-relative path** (preferred), e.g. `src/Customers/CustomerService.cs` — or a full URL for anything outside the project repo |
 | `repoUrl` | case-studies | the project repo base, set **once**, when it becomes reachable — **usually never** |
 | `repoAccess` | case-studies | `private` (default) or `pending` — is the missing `repoUrl` a decision or a to-do? |
-| `repoNote` | case-studies | optional, localized: why the code is not linked |
+| `repoNote` | case-studies | optional, localized: why the code is not linked — **no longer rendered** |
 | `sourceUrl` | iterations | absolute URL of the release tag |
 
 **Hosting does not gate authoring.** A repo-relative `codeUrl` resolves at render time against
@@ -75,12 +75,10 @@ are the *end state*, and `re:check` says nothing about them. Only `repoAccess: p
 actually meant to be opened, is reported. A reminder you can never act on is one you learn to skim,
 and the whole info list goes with it.
 
-Private does not mean silent. A case study with no `repoUrl` prints one sentence above the story
-list saying why the code is not linked — `repoNote` in the project's own words, or a generic
-fallback from `src/i18n/ui.ts` (`case.repoPrivate`). An unexplained path reads as a broken link;
-the same path with the reason next to it reads as respecting a client's decision, which is the
-truth. **Keep writing the paths either way** — they are exact citations, verifiable in a
-walkthrough or an interview, and they cost nothing if a repo ever does open.
+**Private is not explained on the page either.** An earlier version printed a sentence above the
+story list saying why the code was not linked. It is gone: the repos are never linked, so that
+sentence was boilerplate about a constant rather than information, repeated on every level page.
+The path itself is the citation — it stays exact, and it stands as a path.
 
 Two rules follow from iterations being append-only, and they are the whole contract:
 

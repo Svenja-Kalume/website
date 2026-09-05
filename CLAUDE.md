@@ -89,8 +89,9 @@ collection. Full reasoning: **`docs/iterations-and-publication-plan.md`**.
   have stakeholders who will refuse, and wurzel's own repo may yet be released as a product. So
   `repoAccess` defaults to **`private`**, unresolved `codeUrl` paths are the expected end state, and
   `re:check` reports them only for `repoAccess: pending` — a repo actually meant to open. Never
-  propose making a repo public as the fix. The case study states the reason instead (`repoNote`, or
-  the `case.repoPrivate` fallback); write the paths regardless, they are exact citations.
+  propose making a repo public as the fix, and do not render an explanation either: the repos
+  are never linked, so a note saying so on every page is boilerplate about a constant. Write the
+  paths regardless — they are exact citations, and they stand as paths.
 - `case-studies.version` is **deprecated**; the displayed version must be derived from the current
   iteration.
 

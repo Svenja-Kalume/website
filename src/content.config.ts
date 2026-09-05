@@ -96,9 +96,10 @@ const caseStudies = defineCollection({
     // and only that one is reported by `re:check`. A warning you can never clear is one you
     // learn to skip, so the deliberate case must not produce one.
     repoAccess: z.enum(['private', 'pending']).default('private'),
-    // Why the code is not linked, in the project's own words (stakeholder decision, product
-    // plans, NDA). Optional: without it the page falls back to the generic i18n sentence.
-    // Only shown while `repoUrl` is unset.
+    // Why the code is not linked, in the project's own words. NOT RENDERED: the repos are
+    // never linked, so an explanation on every level page is permanent boilerplate about a
+    // thing that does not vary. Kept in the schema because existing case studies carry it
+    // and a published file is not edited to remove a field.
     repoNote: loc.optional(),
     order: z.number().default(0),
   }),

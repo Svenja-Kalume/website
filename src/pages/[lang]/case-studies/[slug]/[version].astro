@@ -71,11 +71,6 @@ const groups = [
   { key: 'workflow', label: t('iter.workflow'), items: introducedIn(await getCollection('workflow'), iteration.id) },
 ].filter((g) => g.items.length > 0);
 
-// The repo is not linked (see `repoAccess`): say why once, above the paths, so an
-// unresolved `codeUrl` reads as a client's decision rather than a missing link.
-const repoNote = !caseEntry.data.repoUrl && stories.some((s) => s.data.codeUrl)
-  ? (caseEntry.data.repoNote ? localize(caseEntry.data.repoNote, lang) : t('case.repoPrivate'))
-  : undefined;
 
 const corrects = await Promise.all((iteration.data.corrects ?? []).map((r) => getEntry(r)));
 const sameProcess = iteration.data.sameProcessAs ? await getEntry(iteration.data.sameProcessAs) : undefined;
@@ -171,9 +166,6 @@ const dateStr = iteration.data.date.toISOString().slice(0, 10);
       </ul>
     </div>
   ))}
-
-  {/* Said once for the whole level, not per topic: it is one decision about the repo. */}
-  {repoNote && <p class="small">{repoNote}</p>}
 
   {sections.map((g) => (
     <section class="topic">
