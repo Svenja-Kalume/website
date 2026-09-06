@@ -16,7 +16,7 @@ source: docs/user-stories/059-create-offer-from-customer.md
 code:
   en: |
     flowchart TD
-      A["Customer create / edit form"] -->|"Create offer"| B["Offer draft in customer context — Subject pre-filled, no positions"]
+      A["Customer create / edit form"] --> B["Offer draft in customer context — Subject pre-filled, no positions"]
       B --> C["Create positions in the offer editor (Description, Unit, Quantity, UnitPrice)"]
       C --> D{"Subject set and at least one position?"}
       D -->|"no — leave the draft"| Z["Nothing created: no project, no position, no offer"]
@@ -32,7 +32,7 @@ code:
       K --> L["Offer read-only; Download serves the stored PDF"]
   de: |
     flowchart TD
-      A["Kunde anlegen / bearbeiten"] -->|"Angebot anlegen"| B["Angebotsentwurf im Kundenkontext — Betreff vorbelegt, keine Positionen"]
+      A["Kunde anlegen / bearbeiten"] --> B["Angebotsentwurf im Kundenkontext — Betreff vorbelegt, keine Positionen"]
       B --> C["Positionen im Angebotseditor anlegen (Beschreibung, Einheit, Menge, Einzelpreis)"]
       C --> D{"Betreff gesetzt und mindestens eine Position?"}
       D -->|"nein — Entwurf verlassen"| Z["Nichts angelegt: kein Projekt, keine Position, kein Angebot"]

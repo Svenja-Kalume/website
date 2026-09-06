@@ -226,9 +226,11 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
   {sections.map((g) => (
     <section class="topic" id={g.topic!.id}>
       <h2>
-        {localize(g.topic!.data.title, lang)}
+        {localize(g.topic!.data.title, lang)}{' '}
         {/* Derived, not declared: a topic the glossary has no term for is a technical
-            concern (navigation, autosave, a test harness), and says so. */}
+            concern (navigation, autosave, a test harness), and says so. The space above is
+            written out: JSX drops the line break, and without it the heading reads as one
+            word -- "Navigation & UXtechnisch" -- to a screen reader and to a crawler. */}
         {g.topic!.data.glossary.length === 0 && (
           <span class="tag" style="margin-left:.5rem">{t('topic.technical')}</span>
         )}

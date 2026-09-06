@@ -21,7 +21,7 @@ code:
       D --> E{"Revise?"}
       E -->|"new version"| F["Previous offer set to Superseded (snapshot)"]
       F --> D
-      E -->|"done"| G["Open offer stands (invoices = Level 2)"]
+      E -->|"done"| G["Open offer stands"]
   de: |
     flowchart TD
       A["Kunde anlegen / finden"] --> B["Projekt für den Kunden anlegen"]
@@ -30,5 +30,5 @@ code:
       D --> E{"Überarbeiten?"}
       E -->|"Neue Version"| F["Bisheriges Angebot auf Ersetzt (Snapshot)"]
       F --> D
-      E -->|"fertig"| G["Offenes Angebot bleibt bestehen (Rechnungen = Level 2)"]
+      E -->|"fertig"| G["Offenes Angebot bleibt bestehen"]
 ---

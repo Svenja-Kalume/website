@@ -17,7 +17,7 @@ code:
     flowchart TD
       A["Open offer draft (pre-filled: Subject, positions)"] --> B{"Real change?"}
       B -->|"pure peek, then leave"| Z["Nothing persisted"]
-      B -->|"first change / 10s idle / valid-and-leave"| C["POST create (OfferNumber, OfferDate, Open)"]
+      B -->|"first change / 10s idle / valid-and-leave"| C["Save offer (OfferNumber, OfferDate, Open)"]
       C --> D["Edit — arms on typing"]
       D --> E{"Leave with pending invalid input?"}
       E -->|"no (valid)"| F["Autosave: Saving… / Saved"]
@@ -27,7 +27,7 @@ code:
     flowchart TD
       A["Angebotsentwurf öffnen (vorbelegt: Betreff, Positionen)"] --> B{"Echte Änderung?"}
       B -->|"nur hineinsehen, dann verlassen"| Z["Nichts gespeichert"]
-      B -->|"erste Änderung / 10 s Leerlauf / gültig und verlassen"| C["POST anlegen (Angebotsnummer, Angebotsdatum, Offen)"]
+      B -->|"erste Änderung / 10 s Leerlauf / gültig und verlassen"| C["Angebot speichern (Angebotsnummer, Angebotsdatum, Offen)"]
       C --> D["Bearbeiten — scharf ab dem Tippen"]
       D --> E{"Verlassen mit offener ungültiger Eingabe?"}
       E -->|"nein (gültig)"| F["Autosave: Wird gespeichert… / Gespeichert"]

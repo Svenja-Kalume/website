@@ -16,6 +16,7 @@ code:
   en: |
     flowchart TD
       User["Owner (browser: Windows / Android)"]
+      User --> Client
       subgraph App["Wurzel — one hosted deployment"]
         Client["Client (Blazor WASM UI, German labels)"]
         Server["Server (ASP.NET Core Web API + serves WASM)"]
@@ -25,11 +26,11 @@ code:
         Server -.->|"contracts"| Shared
       end
       DB[("SQLite now / PostgreSQL later")]
-      User --> Client
       Server --> DB
   de: |
     flowchart TD
       User["Inhaber (Browser: Windows / Android)"]
+      User --> Client
       subgraph App["Wurzel — ein Hosted-Deployment"]
         Client["Client (Blazor-WASM-Oberfläche, deutsche Beschriftungen)"]
         Server["Server (ASP.NET Core Web API + liefert das WASM aus)"]
@@ -39,6 +40,5 @@ code:
         Server -.->|"Verträge"| Shared
       end
       DB[("SQLite jetzt / PostgreSQL später")]
-      User --> Client
       Server --> DB
 ---

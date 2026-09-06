@@ -21,7 +21,7 @@ code:
         C --> D{"Readiness gate: unambiguous & testable?"}
         D -->|"no"| B
       end
-      D -->|"Ready, hand to delivery"| E
+      D -->|"Ready — handed to the agents"| E
       subgraph AI["AI — technician subagents"]
         E["Plan in parallel (backend / frontend / tester)"] --> F["Approve plan (human gate)"]
         F --> G["Shared contracts + test-first"]
@@ -40,7 +40,7 @@ code:
         C --> D{"Readiness-Gate: eindeutig & testbar?"}
         D -->|"nein"| B
       end
-      D -->|"Ready, Übergabe an die Delivery"| E
+      D -->|"Ready — Übergabe an die Agenten"| E
       subgraph AI["KI — Technician-Subagenten"]
         E["Parallel planen (Backend / Frontend / Tester)"] --> F["Plan freigeben (menschliches Gate)"]
         F --> G["Gemeinsame Verträge + Test-First"]

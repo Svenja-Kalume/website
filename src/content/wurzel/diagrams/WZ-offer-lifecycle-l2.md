@@ -18,24 +18,24 @@ code:
   en: |
     stateDiagram-v2
       [*] --> Open
-      Open --> Exported : export (freeze + store + lock)
+      Open --> Exported : export (store + lock)
       Open --> Superseded : new version off an Open offer
       Exported --> [*]
       Superseded --> [*]
-      note right of Open : editable; at most one Open offer per project
-      note right of Exported : read-only; a new version leaves it Exported
-      note right of Superseded : read-only; a newer version exists
+      note right of Open : editable — at most one Open offer per project
+      note right of Exported : read-only — a new version leaves it Exported
+      note right of Superseded : read-only — a newer version exists
   de: |
     stateDiagram-v2
       state "Offen" as Offen
       state "Exportiert" as Exportiert
       state "Ersetzt" as Ersetzt
       [*] --> Offen
-      Offen --> Exportiert : Export (einfrieren + speichern + sperren)
+      Offen --> Exportiert : Export (speichern + sperren)
       Offen --> Ersetzt : Neue Version aus einem offenen Angebot
       Exportiert --> [*]
       Ersetzt --> [*]
-      note right of Offen : bearbeitbar; höchstens ein offenes Angebot je Projekt
-      note right of Exportiert : nur lesbar; eine neue Version lässt es auf Exportiert
-      note right of Ersetzt : nur lesbar; es existiert eine neuere Version
+      note right of Offen : bearbeitbar — höchstens ein offenes Angebot je Projekt
+      note right of Exportiert : nur lesbar — eine neue Version lässt es auf Exportiert
+      note right of Ersetzt : nur lesbar — es existiert eine neuere Version
 ---

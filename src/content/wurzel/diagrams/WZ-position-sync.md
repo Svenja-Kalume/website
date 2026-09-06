@@ -16,17 +16,19 @@ code:
   en: |
     flowchart TD
       A["Edit position (Description / Unit / Quantity / UnitPrice)"] --> B["OfferMapper reads live"]
-      B --> C["Every Open offer reflects it; OfferPrice + total recompute"]
+      B --> C["Open offer reflects it"]
+      C --> C2["OfferPrice + total recompute"]
       D["Deactivate position (IsDisabled = true)"] --> E["Read-time filter drops the line from Open offers"]
       E --> F["Reactivate: the line reappears automatically"]
-      C -.->|"not applied to"| G["Superseded / frozen offers"]
+      C2 -.->|"not applied to"| G["Superseded / frozen offers"]
       E -.->|"not applied to"| G
   de: |
     flowchart TD
       A["Position bearbeiten (Beschreibung / Einheit / Menge / Einzelpreis)"] --> B["OfferMapper liest live"]
-      B --> C["Jedes offene Angebot übernimmt es; Angebotspreis + Gesamtpreis werden neu berechnet"]
+      B --> C["Offenes Angebot übernimmt es"]
+      C --> C2["Angebotspreis + Gesamtpreis werden neu berechnet"]
       D["Position deaktivieren (Deaktiviert = wahr)"] --> E["Der Lesefilter entfernt die Zeile aus offenen Angeboten"]
       E --> F["Reaktivieren: die Zeile erscheint automatisch wieder"]
-      C -.->|"gilt nicht für"| G["Ersetzte / eingefrorene Angebote"]
+      C2 -.->|"gilt nicht für"| G["Ersetzte / eingefrorene Angebote"]
       E -.->|"gilt nicht für"| G
 ---

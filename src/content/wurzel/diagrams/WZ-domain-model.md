@@ -16,7 +16,7 @@ code:
   en: |
     classDiagram
       Customer "1" --> "0..*" Project : owns
-      Project "1" --> "0..*" ProjectPosition : has
+      Project "1" --> "0..*" ProjectPosition : contains
       Project "1" --> "0..*" Offer : has
       Offer "1" --> "0..*" OfferItem : contains
       OfferItem "0..*" --> "1" ProjectPosition : reads live
@@ -43,7 +43,7 @@ code:
   de: |
     classDiagram
       Customer "1" --> "0..*" Project : besitzt
-      Project "1" --> "0..*" ProjectPosition : hat
+      Project "1" --> "0..*" ProjectPosition : enthält
       Project "1" --> "0..*" Offer : hat
       Offer "1" --> "0..*" OfferItem : enthält
       OfferItem "0..*" --> "1" ProjectPosition : liest live

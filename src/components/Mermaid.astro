@@ -17,7 +17,11 @@ const { code, caption } = Astro.props;
 const described = describeMermaid(code);
 ---
 <figure class="mermaid-figure">
-  <div class="mermaid-wrap">
+  {/* Hidden from assistive technology on purpose, in both of its states: before the script
+      runs it holds Mermaid source, which read aloud is noise, and afterwards the generated
+      SVG, which carries no accessible name of its own. The figcaptions below are what the
+      figure says. */}
+  <div class="mermaid-wrap" aria-hidden="true">
     <pre class="mermaid">{code}</pre>
   </div>
   {caption && <figcaption class="muted small">{caption}</figcaption>}
