@@ -5,16 +5,17 @@
  * a second, hand-maintained list of what the site contains is exactly the kind of
  * link list this project models as data instead.
  *
- * English only. It is the default locale, and a bilingual dump would double the file
- * without adding a fact; the German pages are reachable via hreflang.
+ * One locale only -- the default one, whatever it is set to: a bilingual dump would
+ * double the file without adding a fact, and the other locale is reachable via hreflang.
+ * Derived from `defaultLang`, so switching the site's default switches this file too.
  */
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { ui, localize } from '../i18n/ui';
+import { ui, localize, defaultLang } from '../i18n/ui';
 import { allIterations, iterationsOf } from '../lib/iterations';
 import { SITE_URL } from '../lib/schema';
 
-const en = ui.en;
+const t = ui[defaultLang];
 const url = (path: string) => new URL(path, SITE_URL).href;
 const line = (label: string, path: string, note?: string) =>
   `- [${label}](${url(path)})${note ? `: ${note}` : ''}`;
@@ -27,30 +28,30 @@ export const GET: APIRoute = async () => {
   );
 
   const out: string[] = [
-    `# ${en['site.title']}`,
+    `# ${t['site.title']}`,
     '',
-    `> ${en['home.desc']}`,
+    `> ${t['home.desc']}`,
     '',
-    en['home.p1'],
+    t['home.p1'],
     '',
     '## Pages',
-    line(en['nav.home'], '/en/', en['home.desc']),
-    line(en['nav.how'], '/en/how-i-work', en['how.desc']),
-    line(en['nav.trace'], '/en/traceability', en['trace.desc']),
-    line(en['nav.journal'], '/en/journal', en['journal.desc']),
-    line(en['nav.about'], '/en/about', en['about.desc']),
+    line(t['nav.home'], `/${defaultLang}/`, t['home.desc']),
+    line(t['nav.how'], `/${defaultLang}/how-i-work`, t['how.desc']),
+    line(t['nav.trace'], `/${defaultLang}/traceability`, t['trace.desc']),
+    line(t['nav.journal'], `/${defaultLang}/journal`, t['journal.desc']),
+    line(t['nav.about'], `/${defaultLang}/about`, t['about.desc']),
     '',
     '## Case studies',
   ];
 
   for (const c of cases) {
-    out.push(line(localize(c.data.title, 'en') ?? c.id, `/en/case-studies/${c.id}`, localize(c.data.summary, 'en')));
+    out.push(line(localize(c.data.title, defaultLang) ?? c.id, `/${defaultLang}/case-studies/${c.id}`, localize(c.data.summary, defaultLang)));
     for (const it of iterationsOf(iterations, c.id)) {
       out.push(
         `  ${line(
-          `${localize(it.data.title, 'en') ?? it.id} (v${it.data.version}, ${it.data.date.toISOString().slice(0, 10)})`,
-          `/en/case-studies/${c.id}/${it.data.version}`,
-          localize(it.data.summary, 'en')
+          `${localize(it.data.title, defaultLang) ?? it.id} (v${it.data.version}, ${it.data.date.toISOString().slice(0, 10)})`,
+          `/${defaultLang}/case-studies/${c.id}/${it.data.version}`,
+          localize(it.data.summary, defaultLang)
         )}`
       );
     }
@@ -60,9 +61,9 @@ export const GET: APIRoute = async () => {
   for (const e of journal) {
     out.push(
       line(
-        `${e.data.date.toISOString().slice(0, 10)} — ${localize(e.data.title, 'en') ?? e.id}`,
-        `/en/journal/${e.id}`,
-        localize(e.data.summary, 'en')
+        `${e.data.date.toISOString().slice(0, 10)} — ${localize(e.data.title, defaultLang) ?? e.id}`,
+        `/${defaultLang}/journal/${e.id}`,
+        localize(e.data.summary, defaultLang)
       )
     );
   }

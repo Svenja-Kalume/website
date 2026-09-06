@@ -11,7 +11,7 @@
  */
 
 export const languages = { en: 'English', de: 'Deutsch' } as const;
-export const defaultLang: Lang = 'en';
+export const defaultLang: Lang = 'de';
 export type Lang = 'en' | 'de';
 
 export function isLang(value: unknown): value is Lang {

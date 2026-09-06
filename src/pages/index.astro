@@ -2,19 +2,23 @@
 // Root entry point. The site is bilingual and both locales are prefixed
 // (/en/…, /de/…), so the bare domain redirects to the default locale.
 // Kept static-friendly (meta refresh) so it works on plain IONOS hosting.
-const target = '/en/';
+import { defaultLang, ui } from '../i18n/ui';
+
+// Derived, so the redirect follows the default locale rather than restating it.
+const target = `/${defaultLang}/`;
 // Absolute: a relative canonical on the entry page is ignored by crawlers.
 const canonical = new URL(target, Astro.site ?? 'https://svenjakalume.de').href;
+const t = ui[defaultLang];
 ---
 <!doctype html>
-<html lang="en">
+<html lang={defaultLang}>
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="refresh" content={`0; url=${target}`} />
     <link rel="canonical" href={canonical} />
-    <title>Understanding Before Solving</title>
+    <title>{t['site.title']}</title>
   </head>
   <body>
-    <p><a href={target}>Continue to the site →</a></p>
+    <p><a href={target}>{t['nav.home']} →</a></p>
   </body>
 </html>
