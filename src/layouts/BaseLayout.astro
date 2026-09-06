@@ -46,7 +46,7 @@ const switchHref = alternatePath(Astro.url.pathname, lang);
 // Canonical and hreflang have to be absolute URLs -- a relative hreflang is ignored
 // outright, and the pair only counts as a cluster if every page names *itself* too.
 // `site` in astro.config.mjs is the single place the domain is written.
-const abs = (path: string) => new URL(path, Astro.site ?? 'https://svenjakalume.dev').href;
+const abs = (path: string) => new URL(path, Astro.site ?? 'https://svenjakalume.de').href;
 const canonical = abs(Astro.url.pathname);
 const switchCanonical = abs(switchHref);
 // x-default names the locale a visitor lands on without a language signal, which is

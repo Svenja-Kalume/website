@@ -10,7 +10,7 @@
  */
 import type { Lang } from '../i18n/ui';
 
-export const SITE_URL = 'https://svenjakalume.dev';
+export const SITE_URL = 'https://svenjakalume.de';
 export const SITE_OWNER = 'Svenja Kalume';
 
 /** Absolute URL for a site-relative path — structured data may not use relative ones. */

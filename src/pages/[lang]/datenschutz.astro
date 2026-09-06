@@ -7,63 +7,203 @@ export function getStaticPaths() {
 }
 const lang = toLang(Astro.params.lang);
 const t = useTranslations(lang);
+// The seven-day log retention is not an estimate: it is the figure IONOS states for its
+// hosting products in Anhang 1 (Leistungsbeschreibungen) zur Auftragsverarbeitungs-
+// vereinbarung, Ziffer 4, Version 3.0, Stand 03/2026 --
+// https://www.ionos.de/terms-gtc/fileadmin/pdf/terms-gtc/DE/AVV/Anhang_1_Leistungsbeschreibungen_AVV_IONOS_v.3.0.pdf
+// Re-read it when the annex version changes; the number is a promise made to visitors.
 ---
 <BaseLayout lang={lang} title={t('footer.datenschutz')} description={t('datenschutz.desc')}>
   <h1>{t('footer.datenschutz')}</h1>
   {lang === 'de' ? (
     <>
       <p>
-        Diese Website verarbeitet keine personenbezogenen Daten. Es gibt keine
-        Benutzerkonten, keine Formulare, keine Cookies, kein Tracking und keine
-        Analyse-Tools. Es werden keine personenbezogenen Daten erhoben, gespeichert oder
-        weitergegeben.
+        Diese Website ist eine statische Seite. Sie setzt keine Cookies, bindet keine
+        Analyse- oder Tracking-Dienste ein, hat keine Benutzerkonten und keine Formulare.
+        Schriften und die Diagramm-Bibliothek werden vom eigenen Server ausgeliefert, es
+        wird also beim Aufruf keine Verbindung zu Dritten hergestellt. Personenbezogene
+        Daten fallen nur dort an, wo der Betrieb der Seite es technisch erfordert:
+        in den Server-Protokollen des Hosting-Anbieters.
       </p>
 
       <h2>Verantwortlicher</h2>
       <p>
+        Verantwortlich im Sinne der DSGVO ist:<br />
         Svenja Kalume<br />
         Enzweilerstr. 15, 55743 Idar-Oberstein<br />
+        Telefon: <a href="tel:+4915206211119">01520 6211119</a><br />
         E-Mail: <a href="mailto:kontakt@svenjakalume.de">kontakt@svenjakalume.de</a>
       </p>
-
-      <h2>Hosting</h2>
       <p>
-        Die Seite ist eine statische Website und wird bei IONOS SE gehostet. Etwaige technische Zugriffsdaten fallen ausschließlich beim
-        Hosting-Anbieter an; sie werden vom Betreiber dieser Website weder ausgewertet
-        noch genutzt.
+        Eine Datenschutzbeauftragte ist nicht bestellt; die Voraussetzungen des
+        § 38 BDSG liegen nicht vor.
       </p>
 
-      <p class="muted small">
-        [Hinweis: Diesen Entwurf vor Veröffentlichung rechtlich prüfen und die
-        Platzhalter ausfüllen.]
+      <h2>Hosting und Server-Protokolle</h2>
+      <p>
+        Die Seite wird bei der IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, gehostet;
+        die Server stehen in der Europäischen Union. Mit IONOS besteht ein Vertrag zur
+        Auftragsverarbeitung nach Art. 28 DSGVO.
       </p>
+      <p>
+        Beim Abruf einer Seite werden vom Hosting-Anbieter automatisch Daten in
+        Server-Protokolldateien erfasst, die Ihr Browser übermittelt:
+      </p>
+      <ul>
+        <li>IP-Adresse des anfragenden Geräts</li>
+        <li>Datum und Uhrzeit des Zugriffs</li>
+        <li>Name und URL der abgerufenen Datei sowie übertragene Datenmenge</li>
+        <li>Meldung über den erfolgreichen Abruf (HTTP-Statuscode)</li>
+        <li>Browsertyp und -version, Betriebssystem, gegebenenfalls die zuvor besuchte Seite (Referrer)</li>
+      </ul>
+      <p>
+        Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Das berechtigte Interesse liegt im
+        technisch fehlerfreien Betrieb und in der Sicherheit der Website. Die Daten werden
+        nicht mit anderen Datenquellen zusammengeführt, nicht ausgewertet und nicht zur
+        Erstellung von Nutzungsprofilen verwendet. Sie werden nach spätestens sieben Tagen
+        automatisch gelöscht.
+      </p>
+
+      <h2>Kontaktaufnahme</h2>
+      <p>
+        Wenn Sie mich per E-Mail oder Telefon kontaktieren, verarbeite ich die dabei
+        übermittelten Angaben — Name, Kontaktdaten und den Inhalt Ihrer Nachricht —
+        ausschließlich, um Ihr Anliegen zu bearbeiten. Rechtsgrundlage ist Art. 6 Abs. 1
+        lit. b DSGVO, soweit es um die Anbahnung oder Durchführung eines Vertrags geht,
+        sonst Art. 6 Abs. 1 lit. f DSGVO an der Beantwortung der Anfrage. Ihre Nachricht
+        wird gelöscht, sobald das Anliegen erledigt ist und keine gesetzlichen
+        Aufbewahrungsfristen entgegenstehen.
+      </p>
+
+      <h2>Links zu anderen Anbietern</h2>
+      <p>
+        Diese Seite verlinkt an einer Stelle auf ein LinkedIn-Profil. Der Link ist ein
+        gewöhnlicher Verweis, kein eingebundenes Plugin: Daten werden erst übertragen,
+        wenn Sie ihn anklicken. Ab diesem Moment gilt die Datenschutzerklärung der
+        LinkedIn Ireland Unlimited Company. Dasselbe gilt für Links auf Repositorien,
+        Werkzeuge oder Dokumente anderer Anbieter innerhalb der Fallstudien.
+      </p>
+
+      <h2>Ihre Rechte</h2>
+      <p>Ihnen stehen gegenüber dem Verantwortlichen folgende Rechte zu:</p>
+      <ul>
+        <li>Auskunft über die zu Ihnen gespeicherten Daten (Art. 15 DSGVO)</li>
+        <li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>
+        <li>Löschung (Art. 17 DSGVO)</li>
+        <li>Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+        <li>Datenübertragbarkeit (Art. 20 DSGVO)</li>
+        <li>
+          Widerspruch gegen eine Verarbeitung, die auf einem berechtigten Interesse beruht
+          (Art. 21 DSGVO)
+        </li>
+      </ul>
+      <p>
+        Für die Ausübung genügt eine formlose Nachricht an die oben genannte Adresse.
+        Eine automatisierte Entscheidungsfindung einschließlich Profiling findet nicht statt.
+      </p>
+
+      <h2>Beschwerderecht bei der Aufsichtsbehörde</h2>
+      <p>
+        Unabhängig davon können Sie sich bei einer Datenschutz-Aufsichtsbehörde
+        beschweren (Art. 77 DSGVO). Zuständig ist:<br />
+        Der Landesbeauftragte für den Datenschutz und die Informationsfreiheit
+        Rheinland-Pfalz<br />
+        Hintere Bleiche 34, 55116 Mainz
+      </p>
+
+      <p class="muted small">Stand: 6. September 2026</p>
     </>
   ) : (
     <>
       <p>
-        This website does not process any personal data. There are no user accounts, no
-        forms, no cookies, no tracking and no analytics tools. No personal data is
-        collected, stored or shared.
+        This is a static website. It sets no cookies, embeds no analytics or tracking
+        services, and has no user accounts and no forms. Fonts and the diagram library are
+        served from this site's own server, so opening a page contacts no third party.
+        Personal data arises only where operating the site technically requires it: in the
+        hosting provider's server logs.
       </p>
 
       <h2>Controller</h2>
       <p>
+        The controller within the meaning of the GDPR is:<br />
         Svenja Kalume<br />
-        Enzweilerstr. 15, 55743 Idar-Oberstein<br />
+        Enzweilerstr. 15, 55743 Idar-Oberstein, Germany<br />
+        Phone: <a href="tel:+4915206211119">+49 1520 6211119</a><br />
         E-mail: <a href="mailto:kontakt@svenjakalume.de">kontakt@svenjakalume.de</a>
       </p>
-
-      <h2>Hosting</h2>
       <p>
-        This is a static website hosted by IONOS SE. Any
-        technical access data arises solely at the hosting provider; it is neither
-        evaluated nor used by the operator of this website.
+        No data protection officer has been appointed; the conditions of § 38 BDSG
+        (German Federal Data Protection Act) are not met.
       </p>
 
-      <p class="muted small">
-        [Note: have this draft reviewed legally before publishing and fill in the
-        placeholders.]
+      <h2>Hosting and server logs</h2>
+      <p>
+        The site is hosted by IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Germany;
+        the servers are located in the European Union. A data processing agreement
+        pursuant to Art. 28 GDPR is in place with IONOS.
       </p>
+      <p>
+        When a page is requested, the hosting provider automatically records the data your
+        browser transmits in server log files:
+      </p>
+      <ul>
+        <li>IP address of the requesting device</li>
+        <li>date and time of the request</li>
+        <li>name and URL of the file requested, and the amount of data transferred</li>
+        <li>notification of a successful request (HTTP status code)</li>
+        <li>browser type and version, operating system, and the referring page if sent</li>
+      </ul>
+      <p>
+        The legal basis is Art. 6(1)(f) GDPR. The legitimate interest lies in operating the
+        website securely and free of faults. The data is not combined with other sources,
+        not analysed, and not used to build usage profiles. It is deleted automatically
+        after seven days at the latest.
+      </p>
+
+      <h2>Contacting me</h2>
+      <p>
+        If you contact me by e-mail or telephone, I process the details you provide — your
+        name, contact data and the content of your message — solely in order to deal with
+        your enquiry. The legal basis is Art. 6(1)(b) GDPR where the contact concerns
+        entering into or performing a contract, and otherwise Art. 6(1)(f) GDPR, the
+        interest in answering the enquiry. Your message is deleted once the matter is
+        settled and no statutory retention periods apply.
+      </p>
+
+      <h2>Links to other providers</h2>
+      <p>
+        This site links to a LinkedIn profile in one place. The link is an ordinary
+        reference, not an embedded plugin: no data is transmitted until you click it. From
+        that point the privacy policy of LinkedIn Ireland Unlimited Company applies. The
+        same holds for links to other providers' repositories, tools or documents inside
+        the case studies.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>You have the following rights vis-à-vis the controller:</p>
+      <ul>
+        <li>access to the data stored about you (Art. 15 GDPR)</li>
+        <li>rectification of inaccurate data (Art. 16 GDPR)</li>
+        <li>erasure (Art. 17 GDPR)</li>
+        <li>restriction of processing (Art. 18 GDPR)</li>
+        <li>data portability (Art. 20 GDPR)</li>
+        <li>objection to processing based on a legitimate interest (Art. 21 GDPR)</li>
+      </ul>
+      <p>
+        An informal message to the address above is enough to exercise them. No automated
+        decision-making, including profiling, takes place.
+      </p>
+
+      <h2>Right to lodge a complaint</h2>
+      <p>
+        Regardless of the above, you may lodge a complaint with a data protection
+        supervisory authority (Art. 77 GDPR). The competent authority is:<br />
+        Der Landesbeauftragte für den Datenschutz und die Informationsfreiheit
+        Rheinland-Pfalz<br />
+        Hintere Bleiche 34, 55116 Mainz, Germany
+      </p>
+
+      <p class="muted small">Last updated: 6 September 2026</p>
     </>
   )}
 </BaseLayout>

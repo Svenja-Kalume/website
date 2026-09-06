@@ -12,7 +12,7 @@ const lastmod = sitemapDates();
 // The site is bilingual (English + German). Both locales are prefixed
 // (/en/…, /de/…); the bare domain redirects to the default locale.
 export default defineConfig({
-  site: 'https://svenjakalume.dev',
+  site: 'https://svenjakalume.de',
   i18n: {
     locales: ['en', 'de'],
     defaultLocale: 'en',

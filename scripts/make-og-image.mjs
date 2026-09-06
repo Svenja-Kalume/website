@@ -77,7 +77,7 @@ const page = ({ title, subtitle, caption }) => `<!doctype html>
 <h1>${title}</h1>
 <p class="subtitle">${subtitle}</p>
 ${thread}
-<footer><span>${caption}</span><span class="domain">svenjakalume.dev</span></footer>
+<footer><span>${caption}</span><span class="domain">svenjakalume.de</span></footer>
 `;
 
 const chrome = process.env.CHROME ?? 'google-chrome';
