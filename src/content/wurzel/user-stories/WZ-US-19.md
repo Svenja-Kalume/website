@@ -22,6 +22,7 @@ acceptanceCriteria:
     - Einzelpreis und Menge akzeptieren Komma oder Punkt unabhängig vom OS-/Browser-Locale und werden beim Verlassen mit deutschem Komma angezeigt
     - Es ist höchstens ein Trennzeichen erlaubt (1.234,56 und 1,2,3 werden mit deutscher Meldung abgelehnt, nicht still auf null gesetzt)
     - Mobil nutzt inputmode=decimal; das Feld ist ein Text-Eingabefeld, kein Zahlen-Eingabefeld des Browsers
+priority: should
 status: done
 aiContribution:
   en: The AI traced the root cause — the browser number input validates against the OS locale, and the owner's PC is English-set — and proposed a text input with app-side parsing, reused for Menge. I confirmed the single-separator rule.

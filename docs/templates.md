@@ -43,8 +43,9 @@ The site is bilingual. The rule is: **IDs and links stay language-neutral, prose
 - **Single-language draft?** You may temporarily write a plain string instead of the `en`/`de` pair;
   it will show in *both* locales until you translate it. The schema for **user stories** requires
   both locales (they are the traceability core), so translate those before `npm run build`.
-- **Markdown body** (`case-studies`, `journal`, and Mermaid `diagrams`): the body is currently a
-  single block. Keep diagram bodies (Mermaid code) language-neutral. For case-study / journal
+- **Markdown body** (`case-studies`, `journal`, and older Mermaid `diagrams`): the body is a
+  single block. A diagram's Mermaid code now belongs in the per-locale `code` field — the body
+  is only the fallback for files written before it. For case-study / journal
   narrative, write it in the primary language for now; the bilingual, structured content lives in the
   frontmatter fields above. (If you later need a fully bilingual long-form narrative, keep the prose
   in frontmatter fields and render those instead of the body.)
@@ -180,7 +181,8 @@ businessGoal:
 fitCriterion:                    # how you would PROVE it — a measurement, not a restatement
   en: Five quotes timed end to end, median under 15 minutes, no manual copy-paste step.
   de: Fünf Angebote end-to-end gestoppt, Median unter 15 Minuten, ohne manuelles Copy-Paste.
-priority: must                   # must | should | could
+priority: must                   # DEPRECATED, not rendered — MoSCoW belongs to the story.
+                                 # Kept only because published files carry it.
 status: in-progress              # open | in-progress | done
 aiContribution:                  # optional
   en: What did the AI propose, what did you change?
@@ -273,6 +275,10 @@ bpmn: quote-process              # optional: ID of a diagram
 adr: [ADR-001]                   # optional: list of ADR IDs
 codeUrl: https://github.com/…    # optional: point to existing code
 jiraKey: GW-12                   # optional
+priority: must                   # optional: must | should | could — MoSCoW sits HERE, on the
+                                 # story, because that is where the acceptance checklist
+                                 # assigns it. Leave it out for a story delivered outside a
+                                 # Must/Should heading; no tier beats an invented one.
 status: in-progress              # backlog | in-progress | review | done
 aiContribution:                  # REQUIRED — make the AI contribution transparent
   en: Make the AI contribution transparent.
@@ -305,7 +311,10 @@ relatedRequirements: [R-02]
 
 Two variants:
 
-**A) Mermaid** (body = raw Mermaid code, without ``` fences; the body is language-neutral):
+**A) Mermaid** — the code goes in `code`, **per locale**. Node labels are prose, so an English
+page must not show a German diagram or the other way round; use each language's own domain
+terms, not a transliteration. The Markdown body is still read as a single-language fallback
+for diagrams written before the field, but new diagrams should use `code`.
 
 ```markdown
 ---
@@ -315,15 +324,26 @@ title:
 case: greenworks
 type: bpmn                       # bpmn | c4 | uml | mermaid | event-storming
 tool: Mermaid
+code:
+  en: |
+    flowchart TD
+      A[Request] --> B[Create quote] --> C{Accepted?}
+      C -- yes --> D[Order]
+      C -- no --> E[End]
+  de: |
+    flowchart TD
+      A[Anfrage] --> B[Angebot erstellen] --> C{Angenommen?}
+      C -- ja --> D[Auftrag]
+      C -- nein --> E[Ende]
 aiContribution:                  # optional
   en: optional
   de: optional
 ---
-flowchart TD
-  A[Request] --> B[Create quote] --> C{Accepted?}
-  C -- yes --> D[Order]
-  C -- no --> E[End]
 ```
+
+A written `caption` is shown under the diagram. A description derived from the node labels
+is always rendered too, for assistive technology only — never on the page: printed next to
+the picture it is the picture read out as a chain of arrows.
 
 **B) Real BPMN/C4** (embed exported SVG, link the source):
 
@@ -360,8 +380,17 @@ order: 1                         # display order on the case study page (lower f
 interests:                       # optional
   en: [Faster quotes, Fewer pricing errors]
   de: [Schnellere Angebote, Weniger Preisfehler]
+heldBy:                          # optional: WHO holds the role, as a human
+  en: The owner of the business — a real person, not a persona. Where the product goes is decided there.
+  de: Die Inhaberin des Betriebs — eine reale Person, keine Persona. Die Produktrichtung wird dort entschieden.
+aiSupport:                       # optional: WHICH agents assist, and where their authority stops
+  en: A research agent prepares the options; the choice between them is never the agent's.
+  de: Ein Recherche-Agent bereitet die Optionen auf; die Wahl zwischen ihnen trifft nie der Agent.
 ---
 ```
+
+Every role on these projects is AI-assisted, which is exactly why the human behind it is
+named: a site about working with AI that leaves that implicit invites the opposite reading.
 
 ## Glossary → `src/content/<project>/glossary/<term>.md`
 
@@ -371,10 +400,15 @@ term:
   en: Quote
   de: Angebot
 case: greenworks                 # optional
+definition:                      # the definition is prose, so it is per locale
+  en: A price proposal belonging to a project. At most one open quote per project.
+  de: Ein Preisangebot, das zu einem Projekt gehört. Höchstens ein offenes Angebot je Projekt.
 ---
-
-Definition …
 ```
+
+The Markdown body is still rendered when `definition` is missing — the single-language
+fallback for terms written before the field. New terms should use `definition`, otherwise
+the German page shows an English definition.
 
 ## How-I-work step → `src/content/<project>/workflow/01-stakeholders.md`
 

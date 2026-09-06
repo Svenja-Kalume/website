@@ -20,9 +20,10 @@ acceptanceCriteria:
     - Filtering runs entirely on already-loaded data, with no additional API call per keystroke
   de:
     - Ein Suchfeld über der Kundenliste filtert die Liste in Echtzeit während der Eingabe, ohne Absenden-Button
-    - Nachname, Vorname, Firmenname und Kundennummer werden case-insensitiv durchsucht; ein Begriff ohne Treffer zeigt „Keine Einträge gefunden"; das Leeren des Feldes stellt die volle Liste wieder her
+    - Nachname, Vorname, Firmenname und Kundennummer werden case-insensitiv durchsucht; ein Begriff ohne Treffer zeigt „Keine Einträge gefunden“; das Leeren des Feldes stellt die volle Liste wieder her
     - Das Filtern läuft vollständig auf bereits geladenen Daten, ohne zusätzlichen API-Aufruf pro Tastendruck
 codeUrl: Client/Customers/CustomerListPage.razor
+priority: must
 status: done
 aiContribution:
   en: The AI proposed a shared SearchField component that owns only the input chrome (placeholder, clear button, no debounce) while each page owns its own match predicate — reused unchanged by project search (Story 22) — and proposed two distinct empty-state messages depending on whether a search term is active.

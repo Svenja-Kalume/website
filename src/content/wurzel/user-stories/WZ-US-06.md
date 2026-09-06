@@ -16,12 +16,13 @@ requirement: WZ-R-02
 acceptanceCriteria:
   en:
     - An inline search (not a dialog) filters case-insensitively over CustomerNumber, name, company and address
-    - Dropdown rows show „Kundennummer – Nachname, Vorname", Firma and Ort; no matches shows „Keine Einträge gefunden"
+    - Dropdown rows show „Kundennummer – Nachname, Vorname“, Firma and Ort; no matches shows „Keine Einträge gefunden“
     - A customer must be selected before the project can be saved; it filters already-loaded data
   de:
     - Eine Inline-Suche (kein Dialog) filtert case-insensitiv über Kundennummer, Name, Firma und Adresse
-    - Dropdown-Zeilen zeigen „Kundennummer – Nachname, Vorname", Firma und Ort; keine Treffer zeigt „Keine Einträge gefunden"
+    - Dropdown-Zeilen zeigen „Kundennummer – Nachname, Vorname“, Firma und Ort; keine Treffer zeigt „Keine Einträge gefunden“
     - Ein Kunde muss gewählt sein, bevor das Projekt gespeichert werden kann; es filtert bereits geladene Daten
+priority: must
 status: done
 aiContribution:
   en: The AI built the inline picker filtering client-side (no per-keystroke API call); I specified the row format and made selection mandatory to avoid orphan projects.

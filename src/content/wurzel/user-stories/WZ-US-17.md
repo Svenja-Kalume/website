@@ -22,6 +22,7 @@ acceptanceCriteria:
     - Permanente ← / → Pfeile in der Kopfzeile spiegeln die Browser-Historie, sind ohne Historie deaktiviert und mindestens 44×44px groß
     - Jede Bearbeiten-/Anlege-Ansicht zeigt ein Breadcrumb der Besitz-Hierarchie (Start › Kunde › Projekt › Angebot); Vorfahren sind Links, das aktuelle Segment ist Klartext
     - Die App navigiert nach einem Speichern nie automatisch
+priority: must
 status: done
 aiContribution:
   en: The AI proposed mirroring the browser's own history via JS interop and building the breadcrumb from the database hierarchy; I set the rule that navigation is always explicit, never a side effect of saving.

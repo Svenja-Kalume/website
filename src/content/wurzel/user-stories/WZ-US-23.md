@@ -21,10 +21,11 @@ acceptanceCriteria:
     - On an already-exported offer, Herunterladen serves the exact stored PDF bytes — never a re-render, no confirmation, no state change
   de:
     - Export ist für ein offenes Angebot aus dem Angebots-Editor, der Neuestes-Angebot-Karte und dem Export-Button der Vorschau verfügbar
-    - Da der Export das Angebot unwiderruflich sperrt, geht ein Bestätigungsdialog voraus, mit einer reversiblen „Nicht mehr anzeigen"-Unterdrückung, gespeichert in CompanySettings
+    - Da der Export das Angebot unwiderruflich sperrt, geht ein Bestätigungsdialog voraus, mit einer reversiblen „Nicht mehr anzeigen“-Unterdrückung, gespeichert in CompanySettings
     - Bei bestätigtem Export rendert der Server das gemeinsame QuestPDF-Dokument, friert das Angebot atomar ein/speichert/sperrt es und benennt die Datei Angebot_{OfferNumber}.pdf
     - Bei einem bereits exportierten Angebot liefert Herunterladen exakt die gespeicherten PDF-Bytes — nie ein erneutes Rendering, keine Bestätigung, keine Zustandsänderung
 codeUrl: Server/Offers/OfferExporter.cs
+priority: must
 status: done
 aiContribution:
   en: The AI proposed QuestPDF (the ratified server-side engine) render from the exact same document definition as the preview, and proposed storing both the PDF bytes and page images at export time so a later download or read-back never re-renders. I decided the confirmation dialog's suppression preference lives on CompanySettings, reversible from Settings rather than a one-way dismissal.

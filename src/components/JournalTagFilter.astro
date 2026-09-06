@@ -1,27 +1,47 @@
 ---
 /**
- * The tag filter: every tag the log uses, with its entry count.
+ * The tag filter: every tag the log uses, with the number of entries left if you pick it.
  *
- * A row of links to static per-tag pages rather than a scripted filter — the filtered
- * view then has its own URL you can cite, and the page needs no JavaScript.
+ * A row of links to static per-combination pages rather than a scripted filter — the
+ * filtered view then has its own URL you can cite, and the page needs no JavaScript.
+ *
+ * Selection is additive and every chip is a toggle: picking a second tag narrows to the
+ * entries carrying both, picking a selected one again drops it. The count on an unselected
+ * chip is the result of that click, not the tag's total, so it never promises entries the
+ * combination does not have — and a tag that would empty the list is shown inert rather
+ * than as a link into nothing. A selected chip carries no count: the number that matters
+ * there is what the page is showing, and the heading above already states it.
  */
 import { useTranslations, type Lang } from '../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+import { tagCounts, filterByTags, tagsHref, toggleTag } from '../lib/journal';
 
-interface Props { tags: { tag: string; count: number }[]; lang: Lang; activeTag?: string; }
-const { tags, lang, activeTag } = Astro.props;
+interface Props { entries: CollectionEntry<'journal'>[]; lang: Lang; activeTags?: string[]; }
+const { entries, lang, activeTags = [] } = Astro.props;
 const t = useTranslations(lang);
+
+// Ordered by overall use, so the row keeps the same order whatever is selected.
+const chips = tagCounts(entries).map(({ tag }) => {
+  const next = toggleTag(activeTags, tag);
+  return {
+    tag,
+    active: activeTags.includes(tag),
+    href: tagsHref(lang, next),
+    count: filterByTags(entries, next).length,
+  };
+});
 ---
-{tags.length > 0 && (
+{chips.length > 0 && (
   <nav class="tag-filter small" aria-label={t('journal.filter')}>
-    <span class="muted">{t('journal.filter')}</span>
-    <a href={`/${lang}/journal`} aria-current={activeTag === undefined ? 'page' : undefined}>
+    <a href={`/${lang}/journal`} aria-current={activeTags.length === 0 ? 'page' : undefined}>
       {t('journal.allTags')}
     </a>
-    {tags.map(({ tag, count }) => (
-      <a
-        href={`/${lang}/journal/tags/${tag}`}
-        aria-current={tag === activeTag ? 'page' : undefined}
-      >{tag} <span class="count muted">({count})</span></a>
+    {chips.map(({ tag, active, href, count }) => (
+      count === 0 && !active
+        ? <span class="inert" aria-disabled="true">{tag} <span class="count">(0)</span></span>
+        : <a href={href} aria-current={active ? 'page' : undefined}>
+            {tag}{!active && <span class="count muted"> ({count})</span>}
+          </a>
     ))}
   </nav>
 )}
@@ -34,7 +54,8 @@ const t = useTranslations(lang);
     gap: 0.4rem;
     margin: 0 0 1.6rem;
   }
-  .tag-filter a {
+  .tag-filter a,
+  .tag-filter .inert {
     color: var(--muted);
     text-decoration: none;
     padding: 0.15rem 0.6rem;
@@ -49,5 +70,8 @@ const t = useTranslations(lang);
     font-weight: 600;
   }
   .tag-filter a[aria-current='page'] .count { color: inherit; }
+  /* Not reachable, so not a link — dimmed rather than hidden, so the row does not
+     reshuffle as you narrow and you can see what the selection ruled out. */
+  .tag-filter .inert { opacity: 0.45; }
   .tag-filter .count { font-variant-numeric: tabular-nums; }
 </style>

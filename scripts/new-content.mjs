@@ -27,7 +27,7 @@
  *   --case <id>           case study this belongs to (default: <project>)
  *   --requirement <id>    (user stories, REQUIRED) the requirement it covers
  *   --epic <id>           (user stories) optional epic
- *   --priority must|should|could         (requirements)
+ *   --priority must|should|could         (user-stories; requirements, deprecated)
  *   --status <enum>       collection-specific status
  *   --type <enum>         (diagrams) bpmn|c4|uml|mermaid|event-storming
  *   --tool <name>         (diagrams) e.g. Mermaid, Camunda Modeler
@@ -244,6 +244,10 @@ switch (collection) {
       opts.adr ? `adr: [${opts.adr}]` : null,
       opts['code-url'] ? `codeUrl: ${opts['code-url']}` : null,
       opts.jira ? `jiraKey: ${opts.jira}` : null,
+      // MoSCoW sits on the story, where the acceptance checklist assigns it. No default:
+      // a story delivered outside a Must/Should heading carries no tier, and stamping one
+      // on every stub would put a guess in the file.
+      opts.priority ? `priority: ${opts.priority}     # must | should | could` : null,
       `status: ${opts.status || 'backlog'}       # backlog | in-progress | review | done`,
       loc('aiContribution', 'AI contribution — make the AI role transparent'),
     ];
@@ -274,8 +278,21 @@ switch (collection) {
     ];
     if (opts.image) fm.push(`image: ${opts.image}`);
     // `source` is added below with the other versioned fields.
-    // Mermaid variant → body is raw Mermaid; real BPMN/C4 → link image+source, no body.
-    if (!opts.image) body = '\nflowchart TD\n  A[TODO] --> B[TODO]\n';
+    // Mermaid variant → the code goes in `code`, per locale: node labels are prose, and a
+    // German page showing an English diagram is the bug this field exists to prevent. The
+    // body stays the single-language fallback for diagrams written before the field.
+    // Real BPMN/C4 → link image+source, no code and no body.
+    if (!opts.image) {
+      fm.push(
+        'code:',
+        '  en: |',
+        '    flowchart TD',
+        '      A[TODO] --> B[TODO]',
+        '  de: |',
+        '    flowchart TD',
+        '      A[TODO] --> B[TODO]',
+      );
+    }
     break;
   }
 
@@ -290,12 +307,17 @@ switch (collection) {
       'interests:',
       `  en: [${TODO('interest')}]`,
       `  de: [${TODO('interest')}]`,
+      // Who holds the role as a human, and which agents assist them. Every role here is
+      // AI-assisted, which is exactly why the person behind it has to be named.
+      loc('heldBy', 'the human who holds this role, and what they decide'),
+      loc('aiSupport', 'which agents assist the role, and where their authority stops'),
     ];
     break;
 
   case 'glossary':
-    fm = [loc('term', 'term'), `case: ${caseId}`];
-    body = '\nTODO: definition.\n';
+    // The definition is prose, so it is per locale. The body remains the single-language
+    // fallback for terms written before the field existed.
+    fm = [loc('term', 'term'), `case: ${caseId}`, loc('definition', 'definition')];
     break;
 
   case 'workflow':

@@ -21,10 +21,11 @@ acceptanceCriteria:
     - The latest-offer card shows the project's latest offer regardless of status, with Vorschau/Export shown only when it is Open
   de:
     - Der Export eines offenen Angebots friert atomar einen Positions-Snapshot ein, rendert und speichert PDF und Seitenbilder und setzt OfferState auf Exportiert mit ExportedAt
-    - Der Server lehnt jeden Schreibzugriff auf ein nicht-offenes Angebot mit Conflict (409) ab; der Client rendert exportierte (und ersetzte) Angebote read-only mit einem „Exportiert"-Badge
-    - Eine neue Version aus einem bereits exportierten Angebot lässt den Vorgänger exportiert (kein Wechsel zu „Ersetzt")
+    - Der Server lehnt jeden Schreibzugriff auf ein nicht-offenes Angebot mit Conflict (409) ab; der Client rendert exportierte (und ersetzte) Angebote read-only mit einem „Exportiert“-Badge
+    - Eine neue Version aus einem bereits exportierten Angebot lässt den Vorgänger exportiert (kein Wechsel zu „Ersetzt“)
     - Die Neuestes-Angebot-Karte zeigt das jeweils neueste Angebot des Projekts unabhängig vom Status, Vorschau/Export nur wenn dieses offen ist
 codeUrl: Server/Offers/OfferExport.cs
+priority: must
 status: done
 aiContribution:
   en: The AI proposed the read-back branch (Open reads live ProjectPosition data; Exported/Superseded reads the frozen OfferPositionSnapshot) as one mechanism reused later by Story 27, and proposed storing three separate frozen representations (snapshot, page images, PDF bytes) each serving exactly one purpose rather than one overloaded frozen blob. I decided an Exported predecessor never re-freezes or relabels when a new version is created from it.

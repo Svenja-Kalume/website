@@ -176,7 +176,11 @@ being expressed on the wrong side of the link — put it on the new artifact via
 When a full example project is ready to be published as a case study and go live, follow the
 step-by-step checklist in **`docs/launch-plan.md`**.
 
-**Diagrams:** Mermaid = the body of the `.md` file is raw Mermaid code (no code fences). Real BPMN/C4 =
+**Diagrams:** Mermaid = the raw Mermaid code goes in the **per-locale `code`** field (`en`/`de`,
+no code fences); node labels are prose, so each language gets its own domain terms rather than a
+transliteration. The `.md` body is still read when `code` is absent — the fallback for diagrams
+written before the field. A written `caption` shows under the figure; a description derived from
+the node labels is rendered for assistive technology only, never on the page. Real BPMN/C4 =
 put the exported SVG under `public/diagrams/`, embed it via `image:`, and point `source:` to the
 source (`.bpmn`/`.puml`) in the repo.
 

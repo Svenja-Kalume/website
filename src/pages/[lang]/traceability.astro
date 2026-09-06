@@ -81,20 +81,19 @@ const showCase = groups.length > 1;
       <div class="table-scroll">
         <table class="trace-table">
           {/* Widths declared next to the conditional case column, so the two can never
-              disagree. The stories cell carries several lines and a level tag; the
-              requirement cell an id and one title — the space belongs to the stories. */}
+              disagree. The stories cell carries several lines, a level tag and a MoSCoW
+              tag; the requirement cell an id and one title — the space belongs to the
+              stories. */}
           <colgroup>
-            <col style={showCase ? 'width:18%' : 'width:20%'} />
-            {showCase && <col style="width:12%" />}
-            <col style="width:10%" />
-            <col style={showCase ? 'width:48%' : 'width:56%'} />
-            <col style={showCase ? 'width:12%' : 'width:14%'} />
+            <col style={showCase ? 'width:20%' : 'width:24%'} />
+            {showCase && <col style="width:14%" />}
+            <col style={showCase ? 'width:52%' : 'width:60%'} />
+            <col style={showCase ? 'width:14%' : 'width:16%'} />
           </colgroup>
           <thead>
             <tr>
               <th>{t('trace.th.req')}</th>
               {showCase && <th>{t('trace.th.case')}</th>}
-              <th>{t('trace.th.priority')}</th>
               <th>{t('trace.th.stories')}</th>
               <th>{t('trace.th.status')}</th>
             </tr>
@@ -106,7 +105,6 @@ const showCase = groups.length > 1;
                     .filter(Boolean))].join(' ')}>
                 <td><strong>{req.id}</strong><br /><span class="small">{localize(req.data.title, lang)}</span></td>
                 {showCase && <td class="small">{caseEntry ? localize(caseEntry.data.title, lang) : req.data.case.id}</td>}
-                <td class="small">{req.data.priority}</td>
                 <td class="small">
                   {stories.length === 0
                     ? <span class="tag">{t('trace.noStory')}</span>
@@ -115,6 +113,15 @@ const showCase = groups.length > 1;
                         return (
                           <div data-level={it?.data.version ?? ''}>
                             {s.id}: {localize(s.data.title, lang)}
+                            {/* MoSCoW belongs to the story: the acceptance checklist assigns
+                                Must/Should per checklist item, and an item is a story. A
+                                story shipped outside those headings carries no tier, and
+                                inventing one for it would be a guess. */}
+                            {s.data.priority && (
+                              <span class="tag" style="margin-left:.4rem">
+                                {t(`trace.priority.${s.data.priority}` as const)}
+                              </span>
+                            )}
                             {it && (
                               <a class="tag" style="margin-left:.4rem"
                                  href={`/${lang}/case-studies/${it.data.case.id}/${it.data.version}`}>

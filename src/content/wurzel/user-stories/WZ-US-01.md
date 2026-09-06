@@ -22,6 +22,7 @@ acceptanceCriteria:
     - Pflichtfelder sind Vorname, Nachname, Straße, PLZ und Ort; Firma, Telefon, E-Mail und Notizen sind optional
     - Die Kundennummer wird automatisch als yyyy-nnn erzeugt (jährlicher Reset), mit unsichtbarem Server-Retry bei Konflikt
     - Das Erstelldatum wird automatisch gesetzt und nie angezeigt; der Kunde erscheint sofort in der Liste
+priority: must
 status: done
 aiContribution:
   en: The AI proposed the auto-number with silent retry; I insisted the required address fields can always be entered manually so a customer is creatable without any external lookup.

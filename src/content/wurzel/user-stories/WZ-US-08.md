@@ -22,6 +22,7 @@ acceptanceCriteria:
     - Einheit ist ein festes Enum aus sechs (Stunde/h, m², m³, lfm, km, t); Standard ist Stunde
     - Menge wird angezeigt und ist Pflicht; der Einzelpreis ist der Preis je gewählter Einheit
     - Ein Snapshot friert auch Einheit und Menge ein
+priority: must
 status: done
 aiContribution:
   en: In the recorded session the owner described distance (km) as a special case; the AI generalised this into a fixed six-value unit enum, and I kept deeper transport pricing explicitly out of scope.

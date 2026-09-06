@@ -14,6 +14,10 @@ const t = useTranslations(lang);
 // Inside a topic sub-chapter the diagram title sits one level deeper than on a page
 // that lists diagrams directly, so the caller says which level it is.
 const Title = titleTag;
+// A diagram's node labels are prose AND domain vocabulary: the English diagram has to read
+// in English domain terms and the German one in the labels the UI actually uses. The body
+// stays the fallback for a diagram that has only one language yet.
+const code = localize(d.data.code, lang) ?? d.body ?? '';
 ---
 <Title>{localize(d.data.title, lang)}</Title>
 <p class="muted small">{d.data.type.toUpperCase()} · {t('case.madeWith')} {d.data.tool}</p>
@@ -24,6 +28,6 @@ const Title = titleTag;
   </>
 ) : (
   /* The written caption if there is one, otherwise Mermaid derives it from the labels. */
-  <Mermaid code={d.body ?? ''} caption={localize(d.data.caption, lang)} />
+  <Mermaid code={code} caption={localize(d.data.caption, lang)} />
 )}
 {d.data.aiContribution && <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(d.data.aiContribution, lang)}</p>}

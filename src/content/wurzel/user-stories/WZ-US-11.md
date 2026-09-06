@@ -23,6 +23,7 @@ acceptanceCriteria:
     - Angebotsnummer (yyyy-nnn), Angebotsdatum und Status Offen werden automatisch gesetzt; der Betreff ist mit dem Projektnamen vorbefüllt und Pflicht
     - Geeignete Positionen werden zu Live-Angebotspositionen; deaktivierte sind ausgeschlossen; eine Position kann in mehreren Angeboten sein
     - Das Angebot öffnet als Entwurf und wird verzögert bei der ersten echten Änderung erstellt (Autosave, kein Speichern-Knopf); ein bloßer Blick speichert nichts
+priority: must
 status: done
 aiContribution:
   en: The AI proposed deferred-create so a mere peek persists nothing; I accepted the trade-off that an unchanged default offer needs one touch to persist. A later regression where it silently stopped saving was caught and fixed with tests.

@@ -3,7 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import JournalList from '../../../components/JournalList.astro';
 import JournalTagFilter from '../../../components/JournalTagFilter.astro';
 import { languages, useTranslations, toLang } from '../../../i18n/ui';
-import { journalEntries, tagCounts } from '../../../lib/journal';
+import { journalEntries } from '../../../lib/journal';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -12,7 +12,6 @@ const lang = toLang(Astro.params.lang);
 const t = useTranslations(lang);
 
 const entries = await journalEntries();
-const tags = tagCounts(entries);
 ---
 <BaseLayout lang={lang} title={t('journal.h1')} description={t('journal.desc')}>
   <h1>{t('journal.h1')}</h1>
@@ -20,6 +19,6 @@ const tags = tagCounts(entries);
 
   {entries.length === 0 && <p class="muted">{t('journal.empty')}</p>}
 
-  <JournalTagFilter tags={tags} lang={lang} />
+  <JournalTagFilter entries={entries} lang={lang} />
   <JournalList entries={entries} lang={lang} />
 </BaseLayout>

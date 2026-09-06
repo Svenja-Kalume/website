@@ -17,12 +17,8 @@ const cases = (await getCollection('case-studies')).sort((a, b) => a.data.order 
 // this shows a stale version the day a new iteration publishes.
 const iterations = await allIterations();
 
-const redThread = `flowchart TD
-  P[Problem] --> S[Stakeholders] --> W[Workshop] --> G[Glossary]
-  G --> D[DDD] --> U[User Stories]
-  G --> B[BPMN] --> U
-  U --> A[Architecture] --> C[Code] --> R[Retrospective]
-  R -.-> S`;
+// The diagram's labels are prose, so the source is a translated string (see i18n/ui.ts).
+const redThread = t('home.redThread.code');
 ---
 <BaseLayout
   lang={lang}

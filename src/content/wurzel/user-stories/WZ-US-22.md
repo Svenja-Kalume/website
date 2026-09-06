@@ -27,6 +27,7 @@ acceptanceCriteria:
     - Das Dokument zeigt korrekte Firmen- und Kundendaten (Briefkopf/Empfänger) sowie korrekte Positionen und Summen, mit deutscher Währungs-/Datumsformatierung im gemeinsamen Modell
     - Vorschau und Export werden mit einer Meldung blockiert, wenn das Angebot keine berechtigten Positionen enthält
 codeUrl: Server/Documents/OfferDocumentModelBuilder.cs
+priority: must
 status: done
 aiContribution:
   en: The AI proposed rendering the preview as server-generated page images (QuestPDF GenerateImages, ~150 DPI PNGs) rather than an inline PDF or HTML iframe, so the same layout renders identically on Windows and Android and deploys safely on IONOS; and proposed the company-settings gate that blocks any document render until required sender fields exist. I confirmed the preview and PDF must share one document-model definition rather than two similar ones.

@@ -21,8 +21,9 @@ acceptanceCriteria:
   de:
     - Ein Suchfeld über der Projektliste filtert die Liste in Echtzeit, ohne Absenden-Button, unter Wiederverwendung der SearchField-Komponente aus Story 4
     - Nachname, Vorname, Firmenname, Kundennummer, Projektnummer und Projektname werden case-insensitiv durchsucht; das allgemeine Projektlisten-DTO erhält dafür die nötigen Kundennamensfelder
-    - Ein Begriff ohne Treffer zeigt „Keine Einträge gefunden"; das Leeren des Feldes stellt die volle Liste wieder her; das Filtern läuft vollständig auf bereits geladenen Daten
+    - Ein Begriff ohne Treffer zeigt „Keine Einträge gefunden“; das Leeren des Feldes stellt die volle Liste wieder her; das Filtern läuft vollständig auf bereits geladenen Daten
 codeUrl: Client/Projects/ProjectListPage.razor
+priority: must
 status: done
 aiContribution:
   en: The AI proposed reusing Story 4's SearchField component unchanged (same chrome, no debounce, no magnifier icon) and identified that ProjectNumber was already on the DTO at zero extra cost, so it could be searched too. I confirmed the DTO/server change (adding customer name fields to the general project list) belongs to this story rather than a separate one.

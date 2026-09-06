@@ -20,6 +20,7 @@ acceptanceCriteria:
   de:
     - Ein Summenbereich unter den Positionen zeigt den Gesamtpreis (Nettosumme) als Summe der Positions-Angebotspreise
     - Er aktualisiert sich live, wenn sich Positionen ändern; auf Level 1 werden keine MwSt. und keine Rabatte angewandt
+priority: must
 status: done
 aiContribution:
   en: The AI wired the live recompute (using the unified Quantity × UnitPrice rule); I confirmed no VAT at line level for Level 1 to keep tax handling out of the MVP.

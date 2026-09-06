@@ -22,6 +22,7 @@ acceptanceCriteria:
     - Eine Position hat eine Pflicht-Beschreibung und wird in der Projekt-Bearbeiten-Ansicht hinzugefügt
     - Eine Position kann als Deaktiviert markiert und wieder aktiviert werden; deaktivierte Zeilen sind visuell unterschieden
     - Ein Schalter je Sitzung kann deaktivierte Positionen ausblenden (nicht persistiert)
+priority: must
 status: done
 aiContribution:
   en: The AI proposed disabling instead of deleting positions so history stays intact; I accepted it as the basis for the live-link offer model.

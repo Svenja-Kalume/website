@@ -13,10 +13,15 @@ interface Props { refs: { id: string }[]; lang: Lang; }
 const { refs, lang } = Astro.props;
 const t = useTranslations(lang);
 
+// The definition is prose, so it is per locale (`definition`). The Markdown body stays
+// the fallback for a term that has only one language yet — it renders in both locales,
+// which is visible enough to be fixed rather than silently wrong.
 const terms = await Promise.all(
   refs.map(async (ref) => {
     const entry = await getEntry('glossary', ref.id);
-    return entry ? { entry, Definition: (await render(entry)).Content } : undefined;
+    if (!entry) return undefined;
+    const definition = localize(entry.data.definition, lang);
+    return { entry, definition, Definition: definition ? undefined : (await render(entry)).Content };
   })
 );
 const resolved = terms.filter((x): x is NonNullable<typeof x> => Boolean(x));
@@ -24,9 +29,9 @@ const resolved = terms.filter((x): x is NonNullable<typeof x> => Boolean(x));
 {resolved.length > 0 && (
   <dl class="glossary small">
     <dt class="muted">{t('topic.glossary')}</dt>
-    {resolved.map(({ entry, Definition }) => (
+    {resolved.map(({ entry, definition, Definition }) => (
       <dd>
-        <strong>{localize(entry.data.term, lang)}</strong> — <Definition />
+        <strong>{localize(entry.data.term, lang)}</strong> — {definition ?? (Definition && <Definition />)}
       </dd>
     ))}
   </dl>

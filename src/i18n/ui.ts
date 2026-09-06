@@ -50,6 +50,14 @@ export const ui = {
     'home.p2':
       'At each station you see both sides: the result and the road to it. Every artifact comes with the reasoning behind it — why did I decide this way? — and an open account of the AI\'s part: what did it propose, and what did I keep, change, or discard?',
     'home.redThread': 'The red thread',
+    // The diagram source lives here, not in the page: its node labels are prose, and prose
+    // is translated. Keeping it in index.astro would leave the German page an English diagram.
+    'home.redThread.code': `flowchart TD
+  P[Problem] --> S[Stakeholders] --> W[Workshop] --> G[Glossary]
+  G --> D[DDD] --> U[User Stories]
+  G --> B[BPMN] --> U
+  U --> A[Architecture] --> C[Code] --> R[Retrospective]
+  R -.-> S`,
 
     'cases.desc': 'Living case studies — a documented way of working, per project.',
     'cases.h1': 'Case Studies',
@@ -62,13 +70,15 @@ export const ui = {
     'case.stakeholders': 'Stakeholders',
     'case.influence': 'influence:',
     'case.interests': 'Interests:',
+    'case.heldBy': 'Held by:',
+    'case.aiSupport': 'AI support:',
     'case.madeWith': 'made with',
     'case.aiContribution': 'AI contribution:',
     'case.storiesTrace': 'User Stories & Traceability',
     'case.asA': 'As',
     'case.iWant': 'I want',
     'case.soThat': 'so that',
-    'case.requirement': 'Requirement:',
+    'case.requirement': 'Traceability:',
     'case.process': 'Process:',
     'case.decisions': 'Decisions:',
     'case.acceptance': 'Acceptance criteria',
@@ -80,6 +90,26 @@ export const ui = {
     'how.intro':
       "The point isn't that I use AI — almost everyone does now. It's how: this is what a requirements-engineering workflow looks like when every step still runs through human judgement.",
     'how.mcp': 'Workflow (from a domain perspective)',
+    'how.mcp.code': `flowchart TD
+  N[Workshop notes] --> L1[LLM drafts glossary]
+  L1 --> RV{Human review}
+  RV -- ok --> L2[LLM proposes user stories]
+  RV -- needs refinement --> L1
+  L2 --> RV2{Human review}
+  RV2 -- ok --> JI[User stories]
+  RV2 -- needs refinement --> L2
+  JI --> L3[LLM checks consistency between glossary and stories]
+  L3 --> RV3{Human review}
+  RV3 -- ok --> DEV["Development (incl. automated tests)"]
+  RV3 -- needs refinement --> L3
+  RV3 -- glossary or stories wrong --> L1
+  DEV --> RV4{AI review}
+  RV4 -- ok --> MT{Manual tests}
+  RV4 -- needs refinement --> DEV
+  MT -- ok --> ST{Stakeholder tests}
+  MT -- needs refinement --> DEV
+  ST -- ok --> DONE[Increment done]
+  ST -- needs refinement --> N`,
     'how.steps': 'Steps',
     'how.empty': 'No steps documented yet.',
     'how.tools': 'Tools:',
@@ -114,6 +144,7 @@ export const ui = {
     'topic.requirements': 'Requirements:',
     'topic.glossary': 'Domain terms',
     'topic.technical': 'technical — no domain term',
+    'topic.nextLevel': 'This topic in',
 
     'trace.desc': 'Traceability from requirement to implementation.',
     'trace.h1': 'Traceability Explorer',
@@ -121,8 +152,12 @@ export const ui = {
       'From requirement to implementation — computed automatically from the links. Requirements without a linked story are coverage gaps.',
     'trace.th.req': 'Requirement',
     'trace.th.case': 'Case',
-    'trace.th.priority': 'Priority',
     'trace.th.stories': 'User Stories',
+    // MoSCoW is assigned per story in the acceptance checklist, so the tag sits on the
+    // story line. A story delivered outside a MoSCoW heading carries no tier and no tag.
+    'trace.priority.must': 'Must',
+    'trace.priority.should': 'Should',
+    'trace.priority.could': 'Could',
     'trace.th.status': 'Status',
     'trace.noStory': '⚠ no story',
     'trace.filter': 'Level:',
@@ -187,6 +222,12 @@ export const ui = {
     'home.p2':
       'An jeder Station wird beides sichtbar: das Ergebnis und der Weg dahin. Zu jedem Artefakt gehört die Begründung — warum habe ich mich so entschieden? — und der offengelegte KI-Anteil: Was hat die KI vorgeschlagen, und was habe ich davon übernommen, geändert oder verworfen?',
     'home.redThread': 'Der rote Faden',
+    'home.redThread.code': `flowchart TD
+  P[Problem] --> S[Stakeholder] --> W[Workshop] --> G[Glossar]
+  G --> D[DDD] --> U[User Stories]
+  G --> B[BPMN] --> U
+  U --> A[Architektur] --> C[Code] --> R[Retrospektive]
+  R -.-> S`,
 
     'cases.desc': 'Lebendige Fallstudien — eine dokumentierte Arbeitsweise, pro Projekt.',
     'cases.h1': 'Fallstudien',
@@ -199,13 +240,15 @@ export const ui = {
     'case.stakeholders': 'Stakeholder',
     'case.influence': 'Einfluss:',
     'case.interests': 'Interessen:',
+    'case.heldBy': 'Besetzt durch:',
+    'case.aiSupport': 'KI-Unterstützung:',
     'case.madeWith': 'erstellt mit',
     'case.aiContribution': 'KI-Anteil:',
     'case.storiesTrace': 'User Stories & Nachvollziehbarkeit',
     'case.asA': 'Als',
     'case.iWant': 'möchte ich',
     'case.soThat': 'damit',
-    'case.requirement': 'Anforderung:',
+    'case.requirement': 'Nachvollziehbarkeit:',
     'case.process': 'Prozess:',
     'case.decisions': 'Entscheidungen:',
     'case.acceptance': 'Akzeptanzkriterien',
@@ -217,6 +260,26 @@ export const ui = {
     'how.intro':
       'Der Unterschied liegt nicht darin, dass ich KI nutze — das tun inzwischen fast alle. Er liegt im Wie: So sieht ein Requirements-Engineering-Workflow aus, wenn jeder Schritt durch menschliches Urteil geht.',
     'how.mcp': 'Workflow (aus fachlicher Sicht)',
+    'how.mcp.code': `flowchart TD
+  N[Workshop-Notizen] --> L1[LLM entwirft das Glossar]
+  L1 --> RV{Menschliche Prüfung}
+  RV -- ok --> L2[LLM schlägt User Stories vor]
+  RV -- nachschärfen --> L1
+  L2 --> RV2{Menschliche Prüfung}
+  RV2 -- ok --> JI[User Stories]
+  RV2 -- nachschärfen --> L2
+  JI --> L3[LLM prüft Glossar und Stories auf Widersprüche]
+  L3 --> RV3{Menschliche Prüfung}
+  RV3 -- ok --> DEV["Entwicklung (inkl. automatisierter Tests)"]
+  RV3 -- nachschärfen --> L3
+  RV3 -- Glossar oder Stories falsch --> L1
+  DEV --> RV4{KI-Review}
+  RV4 -- ok --> MT{Manuelle Tests}
+  RV4 -- nachschärfen --> DEV
+  MT -- ok --> ST{Stakeholder-Tests}
+  MT -- nachschärfen --> DEV
+  ST -- ok --> DONE[Inkrement fertig]
+  ST -- nachschärfen --> N`,
     'how.steps': 'Schritte',
     'how.empty': 'Noch keine Schritte dokumentiert.',
     'how.tools': 'Tools:',
@@ -250,6 +313,7 @@ export const ui = {
     'topic.requirements': 'Anforderungen:',
     'topic.glossary': 'Fachbegriffe',
     'topic.technical': 'technisch — kein Fachbegriff',
+    'topic.nextLevel': 'Dieses Thema in',
 
     'trace.desc': 'Nachvollziehbarkeit von der Anforderung bis zur Umsetzung.',
     'trace.h1': 'Nachvollziehbarkeit',
@@ -257,8 +321,10 @@ export const ui = {
       'Von der Anforderung bis zur Umsetzung — automatisch aus den Verknüpfungen berechnet. Anforderungen ohne verknüpfte Story sind Abdeckungslücken.',
     'trace.th.req': 'Anforderung',
     'trace.th.case': 'Fall',
-    'trace.th.priority': 'Priorität',
     'trace.th.stories': 'User Stories',
+    'trace.priority.must': 'Muss',
+    'trace.priority.should': 'Soll',
+    'trace.priority.could': 'Kann',
     'trace.th.status': 'Status',
     'trace.noStory': '⚠ keine Story',
     'trace.filter': 'Level:',

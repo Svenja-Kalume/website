@@ -22,6 +22,7 @@ acceptanceCriteria:
     - Nur offene Angebote sind bearbeitbar (Ersetzt ist schreibgeschützt); der Betreff ist editierbar
     - Geeignete Positionen hinzufügen (nur Verknüpfung) oder entfernen (löscht nur die Verknüpfung)
     - Änderungen an Beschreibung/Einzelpreis werden in die Projektposition zurückgeschrieben und wirken in allen offenen Angeboten; ein Tooltip warnt, dass die Änderung die geteilte Position aktualisiert
+priority: must
 status: done
 aiContribution:
   en: The AI surfaced the risk that editing a shared position silently changes other offers and added the warning tooltip; I confirmed that only the link is removed, never the underlying position.

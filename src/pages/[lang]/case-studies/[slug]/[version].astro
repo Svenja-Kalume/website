@@ -47,9 +47,11 @@ const caseIterations = iterationsOf(all, caseEntry.id);
 // Diagrams, stories and ADRs belong to the level that introduced them, and are rendered
 // here in full — the case study page is the overview. The rest stays a listing.
 const allStories = await getCollection('user-stories');
-const diagrams = introducedIn(await getCollection('diagrams'), iteration.id);
+const allDiagrams = await getCollection('diagrams');
+const allAdrs = await getCollection('adr');
+const diagrams = introducedIn(allDiagrams, iteration.id);
 const stories = introducedIn(allStories, iteration.id);
-const adrs = introducedIn(await getCollection('adr'), iteration.id);
+const adrs = introducedIn(allAdrs, iteration.id);
 
 // Sub-chapters by domain topic: each group carries its own diagrams, stories with their
 // traceability chain, and decisions — so a level reads as "what happened to the customer,
@@ -57,12 +59,31 @@ const adrs = introducedIn(await getCollection('adr'), iteration.id);
 const topics = topicsOf(await getCollection('topics'), caseEntry.id);
 // Only the topic sub-chapters here. What no topic claims describes the project as a
 // whole, not this level, so it is rendered once on the case study overview instead.
-const { groups: topicGroups } = groupByTopic(
-  topics,
-  { diagrams, stories, adrs },
-  allStories.filter((s) => s.data.case.id === caseEntry.id),
-);
+const caseStories = allStories.filter((s) => s.data.case.id === caseEntry.id);
+const { groups: topicGroups } = groupByTopic(topics, { diagrams, stories, adrs }, caseStories);
 const sections = topicGroups;
+
+// Where each topic continues. Someone who has just read what this level did to offers
+// wants the offers of the next level, not the top of its page — so the link carries the
+// topic anchor. Derived from what the later iteration actually publishes under that topic:
+// a link landing on a heading that is not there would be worse than no link at all.
+const continuedIn = new Map<string, { version: string; label: string }[]>();
+for (const later of caseIterations.filter((i) => i.data.order > iteration.data.order)) {
+  const { groups } = groupByTopic(
+    topics,
+    {
+      diagrams: introducedIn(allDiagrams, later.id),
+      stories: introducedIn(allStories, later.id),
+      adrs: introducedIn(allAdrs, later.id),
+    },
+    caseStories,
+  );
+  for (const g of groups) {
+    const list = continuedIn.get(g.topic!.id) ?? [];
+    list.push({ version: later.data.version, label: iterationLabel(later, t('iter.level')) });
+    continuedIn.set(g.topic!.id, list);
+  }
+}
 
 // What this iteration introduced. Every versioned collection, so nothing is silently
 // left out of the record of what a level actually published.
@@ -86,6 +107,8 @@ const levelLabel = iterationLabel(iteration, t('iter.level'));
 // its own singular form. Zero renders nothing at all.
 const count = (n: number, one: UiKey, many: UiKey) =>
   n === 0 ? undefined : `${n} ${t(n === 1 ? one : many)}`;
+const hasProcessChanges = (localize(iteration.data.processChanges, lang) ?? []).length > 0;
+const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).length > 0;
 ---
 <BaseLayout
   lang={lang}
@@ -126,10 +149,41 @@ const count = (n: number, one: UiKey, many: UiKey) =>
     <p class="small muted">{t('iter.blocks')} {iteration.data.blocks.join(' · ')}</p>
   )}
 
+  {/* Every section of this page, in the order it appears, with the sub-chapters nested
+      under the one that introduces them. Derived from what actually renders — a section
+      the contents list omits is a section the reader never learns is there, which is how
+      the lessons at the foot of the page went missing. */}
+  <ul class="reset contents">
+    {(hasProcessChanges || sameProcess) && (
+      <li><a href="#process-changes">{t('iter.processChanges')}</a></li>
+    )}
+    {corrects.filter(Boolean).length > 0 && <li><a href="#corrects">{t('iter.corrects')}</a></li>}
+    <li>
+      <a href="#introduced">{t('iter.introduced')}</a>
+      {sections.length > 0 && (
+        <ul class="reset contents-sub">
+          {sections.map((g) => (
+            <li>
+              <a href={`#${g.topic!.id}`}>{localize(g.topic!.data.title, lang)}</a>
+              <span class="muted">
+                {' '}{[
+                  count(g.stories.length, 'iter.story.one', 'iter.stories'),
+                  count(g.diagrams.length, 'iter.diagram.one', 'iter.diagrams'),
+                  count(g.adrs.length, 'iter.adr.one', 'iter.adr'),
+                ].filter(Boolean).join(' · ')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+    {hasLessons && <li><a href="#lessons">{t('iter.lessons')}</a></li>}
+  </ul>
+
   {/* The headline of the whole concept: not what shipped, but what changed in how you work. */}
   {(localize(iteration.data.processChanges, lang) ?? []).length > 0 && (
     <>
-      <h2>{t('iter.processChanges')}</h2>
+      <h2 id="process-changes">{t('iter.processChanges')}</h2>
       <ul>{(localize(iteration.data.processChanges, lang) ?? []).map((c: string) => <li>{c}</li>)}</ul>
     </>
   )}
@@ -137,7 +191,7 @@ const count = (n: number, one: UiKey, many: UiKey) =>
   {/* Continuity is a finding too: features shipped, the way of working did not move. */}
   {sameProcess && (
     <>
-      <h2>{t('iter.processChanges')}</h2>
+      <h2 id="process-changes">{t('iter.processChanges')}</h2>
       <p class="muted">
         {t('iter.sameProcessAs')}{' '}
         <a href={`/${lang}/case-studies/${caseEntry.id}/${sameProcess.data.version}`}>v{sameProcess.data.version}</a>.
@@ -147,7 +201,7 @@ const count = (n: number, one: UiKey, many: UiKey) =>
 
   {corrects.filter(Boolean).length > 0 && (
     <>
-      <h2>{t('iter.corrects')}</h2>
+      <h2 id="corrects">{t('iter.corrects')}</h2>
       <ul>
         {corrects.filter(Boolean).map((c: any) => (
           <li><a href={`/${lang}/case-studies/${caseEntry.id}/${c.data.version}`}>{c.data.version}</a> — {localize(c.data.summary, lang)}</li>
@@ -156,27 +210,9 @@ const count = (n: number, one: UiKey, many: UiKey) =>
     </>
   )}
 
-  <h2>{t('iter.introduced')}</h2>
+  <h2 id="introduced">{t('iter.introduced')}</h2>
   {groups.length === 0 && diagrams.length === 0 && stories.length === 0 && adrs.length === 0 && (
     <p class="muted">{t('iter.introducedEmpty')}</p>
-  )}
-  {/* The sub-chapters below, with what each holds — a contents list, derived from the same
-      grouping that renders them, so it cannot drift from the page it describes. */}
-  {sections.length > 0 && (
-    <ul class="reset contents">
-      {sections.map((g) => (
-        <li>
-          <a href={`#${g.topic!.id}`}>{localize(g.topic!.data.title, lang)}</a>
-          <span class="muted small">
-            {' '}{[
-              count(g.stories.length, 'iter.story.one', 'iter.stories'),
-              count(g.diagrams.length, 'iter.diagram.one', 'iter.diagrams'),
-              count(g.adrs.length, 'iter.adr.one', 'iter.adr'),
-            ].filter(Boolean).join(' · ')}
-          </span>
-        </li>
-      ))}
-    </ul>
   )}
   {groups.map((g) => (
     <div class="card">
@@ -198,8 +234,6 @@ const count = (n: number, one: UiKey, many: UiKey) =>
         )}
       </h2>
       {g.topic?.data.summary && <p class="muted">{localize(g.topic.data.summary, lang)}</p>}
-      {/* The topics are the project's own epic spine, not a lens invented for the site. */}
-      {g.topic?.data.source && <p class="small muted"><code>{g.topic.data.source}</code></p>}
       {g.topic && <GlossaryTerms refs={g.topic.data.glossary} lang={lang} />}
       {g.topic && g.topic.data.requirements.length > 0 && (
         <p class="small muted">
@@ -229,12 +263,24 @@ const count = (n: number, one: UiKey, many: UiKey) =>
           {g.adrs.map((a) => <AdrCard adr={a} lang={lang} />)}
         </>
       )}
+
+      {(continuedIn.get(g.topic!.id) ?? []).length > 0 && (
+        <p class="small next-level">
+          {t('topic.nextLevel')}{' '}
+          {continuedIn.get(g.topic!.id)!.map((next, i) => (
+            <>
+              {i > 0 && ', '}
+              <a href={`/${lang}/case-studies/${caseEntry.id}/${next.version}#${g.topic!.id}`}>{next.label} →</a>
+            </>
+          ))}
+        </p>
+      )}
     </section>
   ))}
 
   {(localize(iteration.data.lessons, lang) ?? []).length > 0 && (
     <>
-      <h2>{t('iter.lessons')}</h2>
+      <h2 id="lessons">{t('iter.lessons')}</h2>
       <ul>{(localize(iteration.data.lessons, lang) ?? []).map((l: string) => <li>{l}</li>)}</ul>
     </>
   )}

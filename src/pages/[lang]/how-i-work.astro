@@ -31,26 +31,8 @@ const stepCount = groups.reduce((n, g) => n + g.steps.length, 0);
 // One project: keep the plain list, no redundant heading above it.
 const showGroupHeadings = groups.length > 1;
 
-const mcpFlow = `flowchart TD
-  N[Workshop notes] --> L1[LLM drafts glossary]
-  L1 --> RV{Human review}
-  RV -- ok --> L2[LLM proposes user stories]
-  RV -- needs refinement --> L1
-  L2 --> RV2{Human review}
-  RV2 -- ok --> JI[User stories]
-  RV2 -- needs refinement --> L2
-  JI --> L3[LLM checks consistency between glossary and stories]
-  L3 --> RV3{Human review}
-  RV3 -- ok --> DEV["Development (incl. automated tests)"]
-  RV3 -- needs refinement --> L3
-  RV3 -- glossary or stories wrong --> L1
-  DEV --> RV4{AI review}
-  RV4 -- ok --> MT{Manual tests}
-  RV4 -- needs refinement --> DEV
-  MT -- ok --> ST{Stakeholder tests}
-  MT -- needs refinement --> DEV
-  ST -- ok --> DONE[Increment done]
-  ST -- needs refinement --> N`;
+// Labels are prose, so the source is a translated string (see i18n/ui.ts).
+const mcpFlow = t('how.mcp.code');
 ---
 <BaseLayout lang={lang} title={t('how.h1')} description={t('how.desc')}>
   <h1>{t('how.h1')}</h1>

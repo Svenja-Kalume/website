@@ -184,6 +184,20 @@ for (const r of requirements) {
 for (const d of diagrams) {
   checkRef(d.file, 'case', d.data.case, caseIds);
   if (!locHasContent(d.data.aiContribution)) advise(infos, d, `${d.file}: no AI contribution documented.`);
+  // A Mermaid diagram draws from `code` (per locale) or, for files written before that
+  // field, the Markdown body. Node labels are prose: half a translation renders an empty
+  // figure on one language's page, and nothing on the page says why.
+  if (!d.data.image) {
+    const code = d.data.code;
+    const hasBody = (d.body ?? '').trim() !== '';
+    if (!hasBody && !locHasContent(code)) {
+      advise(warnings, d, `${d.file}: no diagram code — neither \`code\` nor a Markdown body.`);
+    } else if (code && typeof code === 'object') {
+      for (const lang of ['en', 'de']) {
+        if (!(code[lang] ?? '').trim()) advise(warnings, d, `${d.file}: code.${lang} is empty — that locale renders a blank figure.`);
+      }
+    }
+  }
 }
 
 // ---- Citations out of a published iteration must be immutable ----

@@ -27,7 +27,7 @@ mkdirSync(tmpDir, { recursive: true });
 for (const [name, size] of Object.entries(sizes)) {
   const html = resolve(tmpDir, `${name}.html`);
   writeFileSync(html, `<!doctype html><meta charset="utf-8">
-<style>html,body{margin:0;width:${size}px;height:${size}px;background:#fcfdfc}
+<style>html,body{margin:0;width:${size}px;height:${size}px;background:#fdfbfb}
 svg{display:block;width:${size}px;height:${size}px}</style>${svg}`);
   execFileSync(chrome, [
     '--headless', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1',

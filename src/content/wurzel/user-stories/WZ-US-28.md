@@ -23,6 +23,7 @@ acceptanceCriteria:
     - Passende Vorschläge erscheinen in einem unter Straße verankerten Dropdown; die Auswahl befüllt Straße, PLZ und Ort gemeinsam; alle drei Felder bleiben danach unabhängig editierbar
     - Eine manuell eingegebene Adresse ohne Treffer wird immer unverändert akzeptiert und gespeichert; der Lookup ist auf Deutschland ausgerichtet und blockiert nie die Eingabe — ein fehlgeschlagener/zeitüberschrittener Lookup liefert eine leere Liste statt eines Fehlers
 codeUrl: Server/Addresses/IAddressLookup.cs
+priority: must
 status: done
 aiContribution:
   en: The AI proposed the Photon geocoder (Komoot's OSM-based, free-for-commercial-use, no API key) over Nominatim, whose usage policy discourages the type-ahead querying this feature needs, and proposed a swappable IAddressLookup interface behind a thin API endpoint so the client never calls a third-party geocoder directly. I confirmed this also builds the reusable AddressFields piece that Story 57 reuses on the project form.

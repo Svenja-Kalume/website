@@ -20,11 +20,12 @@ acceptanceCriteria:
     - An empty BrandingSettings renders the document exactly as it did before this story — no logo, near-black default, no optional lines
     - Vorschau still never locks the offer; Export still locks it exactly as before — branding adds no new freeze mechanism, since the already-stored exported bytes are the frozen branding
   de:
-    - Ein geseedetes BrandingSettings-Singleton wird in einem neuen „Angebotsvorlage"-Bereich der Einstellungen gepflegt; Text-/Farb-/Gültigkeits-/Kleinunternehmer-Felder speichern automatisch, das Logo lädt über einen eigenen Endpunkt (nur PNG/JPG) mit Vorschau und Entfernen-Aktion
+    - Ein geseedetes BrandingSettings-Singleton wird in einem neuen „Angebotsvorlage“-Bereich der Einstellungen gepflegt; Text-/Farb-/Gültigkeits-/Kleinunternehmer-Felder speichern automatisch, das Logo lädt über einen eigenen Endpunkt (nur PNG/JPG) mit Vorschau und Entfernen-Aktion
     - Branding rendert identisch in der gemeinsamen Vorschau und dem exportierten PDF — Logo, Akzentfarbe, Einleitungs-/Schluss-/Zahlungstext mit Token-Ersetzung, die Gültigkeitszeile und der § 19-Kleinunternehmer-Hinweis, wo zutreffend
     - Ein leeres BrandingSettings rendert das Dokument exakt wie vor dieser Story — kein Logo, Standard-Schwarzton, keine optionalen Zeilen
     - Vorschau sperrt das Angebot weiterhin nie; Export sperrt es weiterhin genau wie zuvor — Branding fügt keinen neuen Freeze-Mechanismus hinzu, da die bereits gespeicherten exportierten Bytes das eingefrorene Branding sind
 codeUrl: Server/Settings/BrandingSettings.cs
+priority: must
 status: done
 aiContribution:
   en: Scope was fixed in a /grill-me session on 2026-07-21 — the AI's proposal of a single global branding config (not a list of named templates), no custom fonts, and a closed token-substitution set was accepted; I added the Kleinunternehmer (§ 19 UStG) tax toggle as a separate concern living on CompanySettings rather than BrandingSettings, since it is a tax fact, not branding.

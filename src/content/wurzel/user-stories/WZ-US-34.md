@@ -23,6 +23,7 @@ acceptanceCriteria:
     - Die SQLitePCLRaw.lib.e_sqlite3-Advisory wird gelöst durch ein neueres EF-Core-Sqlite mit gepatchtem nativem SQLite, oder ein stabiles gepatchtes Release, oder — nur falls beides noch nicht existiert — ein dokumentiertes, befristetes NuGetAuditSuppress mit Verweis auf diese Story
     - Die volle Test-Suite (Client.Tests, Server.Tests, E2ETests) bleibt nach der Änderung grün, ohne Verhaltensänderung an OpenAPI-Ausgabe oder SQLite-Datenzugriff, und ohne Einführung eines kostenpflichtigen Pakets
 codeUrl: Server/Wurzel.Server.csproj
+priority: must
 status: done
 aiContribution:
   en: The AI assessed both advisories as DoS/memory-safety (not data exposure or RCE) and judged practical exposure low because the app only parses its own generated OpenAPI surface and runs fixed, app-authored SQLite queries — grounding the decision to accept a time-boxed suppression where no stable fix existed yet, rather than blocking the release. I own the call that this is acceptable only because the app is not yet productive.

@@ -22,6 +22,7 @@ acceptanceCriteria:
     - Das Formular ist vorbefüllt; Kundennummer und Erstelldatum sind schreibgeschützt
     - Es gilt dieselbe Validierung wie beim Anlegen; Änderungen wirken überall, wo der Kunde erscheint
     - Löschen ist nicht Teil von Level 1
+priority: must
 status: done
 aiContribution:
   en: The AI reused the create form for editing with the identity fields locked; I confirmed leaving delete out of Level 1 to keep the data model safe.

@@ -23,6 +23,7 @@ acceptanceCriteria:
     - Schätzung/Estimation wird vollständig entfernt; die Preisbildung ist auf Positionspreis = Einzelpreis × Menge für jede Einheit vereinheitlicht
     - Spaltenreihenfolge ist Beschreibung, Arbeitszeit, Einheit, Menge, Einzelpreis, Positionspreis; eine einzige Gesamtpreis-Zeile summiert die aktiven Positionen
     - Die geteilte Tabelle wird im Angebot (Anlegen/Bearbeiten) wiederverwendet (das Angebot lässt Arbeitszeit weg und nennt die Summe Angebotspreis)
+priority: must
 status: done
 aiContribution:
   en: The AI spotted that the old Estimation field and per-unit price branches were redundant and proposed one rule; I approved removing Estimation entirely and keeping Duration as an inert, informational field.

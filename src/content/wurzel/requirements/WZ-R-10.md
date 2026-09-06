@@ -8,7 +8,7 @@ businessGoal:
   de: Der Inhaber kann eine korrekte Adresse mit minimalem Tippen erfassen, einem Projekt eine eigene Adresse geben, wenn sie von der des Kunden abweicht, und direkt vom Kunden zu einem neuen Projekt oder Angebot gelangen, ohne zuerst über Zwischenbildschirme zu navigieren.
 fitCriterion:
   en: Typing 3+ characters into a Straße field anywhere it appears offers real address suggestions that fill Straße/PLZ/Ort together; a "Projekt anlegen"/"Angebot anlegen" button on the customer screen reaches a saved project/offer without visiting any other screen first, and an abandoned in-progress offer draft leaves no orphan project or position behind.
-  de: Das Tippen von 3+ Zeichen in ein Straße-Feld bietet überall echte Adressvorschläge, die Straße/PLZ/Ort gemeinsam befüllen; ein „Projekt anlegen"/„Angebot anlegen"-Button auf der Kundenseite führt ohne Zwischenbildschirm zu einem gespeicherten Projekt/Angebot, und ein abgebrochener Angebotsentwurf hinterlässt kein verwaistes Projekt oder keine verwaiste Position.
+  de: Das Tippen von 3+ Zeichen in ein Straße-Feld bietet überall echte Adressvorschläge, die Straße/PLZ/Ort gemeinsam befüllen; ein „Projekt anlegen“/„Angebot anlegen“-Button auf der Kundenseite führt ohne Zwischenbildschirm zu einem gespeicherten Projekt/Angebot, und ein abgebrochener Angebotsentwurf hinterlässt kein verwaistes Projekt oder keine verwaiste Position.
 priority: should
 status: done
 aiContribution:

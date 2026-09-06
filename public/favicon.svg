@@ -6,8 +6,8 @@
     horizontal room for that is gone, so the two states sit one over the other.
     Light tile with an accent frame; for the solid variant, swap the two colours.
   -->
-  <rect width="32" height="32" rx="6" fill="#fcfdfc" stroke="#1b5e3a" stroke-width="2"/>
-  <g fill="none" stroke="#1b5e3a" stroke-width="2.6" stroke-linecap="round">
+  <rect width="32" height="32" rx="6" fill="#fdfbfb" stroke="#7a1e33" stroke-width="2"/>
+  <g fill="none" stroke="#7a1e33" stroke-width="2.6" stroke-linecap="round">
     <path d="M7 11.5c1.6-3.2 3.2 3.2 4.8 0s3.2 3.2 4.8 0 3.2 3.2 4.8 0"/>
     <path d="M7 21h18"/>
   </g>

@@ -161,6 +161,14 @@ const stakeholders = defineCollection({
     name: z.string(), // proper noun -- language-neutral
     role: loc,
     case: reference('case-studies'),
+    // WHO holds the role, as a human. Every role on this project is AI-assisted, which is
+    // exactly why the human behind it has to be named: the direction of the product is
+    // decided by people, and a site about working with AI that leaves that implicit
+    // invites the opposite reading.
+    heldBy: loc.optional(),
+    // WHICH specialised agents assist the role, and where their authority stops
+    // (north-star principle 3: the AI contribution is stated, not implied).
+    aiSupport: loc.optional(),
     interests: locArr.default({ en: [], de: [] }),
     influence: z.enum(['low', 'medium', 'high']).default('medium'),
     // Display order on the case study page. Influence is not the same thing — two
@@ -174,6 +182,11 @@ const glossary = defineCollection({
   schema: z.object({
     term: loc,
     case: reference('case-studies').optional(),
+    // The definition, per locale. It is prose, so the bilingual rule applies to it like to
+    // every other prose field -- a German page that renders an English definition under a
+    // German term is half-translated. Optional so the Markdown body still works as the
+    // single-language fallback.
+    definition: loc.optional(),
   }),
 });
 
@@ -187,6 +200,10 @@ const requirements = defineCollection({
     // the "businessGoal measurable?" checklist item, which was a hope rather than a field:
     // a goal nobody can measure cannot be shown to have been reached.
     fitCriterion: loc.optional(),
+    // DEPRECATED -- moved to `user-stories.priority`. MoSCoW is assigned per checklist item
+    // in the project itself, and a checklist item is a story: a requirement worked across
+    // several stories has no single tier. NOT RENDERED any more; kept because published
+    // files carry it and a published file is not edited to remove a field.
     priority: z.enum(['must', 'should', 'could']).default('should'),
     status: z.enum(['open', 'in-progress', 'done']).default('open'),
     aiContribution: loc.optional(),
@@ -270,6 +287,11 @@ const userStories = defineCollection({
     // anything outside the project repo.
     codeUrl: z.string().optional(),
     jiraKey: z.string().optional(),
+    // MoSCoW, at the level the project actually assigns it: the acceptance checklist puts
+    // each item under a Must-Have / Should-Have heading, and an item is a story. Optional
+    // with NO default -- a story delivered outside those headings (styling, technical
+    // groundwork) carries no tier, and inventing one for it would be a guess.
+    priority: z.enum(['must', 'should', 'could']).optional(),
     status: z.enum(['backlog', 'in-progress', 'review', 'done']).default('backlog'),
     // Make the AI contribution transparent (north-star principle). Required.
     aiContribution: loc,
@@ -302,6 +324,11 @@ const diagrams = defineCollection({
     type: z.enum(['bpmn', 'c4', 'uml', 'mermaid', 'event-storming']),
     tool: z.string(),
     caption: loc.optional(),
+    // The Mermaid source, per locale. A diagram's node labels are prose AND domain
+    // vocabulary: an English diagram has to read in English domain terms, a German one in
+    // the German ones the UI actually uses. Falls back to the Markdown body, which stays
+    // the right place for a diagram that has only one language yet.
+    code: loc.optional(),
     // For real BPMN/C4: path to the exported SVG under /public. The matching `.bpmn`/
     // `.puml` in the vault goes in `source` (part of `versioned` below).
     image: z.string().optional(),

@@ -27,6 +27,7 @@ acceptanceCriteria:
     - Ein Präferenzen-Bereich bietet einen Export-Bestätigung-Schalter (SkipExportConfirmation), der den Export-Bestätigungsdialog reversibel unterdrückt
     - Das Einstellungsformular ist eine gemeinsame Komponente, gerendert sowohl auf der vollen Settings-Seite als auch im Firmeneinstellungen-Gate-Modal
 codeUrl: Server/Settings/CompanySettings.cs
+priority: must
 status: done
 aiContribution:
   en: The AI proposed CompanySettings as a seeded singleton with no DocumentNumber and no UpdatedAt (an always-present config row, not a document), and proposed extracting the settings form into a shared component so the full Settings page and the later company-settings gate (Story 77) render one form with one validation path.

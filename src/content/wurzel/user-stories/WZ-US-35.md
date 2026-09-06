@@ -24,6 +24,7 @@ acceptanceCriteria:
     - Der Positionspreis ist Menge × Einzelpreis für jede Einheit, auch für Stunde — eine Preisregel, kein Sonderfall
 codeUrl: Shared/Positions/PositionRequest.cs
 adr: [WZ-ADR-004]
+priority: must
 status: done
 aiContribution:
   en: This story originally shipped Estimation (planned hours) as required only for Unit = Hour, alongside the new Quantity-based units — a two-formula model where the Hour case priced off time and every other unit off Quantity. The AI later found, while investigating the offer/invoice split, that this left Duration and Estimation carrying three unrelated jobs at once (pricing, work-tracking, and offer/invoice eligibility) and proposed unifying all units — Hour included — onto Quantity × UnitPrice, removing Estimation entirely and making Duration purely informational. I accepted that unification; the acceptance criteria above describe the shipped, unified rule, not this story's original two-formula design.

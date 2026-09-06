@@ -17,7 +17,11 @@ const lang = toLang(Astro.params.lang);
 const t = useTranslations(lang);
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const relatedCase = entry.data.case ? await getEntry(entry.data.case) : undefined;
+// The case study the entry belongs to. While there is exactly one, every entry carries the
+// same chip and it says nothing — so it is left off, the way the navigation drops the case
+// study list. A second case study makes it a distinction again and brings it back.
+const manyCases = (await getCollection('case-studies')).length > 1;
+const relatedCase = manyCases && entry.data.case ? await getEntry(entry.data.case) : undefined;
 // The implementation level the entry belongs to, linked to that level's own page —
 // so a reader can go from "what happened that day" to "what that level shipped".
 const iteration = entry.data.iteration ? await getEntry(entry.data.iteration) : undefined;

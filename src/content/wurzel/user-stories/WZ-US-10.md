@@ -23,6 +23,7 @@ acceptanceCriteria:
     - Änderungen an Beschreibung, Einheit, Menge oder Einzelpreis wirken in jedem offenen Angebot; Angebotspreis und Nettosumme werden neu berechnet
     - Das Deaktivieren einer Position entfernt sie aus den Positionen jedes offenen Angebots; das Reaktivieren fügt sie automatisch wieder hinzu
     - Eingefrorene Angebote (Ersetzt) sind nicht betroffen; die Änderung wirkt über einen Lese-Filter, nicht durch Löschen der Verknüpfung
+priority: must
 status: done
 aiContribution:
   en: Grooming found the live-read already worked via the OfferMapper, so the AI reframed the story as verification plus regression tests rather than new code; I confirmed the Open-only gate.

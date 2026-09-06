@@ -38,6 +38,11 @@ const iterations = await allIterations();
 const caseIterations = iterationsOf(iterations, caseId);
 const current = currentOf(iterations, caseId);
 
+// While there is exactly one case study this page IS the top of the trail -- the
+// navigation names it, and the index it would point back at is not built. A trail of
+// one unlinked crumb is chrome about nothing. A second case study restores both.
+const onlyCase = (await getCollection('case-studies')).length === 1;
+
 // Diagrams, stories and ADRs are shown on the level that introduced them, not here: this
 // page is the overview, and a flat dump of every artifact hides which increment produced
 // what. Each iteration card carries the counts and links to the level that renders them.
@@ -101,10 +106,12 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
     version: displayVersion(iterations, entry),
   })}
 >
-  <Breadcrumbs items={[
-    { label: t('nav.cases'), href: `/${lang}/case-studies` },
-    { label: localize(entry.data.title, lang) ?? entry.id },
-  ]} />
+  {!onlyCase && (
+    <Breadcrumbs items={[
+      { label: t('nav.cases'), href: `/${lang}/case-studies` },
+      { label: localize(entry.data.title, lang) ?? entry.id },
+    ]} />
+  )}
   <LevelNav lang={lang} caseId={caseId} iterations={caseIterations} />
   <h1>{localize(entry.data.title, lang)}</h1>
   <p>
@@ -138,12 +145,14 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
   </ul>
 
   {/* The development-over-time view: every published iteration stays listed and reachable,
-      newest first. Each has its own stable URL — earlier ones never disappear. */}
+      oldest first. The list is a development, and a development reads forwards: Level 1
+      is where the reasoning starts, so it is where the reader starts. Each iteration has
+      its own stable URL — earlier ones never disappear. */}
   {caseIterations.length > 0 && (
     <>
       <h2 id="iterations">{t('iter.h2')}</h2>
       <ul class="reset">
-        {[...caseIterations].reverse().map((it) => (
+        {caseIterations.map((it) => (
           <li class="card">
             <a class="card-link" href={`/${lang}/case-studies/${caseId}/${it.data.version}`}>
               <strong>{localize(it.data.title, lang)}</strong>
@@ -171,6 +180,14 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
             <span class="tag" style="margin-left:.5rem">{t('case.influence')} {s.data.influence}</span>
             {localize<string[]>(s.data.interests, lang)!.length > 0 && (
               <p class="muted small" style="margin:.3rem 0 0">{t('case.interests')} {localize<string[]>(s.data.interests, lang)!.join(', ')}</p>
+            )}
+            {/* Who holds the role as a human, and where the assisting agents stop. On a site
+                about working with AI, leaving that implicit invites the opposite reading. */}
+            {localize(s.data.heldBy, lang) && (
+              <p class="small" style="margin:.3rem 0 0"><strong>{t('case.heldBy')}</strong> {localize(s.data.heldBy, lang)}</p>
+            )}
+            {localize(s.data.aiSupport, lang) && (
+              <p class="ai-note"><strong>{t('case.aiSupport')}</strong> {localize(s.data.aiSupport, lang)}</p>
             )}
           </li>
         ))}

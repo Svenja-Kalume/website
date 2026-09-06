@@ -25,7 +25,7 @@ const outDir = resolve(root, 'public/og');
 const tmpDir = resolve(root, 'node_modules/.cache/og');
 
 // The palette is src/styles/global.css; kept in sync by hand, which is why it is short.
-const C = { bg: '#fcfdfc', title: '#1f2933', muted: '#6b7280', accent: '#1b5e3a', border: '#e5e7eb' };
+const C = { bg: '#fdfbfb', title: '#2a2024', muted: '#6f6167', accent: '#7a1e33', border: '#e9dfe2' };
 
 const locales = {
   en: {

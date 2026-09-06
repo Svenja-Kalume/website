@@ -2,20 +2,26 @@
 // Client-side Mermaid rendering (light build, no headless browser needed).
 // Can be switched to build-time SVG (rehype-mermaid + Playwright) -- see CLAUDE.md.
 //
-// The figure carries a caption: the written one where a diagram has it, otherwise the
-// path derived from the diagram's own labels (src/lib/mermaid-text.ts). Without it the
-// diagram is a script tag to a crawler and silence to a screen reader.
+// The figure carries two different things, and only one of them is for the reader:
+//   - the WRITTEN caption, if the diagram has one — that is prose about the diagram, and
+//     it shows;
+//   - the path derived from the diagram's own labels (src/lib/mermaid-text.ts), which
+//     exists so a crawler and a screen reader get more than a script tag. Printed on the
+//     page it is just the picture read out as a chain of arrows, standing next to the
+//     picture — so it is always rendered, always for assistive technology, never in sight.
+//     A caption is no substitute for it: prose about a diagram is not the diagram.
 import { describeMermaid } from '../lib/mermaid-text';
 
 interface Props { code: string; caption?: string; }
 const { code, caption } = Astro.props;
-const text = caption ?? describeMermaid(code);
+const described = describeMermaid(code);
 ---
 <figure class="mermaid-figure">
   <div class="mermaid-wrap">
     <pre class="mermaid">{code}</pre>
   </div>
-  {text && <figcaption class="muted small">{text}</figcaption>}
+  {caption && <figcaption class="muted small">{caption}</figcaption>}
+  {described && <figcaption class="visually-hidden">{described}</figcaption>}
 </figure>
 
 <style>

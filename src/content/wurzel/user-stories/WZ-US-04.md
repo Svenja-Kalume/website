@@ -24,9 +24,10 @@ acceptanceCriteria:
     - Vom Kunden aus ist die Kundennummer vorbefüllt; aus der Projektliste editierbar mit Inline-Suche
     - Der Projektname ist Pflicht; die Projektnummer wird automatisch als yyyy-nnn erzeugt
     - Der Projektstatus wird automatisch auf Offen gesetzt und ist bei der Anlage nicht wählbar
+priority: must
 status: done
 aiContribution:
   en: The AI drafted the two entry points; I tied the decision to the "Project as core entity" ADR so offers always hang off a project.
-  de: Die KI entwarf die zwei Einstiegspunkte; ich verband die Entscheidung mit dem ADR „Projekt als zentrale Entität", damit Angebote stets an einem Projekt hängen.
+  de: Die KI entwarf die zwei Einstiegspunkte; ich verband die Entscheidung mit dem ADR „Projekt als zentrale Entität“, damit Angebote stets an einem Projekt hängen.
 introducedIn: WZ-0.1.0
 ---

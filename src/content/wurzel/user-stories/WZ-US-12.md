@@ -17,13 +17,14 @@ bpmn: WZ-offer-lifecycle
 adr: [WZ-ADR-003]
 acceptanceCriteria:
   en:
-    - „Neue Version" seeds the new offer with the positions still in the project (not disabled, referenced by the source), copies Betreff and sets AncestorId
+    - „Neue Version“ seeds the new offer with the positions still in the project (not disabled, referenced by the source), copies Betreff and sets AncestorId
     - The source offer becomes Ersetzt with a frozen snapshot; the new one is Offen
     - At most one Open offer per project, and at most one direct successor (no branching)
   de:
-    - „Neue Version" befüllt das neue Angebot mit den Positionen, die noch im Projekt sind (nicht deaktiviert, vom Ursprung referenziert), kopiert den Betreff und setzt die AncestorId
+    - „Neue Version“ befüllt das neue Angebot mit den Positionen, die noch im Projekt sind (nicht deaktiviert, vom Ursprung referenziert), kopiert den Betreff und setzt die AncestorId
     - Das Quell-Angebot wird Ersetzt mit eingefrorenem Snapshot; das neue ist Offen
     - Höchstens ein offenes Angebot je Projekt und höchstens ein direkter Nachfolger (keine Verzweigung)
+priority: must
 status: done
 aiContribution:
   en: The AI modelled versions as a self-referential chain with a snapshot on supersede; I set the single-Open-offer invariant so the project view stays unambiguous.

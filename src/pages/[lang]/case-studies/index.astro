@@ -4,7 +4,13 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
 import { allIterations, displayVersion } from '../../../lib/iterations';
 
-export function getStaticPaths() {
+// A list of one is not a list: while there is exactly one case study the navigation
+// links straight at it (see BaseLayout) and nothing points here, so the page is not
+// built at all rather than left orphaned in the build and the sitemap. Adding a second
+// case study brings it back -- derived from the content, not switched by a flag.
+export async function getStaticPaths() {
+  const cases = await getCollection('case-studies');
+  if (cases.length < 2) return [];
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
 }
 const lang = toLang(Astro.params.lang);

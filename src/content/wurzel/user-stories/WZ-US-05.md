@@ -16,12 +16,13 @@ requirement: WZ-R-02
 acceptanceCriteria:
   en:
     - A menu item lists all projects across customers, sorted by UpdatedAt descending (newest first)
-    - A „Neu" button creates a project with the customer chosen by inline search
+    - A „Neu“ button creates a project with the customer chosen by inline search
     - The same list is embedded as a collapsible section in a customer's view
   de:
     - Ein Menüpunkt listet alle Projekte über alle Kunden, sortiert nach UpdatedAt absteigend (neueste zuerst)
-    - Ein „Neu"-Knopf legt ein Projekt an, mit per Inline-Suche gewähltem Kunden
+    - Ein „Neu“-Knopf legt ein Projekt an, mit per Inline-Suche gewähltem Kunden
     - Dieselbe Liste ist als aufklappbarer Abschnitt in der Kundenansicht eingebettet
+priority: must
 status: done
 aiContribution:
   en: The AI proposed the newest-first ordering by UpdatedAt so the owner lands on recent work; I confirmed reusing the same list component inside the customer view.

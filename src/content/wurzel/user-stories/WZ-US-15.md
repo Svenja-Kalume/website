@@ -23,6 +23,7 @@ acceptanceCriteria:
     - Wird ein Angebot auf Ersetzt gesetzt, wird je Position ein Snapshot (OfferPositionSnapshot) erzeugt und OfferItem.SnapshotId gesetzt
     - Snapshots referenzieren den Ursprung über OriginProjectPositionId; die Projektpositionen bleiben unberührt
     - Das Einfrieren ist atomar mit dem Statusübergang
+priority: must
 status: done
 aiContribution:
   en: The AI designed the snapshot entity and made the freeze atomic with the transition; I noted the read-back path (viewing a superseded offer from its snapshot) as a separate, later story.
