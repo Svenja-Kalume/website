@@ -8,8 +8,8 @@ level: 1
 order: 1
 date: 2026-07-19
 summary:
-  en: The first published state of understanding — customers, projects, priced positions, and offers with versions. Invoices, PDF export, company settings and the document preview were deliberately deferred to later levels. All 20 stories in this iteration are Done; nothing Ready or planned is published here.
-  de: Der erste veröffentlichte Stand des Verständnisses — Kunden, Projekte, bepreiste Positionen und Angebote mit Versionen. Rechnungen, PDF-Export, Firmeneinstellungen und die Dokumentenvorschau wurden bewusst auf spätere Level verschoben. Alle 20 Stories dieser Iteration sind Done; nichts Ready oder Geplantes wird hier veröffentlicht.
+  en: The first usable state of the application — customers, projects, priced positions, and offers with versions. Invoices, PDF export, company settings and the document preview were deliberately deferred to later levels. All 20 stories in this iteration are Done; nothing Ready or planned is published here.
+  de: Der erste nutzbare Stand der Anwendung — Kunden, Projekte, bepreiste Positionen und Angebote mit Versionen. Rechnungen, PDF-Export, Firmeneinstellungen und die Dokumentenvorschau wurden bewusst auf spätere Level verschoben. Alle 20 Stories dieser Iteration sind Done; nichts Ready oder Geplantes wird hier veröffentlicht.
 processChanges:
   en:
     - "Requirements came from watching real use, not upfront planning. A recorded walkthrough of the owner clicking customer → project → position → offer, thinking aloud in German, surfaced needs that planning had missed — the habitual comma in prices (locale-independent decimal input) and billing units beyond hours (m², m³, km, t)."
