@@ -37,7 +37,7 @@ export const ui = {
     'site.title': 'Understanding Before Solving',
     'site.subtitle':
       'An open working journal on insights from software development, requirements engineering, and the path to a solution.',
-    'footer': 'Complexity is my dopamine.',
+    'footer': 'Complexity is my dopamine',
     'footer.impressum': 'Imprint',
     'footer.datenschutz': 'Privacy',
     'footer.rights': 'Built with curiosity and Markdown.',
@@ -147,7 +147,7 @@ export const ui = {
     'topic.nextLevel': 'This topic in',
 
     'trace.desc': 'Traceability from requirement to implementation.',
-    'trace.h1': 'Traceability Explorer',
+    'trace.h1': 'Traceability',
     'trace.intro':
       'From requirement to implementation — computed automatically from the links. Requirements without a linked story are coverage gaps.',
     'trace.th.req': 'Requirement',
@@ -349,11 +349,11 @@ export const ui = {
       'Vom Software-Engineering zur KI-gestützten Rolle als Requirements Engineer / Technical Business Analyst.',
     'about.h1': 'Über mich',
     'about.p1':
-      'Gute Lösungen entstehen nicht zufällig. Sie entstehen, wenn das eigentliche Problem verstanden wird – fachlich, technisch und aus Sicht der Menschen, die damit arbeiten. Genau dieser Weg vom ersten Verständnis bis zur tragfähigen Lösung fasziniert mich.',
+      'Gute Lösungen entstehen nicht zufällig. Sie entstehen, wenn das eigentliche Problem verstanden wird — fachlich, technisch und aus Sicht der Menschen, die damit arbeiten. Genau dieser Weg vom ersten Verständnis bis zur tragfähigen Lösung fasziniert mich.',
     'about.p2':
       'Ich liebe es, komplexe Zusammenhänge zu verstehen, unterschiedliche Perspektiven zusammenzubringen und aus vielen Einzelteilen ein gemeinsames Bild entstehen zu lassen.',
     'about.p3':
-      'Diese Website dokumentiert genau diesen Prozess. Nicht als Sammlung perfekter Projekte, sondern als offenes Arbeitsjournal meines Lernwegs – inklusive Irrwegen, neuen Erkenntnissen und der Frage, wie aus Verständnis gute Lösungen entstehen.',
+      'Diese Website dokumentiert genau diesen Prozess. Nicht als Sammlung perfekter Projekte, sondern als offenes Arbeitsjournal meines Lernwegs — inklusive Irrwegen, neuen Erkenntnissen und der Frage, wie aus Verständnis gute Lösungen entstehen.',
     'about.p4':
       'Beruflich arbeite ich seit über elf Jahren als Software Engineer. Mein Schwerpunkt entwickelt sich zunehmend in Richtung Requirements Engineering, weil ich dort genau die Themen wiederfinde, die mich seit Beginn meiner Laufbahn antreiben: Probleme verstehen, Menschen verbinden und Komplexität strukturieren.',
     'about.contact': 'Kontakt',

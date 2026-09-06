@@ -4,7 +4,7 @@ title:
   de: Angebotsvorschau
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to preview the printable offer document on screen before I export it
@@ -15,11 +15,11 @@ soThat:
 requirement: WZ-R-08
 acceptanceCriteria:
   en:
-    - A Vorschau button opens the offer document, for Open offers only, from the offer editor and the project view's latest-offer card
+    - A Preview button opens the offer document, for Open offers only, from the offer editor and the project view's latest-offer card
     - The preview renders as page images inside a modal, generated server-side from the same QuestPDF document definition later used for export, so it is genuinely WYSIWYG
-    - Before rendering, a company-settings gate blocks Vorschau/Export until CompanyName, Street, PostalCode and City are filled — no document ever renders with a blank sender
-    - The document shows correct company and customer data (Briefkopf/Empfänger) and correct line items and totals, with German currency/date formatting applied in the shared model
-    - Vorschau and Export are blocked with a message if the offer has no eligible positions
+    - Before rendering, a company-settings gate blocks Preview/Export until CompanyName, Street, PostalCode and City are filled — no document ever renders with a blank sender
+    - The document shows correct company and customer data (sender block/recipient) and correct line items and totals, with German currency/date formatting applied in the shared model
+    - Preview and Export are blocked with a message if the offer has no eligible positions
   de:
     - Ein Vorschau-Button öffnet das Angebotsdokument, nur für offene Angebote, aus dem Angebots-Editor und der Neuestes-Angebot-Karte in der Projektansicht
     - Die Vorschau rendert als Seitenbilder in einem Modal, serverseitig aus derselben QuestPDF-Dokumentdefinition erzeugt, die später der Export nutzt — echtes WYSIWYG

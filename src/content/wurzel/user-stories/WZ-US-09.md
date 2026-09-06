@@ -4,7 +4,7 @@ title:
   de: Eine Positionstabelle, in Angeboten wiederverwendet
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: the same clear position table in projects and offers
@@ -16,11 +16,11 @@ requirement: WZ-R-03
 adr: [WZ-ADR-004]
 acceptanceCriteria:
   en:
-    - Schätzung/Estimation is removed completely; pricing is unified to Positionspreis = Einzelpreis × Menge for every unit
-    - Column order is Beschreibung, Arbeitszeit, Einheit, Menge, Einzelpreis, Positionspreis; a single Gesamtpreis sums the active positions
-    - The shared table is reused in offer create/edit (offer omits Arbeitszeit and labels the total Angebotspreis)
+    - Estimation is removed completely; pricing is unified to PositionPrice = UnitPrice × Quantity for every unit
+    - Column order is Description, Duration, Unit, Quantity, UnitPrice, PositionPrice; a single total sums the active positions
+    - The shared table is reused in offer create/edit (offer omits Duration and labels the total OfferPrice)
   de:
-    - Schätzung/Estimation wird vollständig entfernt; die Preisbildung ist auf Positionspreis = Einzelpreis × Menge für jede Einheit vereinheitlicht
+    - Die Schätzung wird vollständig entfernt; die Preisbildung ist auf Positionspreis = Einzelpreis × Menge für jede Einheit vereinheitlicht
     - Spaltenreihenfolge ist Beschreibung, Arbeitszeit, Einheit, Menge, Einzelpreis, Positionspreis; eine einzige Gesamtpreis-Zeile summiert die aktiven Positionen
     - Die geteilte Tabelle wird im Angebot (Anlegen/Bearbeiten) wiederverwendet (das Angebot lässt Arbeitszeit weg und nennt die Summe Angebotspreis)
 priority: must

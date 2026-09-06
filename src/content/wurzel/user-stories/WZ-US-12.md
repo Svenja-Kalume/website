@@ -4,7 +4,7 @@ title:
   de: Mehrere Angebotsversionen führen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to make a new version of an offer
@@ -17,8 +17,8 @@ bpmn: WZ-offer-lifecycle
 adr: [WZ-ADR-003]
 acceptanceCriteria:
   en:
-    - „Neue Version“ seeds the new offer with the positions still in the project (not disabled, referenced by the source), copies Betreff and sets AncestorId
-    - The source offer becomes Ersetzt with a frozen snapshot; the new one is Offen
+    - “New version” seeds the new offer with the positions still in the project (not disabled, referenced by the source), copies Subject and sets AncestorId
+    - The source offer becomes Superseded with a frozen snapshot; the new one is Open
     - At most one Open offer per project, and at most one direct successor (no branching)
   de:
     - „Neue Version“ befüllt das neue Angebot mit den Positionen, die noch im Projekt sind (nicht deaktiviert, vom Ursprung referenziert), kopiert den Betreff und setzt die AncestorId

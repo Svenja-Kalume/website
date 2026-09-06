@@ -4,7 +4,7 @@ title:
   de: Ein offenes Angebot bearbeiten
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to correct a saved open offer
@@ -15,9 +15,9 @@ soThat:
 requirement: WZ-R-04
 acceptanceCriteria:
   en:
-    - Only Open offers are editable (Ersetzt is read-only); Betreff is editable
+    - Only Open offers are editable (Superseded is read-only); Subject is editable
     - Add eligible positions (link only) or remove them (deletes the link only)
-    - Editing Beschreibung/Einzelpreis writes back to the ProjectPosition and reflects in all Open offers; a tooltip warns that the edit updates the shared position
+    - Editing Description/UnitPrice writes back to the ProjectPosition and reflects in all Open offers; a tooltip warns that the edit updates the shared position
   de:
     - Nur offene Angebote sind bearbeitbar (Ersetzt ist schreibgeschützt); der Betreff ist editierbar
     - Geeignete Positionen hinzufügen (nur Verknüpfung) oder entfernen (löscht nur die Verknüpfung)

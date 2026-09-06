@@ -4,7 +4,7 @@ title:
   de: Neue Position im Angebots-Editor anlegen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to describe a brand-new position directly while editing an offer
@@ -15,7 +15,7 @@ soThat:
 requirement: WZ-R-10
 acceptanceCriteria:
   en:
-    - The offer editor gains a "Neue Position" create row (Beschreibung, Einheit, Menge, Einzelpreis), available even when the project has no addable existing positions
+    - The offer editor gains a “New position” create row (Description, Unit, Quantity, UnitPrice), available even when the project has no addable existing positions
     - On confirm the line is added client-side immediately; the ProjectPosition is only created on the offer's normal autosave, so an abandoned draft creates no orphan position
     - Creating a position obeys the same required-field validation as the project's position editor, and is hidden when the offer is read-only
   de:

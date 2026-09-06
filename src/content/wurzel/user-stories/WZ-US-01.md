@@ -4,7 +4,7 @@ title:
   de: Einen Kunden anlegen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to create a customer with their contact data
@@ -15,7 +15,7 @@ soThat:
 requirement: WZ-R-01
 acceptanceCriteria:
   en:
-    - Required fields are Vorname, Nachname, Straße, PLZ and Ort; Firma, Telefon, E-Mail and Notizen are optional
+    - Required fields are FirstName, LastName, Street, PostalCode and City; Company, Phone, Email and Notes are optional
     - CustomerNumber is generated automatically as yyyy-nnn (yearly reset), with an invisible server retry on a unique conflict
     - CreatedAt is set automatically and never shown; the customer appears in the list immediately
   de:

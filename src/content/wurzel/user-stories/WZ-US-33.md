@@ -4,7 +4,7 @@ title:
   de: Deterministischer E2E-Test-Harness
 case: wurzel
 asA:
-  en: developer
+  en: a developer
   de: Entwickler
 iWant:
   en: the E2E suite to pass deterministically when it runs on its own
@@ -26,7 +26,7 @@ codeUrl: Tests/Wurzel.E2ETests/PlaywrightServerFixture.cs
 priority: must
 status: done
 aiContribution:
-  en: The AI's original root-cause analysis was disproven by measurement and explicitly superseded during delivery — it is kept in the story as a "superseded hypothesis" rather than deleted, and the corrected root cause (a skipped host.Start() call) is what shipped. I granted this story a documented exception to keep that stale analysis visible rather than rewritten away, so the reasoning trail stays honest.
+  en: The AI's original root-cause analysis was disproven by measurement and explicitly superseded during delivery — it is kept in the story as a “superseded hypothesis” rather than deleted, and the corrected root cause (a skipped host.Start() call) is what shipped. I granted this story a documented exception to keep that stale analysis visible rather than rewritten away, so the reasoning trail stays honest.
   de: Die ursprüngliche Ursachenanalyse der KI wurde durch Messung widerlegt und während der Umsetzung ausdrücklich ersetzt — sie bleibt als „ersetzte Hypothese“ in der Story erhalten statt gelöscht, und die korrigierte Ursache (ein übersprungener host.Start()-Aufruf) wurde umgesetzt. Ich gewährte dieser Story eine dokumentierte Ausnahme, damit diese überholte Analyse sichtbar bleibt statt wegredigiert zu werden, damit die Nachvollziehbarkeit ehrlich bleibt.
 introducedIn: WZ-0.2.0
 source: docs/user-stories/080-deterministic-e2e-harness.md

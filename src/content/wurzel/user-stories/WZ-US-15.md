@@ -4,7 +4,7 @@ title:
   de: Ein ersetztes Angebot als Snapshot einfrieren
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: a replaced offer to keep the numbers it had at the time
@@ -16,7 +16,7 @@ requirement: WZ-R-04
 bpmn: WZ-offer-lifecycle
 acceptanceCriteria:
   en:
-    - When an offer is set to Ersetzt, a snapshot (OfferPositionSnapshot) is created per line and OfferItem.SnapshotId is set
+    - When an offer is set to Superseded, a snapshot (OfferPositionSnapshot) is created per line and OfferItem.SnapshotId is set
     - Snapshots reference the origin via OriginProjectPositionId; the ProjectPositions are untouched
     - The freeze is atomic with the state transition
   de:

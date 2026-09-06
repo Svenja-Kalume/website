@@ -4,7 +4,7 @@ title:
   de: Angebotsvorlage (Branding)
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to brand my offer document (logo, accent colour) and set standard wording once
@@ -15,10 +15,10 @@ soThat:
 requirement: WZ-R-08
 acceptanceCriteria:
   en:
-    - A seeded BrandingSettings singleton is maintained in a new "Angebotsvorlage" section on the Einstellungen screen; text/colour/validity/Kleinunternehmer fields autosave, the logo uploads via a dedicated endpoint (PNG/JPG only) with a preview and remove action
-    - Branding renders identically on the shared Vorschau and the exported PDF — logo, accent colour, intro/closing/terms wording with token substitution, the validity line, and the § 19 Kleinunternehmer note where applicable
+    - A seeded BrandingSettings singleton is maintained in a new “Offer template” section on the Settings screen; text/colour/validity/Kleinunternehmer fields autosave, the logo uploads via a dedicated endpoint (PNG/JPG only) with a preview and remove action
+    - Branding renders identically on the shared Preview and the exported PDF — logo, accent colour, intro/closing/terms wording with token substitution, the validity line, and the § 19 Kleinunternehmer note where applicable
     - An empty BrandingSettings renders the document exactly as it did before this story — no logo, near-black default, no optional lines
-    - Vorschau still never locks the offer; Export still locks it exactly as before — branding adds no new freeze mechanism, since the already-stored exported bytes are the frozen branding
+    - Preview still never locks the offer; Export still locks it exactly as before — branding adds no new freeze mechanism, since the already-stored exported bytes are the frozen branding
   de:
     - Ein geseedetes BrandingSettings-Singleton wird in einem neuen „Angebotsvorlage“-Bereich der Einstellungen gepflegt; Text-/Farb-/Gültigkeits-/Kleinunternehmer-Felder speichern automatisch, das Logo lädt über einen eigenen Endpunkt (nur PNG/JPG) mit Vorschau und Entfernen-Aktion
     - Branding rendert identisch in der gemeinsamen Vorschau und dem exportierten PDF — Logo, Akzentfarbe, Einleitungs-/Schluss-/Zahlungstext mit Token-Ersetzung, die Gültigkeitszeile und der § 19-Kleinunternehmer-Hinweis, wo zutreffend

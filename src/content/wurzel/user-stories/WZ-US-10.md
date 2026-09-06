@@ -4,7 +4,7 @@ title:
   de: Offene Angebote bleiben mit ihren Positionen synchron
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: my Open offer to always reflect the current project positions
@@ -16,9 +16,9 @@ requirement: WZ-R-03
 bpmn: WZ-position-sync
 acceptanceCriteria:
   en:
-    - Editing Beschreibung, Einheit, Menge or Einzelpreis reflects in every Open offer; Angebotspreis and NetAmount recompute
+    - Editing Description, Unit, Quantity or UnitPrice reflects in every Open offer; OfferPrice and NetAmount recompute
     - Deactivating a position removes it from every Open offer's line items; reactivating re-adds it automatically
-    - Frozen offers (Ersetzt) are not affected; the change is applied by a read-time filter, not by deleting the link
+    - Frozen offers (Superseded) are not affected; the change is applied by a read-time filter, not by deleting the link
   de:
     - Änderungen an Beschreibung, Einheit, Menge oder Einzelpreis wirken in jedem offenen Angebot; Angebotspreis und Nettosumme werden neu berechnet
     - Das Deaktivieren einer Position entfernt sie aus den Positionen jedes offenen Angebots; das Reaktivieren fügt sie automatisch wieder hinzu

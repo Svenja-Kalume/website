@@ -4,7 +4,7 @@ title:
   de: Einheiten für Projektpositionen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to choose a billing unit per project position (hours, area, volume, length, distance, or weight)

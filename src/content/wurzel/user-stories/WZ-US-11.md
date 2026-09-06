@@ -4,7 +4,7 @@ title:
   de: Ein Angebot aus den Positionen eines Projekts erstellen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to create an offer from the project's positions
@@ -16,9 +16,9 @@ requirement: WZ-R-04
 bpmn: WZ-BPMN-02
 acceptanceCriteria:
   en:
-    - OfferNumber (yyyy-nnn), OfferDate and state Offen are set automatically; Betreff is pre-filled with the project name and required
+    - OfferNumber (yyyy-nnn), OfferDate and state Open are set automatically; Subject is pre-filled with the project name and required
     - Eligible positions become live OfferItem links; disabled positions are excluded; a position may be in multiple offers
-    - The offer opens as a draft and is created lazily on the first real change (autosave, no Speichern button); a pure peek persists nothing
+    - The offer opens as a draft and is created lazily on the first real change (autosave, no Save button); a pure peek persists nothing
   de:
     - Angebotsnummer (yyyy-nnn), Angebotsdatum und Status Offen werden automatisch gesetzt; der Betreff ist mit dem Projektnamen vorbefüllt und Pflicht
     - Geeignete Positionen werden zu Live-Angebotspositionen; deaktivierte sind ausgeschlossen; eine Position kann in mehreren Angeboten sein

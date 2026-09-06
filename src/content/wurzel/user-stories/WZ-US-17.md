@@ -4,7 +4,7 @@ title:
   de: Mit Zurück/Vor und Breadcrumb navigieren
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: clear back/forward arrows and a breadcrumb of where I am

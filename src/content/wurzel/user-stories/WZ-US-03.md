@@ -4,7 +4,7 @@ title:
   de: Die Kundenliste sehen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to see all my customers in a list
@@ -15,9 +15,9 @@ soThat:
 requirement: WZ-R-01
 acceptanceCriteria:
   en:
-    - Reachable under „Kunden“; sorted by Nachname ascending
-    - Columns show Kundennummer, Nachname, Vorname and Ort
-    - An edit pencil opens the editor; a „Neu“ button creates a customer; empty shows „Keine Einträge vorhanden“
+    - Reachable under “Customers”; sorted by LastName ascending
+    - Columns show CustomerNumber, LastName, FirstName and City
+    - An edit pencil opens the editor; a “New” button creates a customer; empty shows “No entries”
   de:
     - Erreichbar unter „Kunden“; sortiert nach Nachname aufsteigend
     - Spalten zeigen Kundennummer, Nachname, Vorname und Ort

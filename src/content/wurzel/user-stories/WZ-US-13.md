@@ -4,7 +4,7 @@ title:
   de: Die Angebotssumme sehen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: the offer to sum its line items automatically
@@ -15,7 +15,7 @@ soThat:
 requirement: WZ-R-04
 acceptanceCriteria:
   en:
-    - A totals section below the line items shows Gesamtpreis (NetAmount) as the sum of the line Angebotspreis values
+    - A totals section below the line items shows the total (NetAmount) as the sum of the line OfferPrice values
     - It updates live as positions change; no VAT or discounts are applied at Level 1
   de:
     - Ein Summenbereich unter den Positionen zeigt den Gesamtpreis (Nettosumme) als Summe der Positions-Angebotspreise

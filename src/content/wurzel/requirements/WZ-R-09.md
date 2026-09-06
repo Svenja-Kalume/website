@@ -7,7 +7,7 @@ businessGoal:
   en: As the customer and project lists grow, the owner can find a record by typing part of its name, company or number, without scrolling the full list.
   de: Mit wachsenden Kunden- und Projektlisten kann der Inhaber einen Datensatz durch Tippen eines Teils von Name, Firma oder Nummer finden, ohne die ganze Liste zu durchscrollen.
 fitCriterion:
-  en: Typing a partial name/company/number into either list's search field filters the visible rows on every keystroke, with no extra network request and a clear "no matches" message when nothing fits.
+  en: Typing a partial name/company/number into either list's search field filters the visible rows on every keystroke, with no extra network request and a clear “no matches” message when nothing fits.
   de: Das Tippen eines Teil-Namens/-Firmennamens/-Nummer im Suchfeld einer der beiden Listen filtert die sichtbaren Zeilen bei jedem Tastendruck, ohne zusätzliche Netzwerkanfrage, mit klarer "keine Treffer"-Meldung, wenn nichts passt.
 priority: should
 status: done

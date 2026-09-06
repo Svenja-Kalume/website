@@ -4,7 +4,7 @@ title:
   de: Pakete mit bekannten Schwachstellen aktualisieren (NU1903)
 case: wurzel
 asA:
-  en: developer
+  en: a developer
   de: Entwickler
 iWant:
   en: the transitive packages flagged by the NuGet vulnerability audit (NU1903) updated to non-vulnerable versions

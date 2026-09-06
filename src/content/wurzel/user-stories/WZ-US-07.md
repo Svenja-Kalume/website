@@ -4,7 +4,7 @@ title:
   de: Positionen zu einem Projekt hinzufügen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to add and structure the work items of a project
@@ -15,8 +15,8 @@ soThat:
 requirement: WZ-R-03
 acceptanceCriteria:
   en:
-    - A position has a required Beschreibung and is added inside the edit-project view
-    - A position can be marked Deaktiviert and re-enabled; disabled rows are visually distinguished
+    - A position has a required Description and is added inside the edit-project view
+    - A position can be marked IsDisabled and re-enabled; disabled rows are visually distinguished
     - A per-session toggle can hide disabled positions (not persisted)
   de:
     - Eine Position hat eine Pflicht-Beschreibung und wird in der Projekt-Bearbeiten-Ansicht hinzugefügt

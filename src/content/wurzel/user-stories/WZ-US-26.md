@@ -4,7 +4,7 @@ title:
   de: Kundensuche
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to find a customer quickly by typing part of their name, company, or customer number
@@ -15,8 +15,8 @@ soThat:
 requirement: WZ-R-09
 acceptanceCriteria:
   en:
-    - A Suchfeld above the customer list filters the list in real time as the user types, no submit button
-    - LastName, FirstName, CompanyName and CustomerNumber are searched, case-insensitively; a term with zero matches shows "Keine Einträge gefunden"; clearing the field restores the full list
+    - A search field above the customer list filters the list in real time as the user types, no submit button
+    - LastName, FirstName, CompanyName and CustomerNumber are searched, case-insensitively; a term with zero matches shows “No matches”; clearing the field restores the full list
     - Filtering runs entirely on already-loaded data, with no additional API call per keystroke
   de:
     - Ein Suchfeld über der Kundenliste filtert die Liste in Echtzeit während der Eingabe, ohne Absenden-Button

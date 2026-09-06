@@ -4,7 +4,7 @@ title:
   de: Je Position eine Einheit wählen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to bill a position by hours, area, volume, length, distance or weight
@@ -15,9 +15,9 @@ soThat:
 requirement: WZ-R-03
 acceptanceCriteria:
   en:
-    - Einheit is a fixed enum of six (Stunde/h, m², m³, lfm, km, t); default is Stunde
-    - Menge is shown and required; UnitPrice is the price per selected unit
-    - A snapshot also freezes Einheit and Menge
+    - Unit is a fixed enum of six (Hour/h, m², m³, lfm, km, t); default is Hour
+    - Quantity is shown and required; UnitPrice is the price per selected unit
+    - A snapshot also freezes Unit and Quantity
   de:
     - Einheit ist ein festes Enum aus sechs (Stunde/h, m², m³, lfm, km, t); Standard ist Stunde
     - Menge wird angezeigt und ist Pflicht; der Einzelpreis ist der Preis je gewählter Einheit

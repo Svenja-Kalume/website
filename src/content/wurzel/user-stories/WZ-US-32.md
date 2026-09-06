@@ -4,7 +4,7 @@ title:
   de: Angebot aus Kunde anlegen/bearbeiten erstellen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to create an offer directly from the customer create or edit screen
@@ -15,7 +15,7 @@ soThat:
 requirement: WZ-R-10
 acceptanceCriteria:
   en:
-    - An "Angebot anlegen" button on the customer create/edit form opens a customer-context offer draft (no project in the URL yet), with Subject pre-filled from the customer's display name
+    - An “Create offer” button on the customer create/edit form opens a customer-context offer draft (no project in the URL yet), with Subject pre-filled from the customer's display name
     - Positions start empty and are added via in-editor creation (Story 79); nothing is persisted while the draft is invalid, so an abandoned draft creates no project, position or offer
     - On the first valid save, one transactional server call atomically creates the Project (named from the Subject), its positions, and the Offer linking them; the client then adopts the returned ids and switches to the saved offer editor
   de:
@@ -26,7 +26,7 @@ codeUrl: Client/Customers/CreateCustomerPage.razor
 priority: must
 status: done
 aiContribution:
-  en: The AI proposed the atomic, deferred mechanism — build the whole offer client-side first, persist project + positions + offer in one all-or-nothing transaction only on first valid save — superseding an earlier "eagerly create an empty project on click" idea that left orphan projects behind on abandoned drafts.
+  en: The AI proposed the atomic, deferred mechanism — build the whole offer client-side first, persist project + positions + offer in one all-or-nothing transaction only on first valid save — superseding an earlier “eagerly create an empty project on click” idea that left orphan projects behind on abandoned drafts.
   de: Die KI schlug den atomaren, aufgeschobenen Mechanismus vor — das gesamte Angebot erst client-seitig aufbauen, Projekt + Positionen + Angebot erst beim ersten gültigen Speichern in einer Alles-oder-nichts-Transaktion persistieren — und ersetzte damit eine frühere Idee, sofort ein leeres Projekt anzulegen, die bei abgebrochenen Entwürfen verwaiste Projekte hinterließ.
 introducedIn: WZ-0.2.0
 source: docs/user-stories/059-create-offer-from-customer.md

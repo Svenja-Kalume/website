@@ -4,7 +4,7 @@ title:
   de: Jedes Bearbeiten-Formular automatisch speichern
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: my work to save automatically
@@ -16,8 +16,8 @@ requirement: WZ-R-05
 acceptanceCriteria:
   en:
     - Every edit form saves after 10s of inactivity (the timer resets on change) and only when there are no validation errors
-    - On leaving, pending valid changes save immediately; pending invalid input shows a „Verlassen“ / „Bleiben“ dialog
-    - A subtle indicator shows „Wird gespeichert…“ / „Gespeichert“; there is no manual Speichern or Zurücksetzen button on edit forms
+    - On leaving, pending valid changes save immediately; pending invalid input shows a “Leave” / “Stay” dialog
+    - A subtle indicator shows “Saving…” / “Saved”; there is no manual Save or Reset button on edit forms
   de:
     - Jedes Bearbeiten-Formular speichert nach 10s Inaktivität (der Timer wird bei Änderung zurückgesetzt) und nur, wenn keine Validierungsfehler vorliegen
     - Beim Verlassen werden ausstehende gültige Änderungen sofort gespeichert; ausstehende ungültige Eingaben zeigen einen Dialog „Verlassen“ / „Bleiben“

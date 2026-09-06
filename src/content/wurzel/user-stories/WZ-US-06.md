@@ -4,7 +4,7 @@ title:
   de: Den Kunden beim Projektanlegen inline auswählen
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to search and select the customer directly in the project form
@@ -16,7 +16,7 @@ requirement: WZ-R-02
 acceptanceCriteria:
   en:
     - An inline search (not a dialog) filters case-insensitively over CustomerNumber, name, company and address
-    - Dropdown rows show „Kundennummer – Nachname, Vorname“, Firma and Ort; no matches shows „Keine Einträge gefunden“
+    - Dropdown rows show “CustomerNumber – LastName, FirstName”, Company and City; no matches shows “No matches”
     - A customer must be selected before the project can be saved; it filters already-loaded data
   de:
     - Eine Inline-Suche (kein Dialog) filtert case-insensitiv über Kundennummer, Name, Firma und Adresse

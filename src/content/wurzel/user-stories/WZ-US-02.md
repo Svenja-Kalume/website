@@ -4,7 +4,7 @@ title:
   de: Einen Kunden bearbeiten
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to edit a customer's data
@@ -15,7 +15,7 @@ soThat:
 requirement: WZ-R-01
 acceptanceCriteria:
   en:
-    - The form is pre-filled; Kundennummer and Erstelldatum are read-only
+    - The form is pre-filled; CustomerNumber and CreatedAt are read-only
     - The same validation as create applies; changes are reflected everywhere the customer shows
     - Delete is not part of Level 1
   de:

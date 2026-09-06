@@ -4,7 +4,7 @@ title:
   de: Projektsuche
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to find a project quickly by typing part of the project name or customer name
@@ -15,9 +15,9 @@ soThat:
 requirement: WZ-R-09
 acceptanceCriteria:
   en:
-    - A Suchfeld above the project list filters the list in real time, no submit button, reusing the SearchField component from Story 4
+    - A search field above the project list filters the list in real time, no submit button, reusing the SearchField component from Story 4
     - LastName, FirstName, CompanyName, CustomerNumber, ProjectNumber and ProjectName are searched, case-insensitively; the general project list DTO gains the customer name fields needed to support this
-    - A term with zero matches shows "Keine Einträge gefunden"; clearing the field restores the full list; filtering runs entirely on already-loaded data
+    - A term with zero matches shows “No matches”; clearing the field restores the full list; filtering runs entirely on already-loaded data
   de:
     - Ein Suchfeld über der Projektliste filtert die Liste in Echtzeit, ohne Absenden-Button, unter Wiederverwendung der SearchField-Komponente aus Story 4
     - Nachname, Vorname, Firmenname, Kundennummer, Projektnummer und Projektname werden case-insensitiv durchsucht; das allgemeine Projektlisten-DTO erhält dafür die nötigen Kundennamensfelder

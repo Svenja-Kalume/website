@@ -4,7 +4,7 @@ title:
   de: Angebots-PDF-Erzeugung
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: to export an offer as a professional PDF
@@ -16,7 +16,7 @@ requirement: WZ-R-08
 acceptanceCriteria:
   en:
     - Export is available for an Open offer from the offer editor, the latest-offer card, and the preview modal's Export button
-    - Because export locks the offer irreversibly, a confirmation dialog precedes it, with a reversible "Nicht mehr anzeigen" suppression stored on CompanySettings
+    - Because export locks the offer irreversibly, a confirmation dialog precedes it, with a reversible “Do not show again” suppression stored on CompanySettings
     - On confirmed export the server renders the shared QuestPDF document, atomically freezes/stores/locks the offer, and names the file Angebot_{OfferNumber}.pdf
     - On an already-exported offer, Herunterladen serves the exact stored PDF bytes — never a re-render, no confirmation, no state change
   de:

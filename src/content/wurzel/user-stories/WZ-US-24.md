@@ -4,7 +4,7 @@ title:
   de: Angebot nach Export sperren
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: an offer to become uneditable once I have exported it
@@ -16,11 +16,11 @@ requirement: WZ-R-08
 acceptanceCriteria:
   en:
     - Exporting an Open offer atomically freezes a position snapshot, renders and stores the PDF and page images, and sets OfferState to Exported with ExportedAt
-    - The server rejects any write to a non-Open offer with Conflict (409); the client renders Exported (and Superseded) offers read-only with an "Exportiert" badge
+    - The server rejects any write to a non-Open offer with Conflict (409); the client renders Exported (and Superseded) offers read-only with an “Exported” badge
     - Creating a new version from an already-Exported offer leaves the predecessor Exported (it does not flip to Superseded)
-    - The latest-offer card shows the project's latest offer regardless of status, with Vorschau/Export shown only when it is Open
+    - The latest-offer card shows the project's latest offer regardless of status, with Preview/Export shown only when it is Open
   de:
-    - Der Export eines offenen Angebots friert atomar einen Positions-Snapshot ein, rendert und speichert PDF und Seitenbilder und setzt OfferState auf Exportiert mit ExportedAt
+    - Der Export eines offenen Angebots friert atomar einen Positions-Snapshot ein, rendert und speichert PDF und Seitenbilder und setzt den Angebotsstatus auf Exportiert mit Exportzeitpunkt
     - Der Server lehnt jeden Schreibzugriff auf ein nicht-offenes Angebot mit Conflict (409) ab; der Client rendert exportierte (und ersetzte) Angebote read-only mit einem „Exportiert“-Badge
     - Eine neue Version aus einem bereits exportierten Angebot lässt den Vorgänger exportiert (kein Wechsel zu „Ersetzt“)
     - Die Neuestes-Angebot-Karte zeigt das jeweils neueste Angebot des Projekts unabhängig vom Status, Vorschau/Export nur wenn dieses offen ist

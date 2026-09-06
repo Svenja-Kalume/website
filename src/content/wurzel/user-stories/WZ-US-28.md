@@ -4,7 +4,7 @@ title:
   de: Adress-Intelli-Fill bei Kunde anlegen/bearbeiten
 case: wurzel
 asA:
-  en: landscaping business owner
+  en: a landscaping business owner
   de: GaLaBau-Betriebsinhaber
 iWant:
   en: the customer address fields (Street, PostalCode, City) to intelli-fill while I type
@@ -15,8 +15,8 @@ soThat:
 requirement: WZ-R-10
 acceptanceCriteria:
   en:
-    - Typing in Straße on the customer create/edit form fires an address lookup after a 300ms debounce and at least 3 characters
-    - Matching suggestions appear in a dropdown anchored under Straße; selecting one fills Street, PostalCode and City together; all three fields stay independently editable afterwards
+    - Typing in Street on the customer create/edit form fires an address lookup after a 300ms debounce and at least 3 characters
+    - Matching suggestions appear in a dropdown anchored under Street; selecting one fills Street, PostalCode and City together; all three fields stay independently editable afterwards
     - A manually typed address matching no suggestion is always accepted and saved unchanged; the lookup is biased to Germany and never blocks entry — a failed/timed-out lookup returns an empty list, not an error
   de:
     - Tippen im Straße-Feld des Kunden-Anlegen/Bearbeiten-Formulars löst nach 300ms Debounce und mindestens 3 Zeichen einen Adress-Lookup aus
