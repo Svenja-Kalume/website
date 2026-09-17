@@ -4,7 +4,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { absoluteUrl, blogPostingSchema } from '../../../lib/schema';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
-import { iterationLabel } from '../../../lib/iterations';
+import { allIterations, iterationLabel, iterationSlug } from '../../../lib/iterations';
 
 export async function getStaticPaths() {
   const entries = await getCollection('journal');
@@ -25,6 +25,7 @@ const relatedCase = manyCases && entry.data.case ? await getEntry(entry.data.cas
 // The implementation level the entry belongs to, linked to that level's own page —
 // so a reader can go from "what happened that day" to "what that level shipped".
 const iteration = entry.data.iteration ? await getEntry(entry.data.iteration) : undefined;
+const allIters = await allIterations();
 
 const locale = lang === 'de' ? 'de-DE' : 'en-US';
 const fmt = (d: Date) =>
@@ -58,7 +59,7 @@ const fmt = (d: Date) =>
     {iteration && (
       <a
         class="tag"
-        href={`/${lang}/case-studies/${iteration.data.case.id}/${iteration.data.version}`}
+        href={`/${lang}/case-studies/${iteration.data.case.id}/${iterationSlug(iteration, allIters)}`}
         title={localize(iteration.data.title, lang)}
       >{iterationLabel(iteration, t('iter.level'))}</a>
     )}

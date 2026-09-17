@@ -34,6 +34,59 @@ export function currentOf(all: Iteration[], caseId: string): Iteration | undefin
 }
 
 /**
+ * The URL segment that locates one iteration: `/en/case-studies/wurzel/<slug>`.
+ *
+ * Normally this is just the release tag — the tag IS the identity of a published
+ * increment, and `/0.1.0` is the citable URL the publication plan promises.
+ *
+ * One release can ship more than one increment, though: wurzel's 0.3.0 contains
+ * Implementation Levels 3 and 4, because Level 4 exists to resolve what Level 3's test
+ * walk found, and both were tagged together. They are two iterations by every measure
+ * the site cares about — two dates, two story sets, two statements of what changed in
+ * how the work is done — so they get two pages, and the page needs a segment the tag
+ * alone cannot give.
+ *
+ * The suffix is therefore DERIVED from the collision rather than stored: an iteration
+ * whose version is unique within its case study keeps the bare tag forever, so no
+ * already-published URL can be changed by a later release. Only the members of a shared
+ * tag are disambiguated, and they are disambiguated by the vocabulary that made them
+ * separate in the first place.
+ *
+ * Note the deliberate gap: when a tag is shared, the BARE tag has no page. That is
+ * honest — `/0.3.0` would have to claim to be one of the two levels, and it is neither.
+ */
+export function iterationSlug(it: Iteration, all: Iteration[]): string {
+  const sharingTag = all.filter(
+    (o) => o.data.case.id === it.data.case.id && o.data.version === it.data.version,
+  );
+  if (sharingTag.length < 2) return it.data.version;
+  const level = it.data.level;
+  const suffix =
+    typeof level === 'number' ? `level-${level}` : (level ?? `part-${it.data.order}`);
+  return `${it.data.version}-${suffix}`;
+}
+
+/**
+ * The release tag to show as a badge beside an iteration, or undefined for no badge.
+ *
+ * A tag marks a release, not a level, and one release can contain several levels. So the
+ * badge belongs to the iteration whose completion the tag actually marks: the LAST one
+ * sharing it. wurzel 0.3.0 shipped Levels 3 and 4, and Level 3 never had a release of its
+ * own — it was finished, walked, corrected by Level 4 and tagged once, together. Level 4
+ * therefore carries the 0.3.0 badge and Level 3 carries none, which is the honest reading:
+ * there is no release you could point at that is Level 3 and not also Level 4.
+ *
+ * Derived from the collision, like `iterationSlug`, so an iteration alone under its tag
+ * always shows it and nothing has to be maintained per level.
+ */
+export function releaseBadge(it: Iteration, all: Iteration[]): string | undefined {
+  const sharingTag = all
+    .filter((o) => o.data.case.id === it.data.case.id && o.data.version === it.data.version)
+    .sort(byOrder);
+  return sharingTag[sharingTag.length - 1]?.id === it.id ? it.data.version : undefined;
+}
+
+/**
  * The version to display for a case study. Derived from the current iteration;
  * falls back to the deprecated `case-studies.version` while a project has no
  * iterations, so nothing renders blank mid-migration.

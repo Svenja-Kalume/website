@@ -37,17 +37,36 @@ export function sitemapDates(contentDir = process.env.CONTENT_DIR ?? './src/cont
     ? readdirSync(contentDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name)
     : [];
 
-  for (const project of projects) {
-    for (const it of read(join(contentDir, project, 'iterations'))) {
-      const date = toDate(it.data.date);
-      const caseId = typeof it.data.case === 'string' ? it.data.case : it.data.case?.id;
-      if (!caseId || !it.data.version) continue;
-      for (const lang of LOCALES) {
-        set(`/${lang}/case-studies/${caseId}/${it.data.version}/`, date);
-        // The overview stands at its newest level, so it carries that level's date.
-        set(`/${lang}/case-studies/${caseId}/`, date);
-      }
+  // Every iteration of every project first: the URL of one of them depends on whether
+  // another shares its release tag, so none can be resolved project by project. Mirrors
+  // `iterationSlug` in src/lib/iterations.ts — one release can ship several iterations
+  // (wurzel 0.3.0 = Levels 3 and 4), and then the level disambiguates the tag.
+  const allIterations = projects.flatMap((project) =>
+    read(join(contentDir, project, 'iterations')).map((it) => ({
+      ...it,
+      caseId: typeof it.data.case === 'string' ? it.data.case : it.data.case?.id,
+    })),
+  );
+  const slugOf = (it) => {
+    const sharingTag = allIterations.filter(
+      (o) => o.caseId === it.caseId && o.data.version === it.data.version,
+    );
+    if (sharingTag.length < 2) return it.data.version;
+    const level = it.data.level;
+    return `${it.data.version}-${typeof level === 'number' ? `level-${level}` : (level ?? `part-${it.data.order}`)}`;
+  };
+
+  for (const it of allIterations) {
+    const date = toDate(it.data.date);
+    if (!it.caseId || !it.data.version) continue;
+    for (const lang of LOCALES) {
+      set(`/${lang}/case-studies/${it.caseId}/${slugOf(it)}/`, date);
+      // The overview stands at its newest level, so it carries that level's date.
+      set(`/${lang}/case-studies/${it.caseId}/`, date);
     }
+  }
+
+  for (const project of projects) {
     for (const entry of read(join(contentDir, project, 'journal'))) {
       const date = toDate(entry.data.date);
       for (const lang of LOCALES) set(`/${lang}/journal/${entry.id}/`, date);

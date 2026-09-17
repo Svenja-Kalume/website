@@ -65,6 +65,15 @@ collection. Full reasoning: **`docs/iterations-and-publication-plan.md`**.
 
 - **The publication unit is the iteration**, identified by the **app-repo release tag** (`WZ-0.1.0`).
   `level` and `blocks` are optional — that is wurzel's scheduling vocabulary, not the site's contract.
+- **One tag can carry several iterations.** Tag `0.3.0` shipped Implementation Levels 3 and 4 —
+  Level 4 exists to resolve what Level 3's own test walks found — so they are two iterations sharing
+  one `version`, ids `WZ-0.3.0-level-3` / `WZ-0.3.0-level-4`, linked by `corrects:` on the newer one.
+  Levels and version tags are **not in sync**; derive which is which from the acceptance checklist at
+  the tag, never from the number. The page URL follows from this and is **derived**, not stored
+  (`iterationSlug` in `src/lib/iterations.ts`): an iteration whose version is unique keeps the bare
+  tag forever (`/0.1.0`), and only the members of a shared tag are suffixed (`/0.3.0-level-3`), so no
+  published URL can be changed by a later release. The bare tag of a shared release has no page —
+  deliberately, since it would have to claim to be one of the levels and is neither.
 - **Published iterations are append-only.** Never edit a file a published iteration shipped. This is
   enforced by the schema shape, not by discipline: the change pointer lives on the **newer** artifact
   (`changes`, `supersedes`), there is no `changedIn` / `supersededBy`, and the current iteration is
@@ -196,6 +205,16 @@ Static output runs on any IONOS hosting. Recommended: **IONOS Deploy Now** (auto
 via GitHub Actions on each push → `dist/`). Alternatively upload `dist/` via SFTP. Before going live,
 set `site:` in `astro.config.mjs` to the real domain.
 
+### Branching — `main` is the live site
+
+**The site is live off `main`. Never commit to it and never merge into it.** Work on a feature branch
+and merge into **`develop`**; promoting `develop` to `main` is a publication decision and belongs to
+the owner alone. A branch per unit of work also keeps the append-only rule auditable — the whole point
+of an iteration update is that its diff can be read.
+
+`.github/workflows/website-orchestration.yaml` triggers on **`push` with no branch filter**, so
+pushing *any* branch to origin starts a Deploy Now run. Ask before pushing.
+
 ## Harness (reminds you of the steps)
 
 - `.claude/settings.json` — hooks: **SessionStart** shows the guardrails; **PostToolUse** (Write/Edit
@@ -204,6 +223,11 @@ set `site:` in `astro.config.mjs` to the real domain.
 - `scripts/check-traceability.mjs` (`npm run re:check`) — checks broken references, missing required
   fields (acceptance criteria, AI contribution), coverage gaps and scope limits.
 - Slash command **`/re-check`** runs the check and summarises it.
+- Slash command **`/update-iteration <tag>`** is the whole update in one run: pull the app repo at
+  the tag, publish the implementation levels that have no iteration yet, refresh what is derivable
+  without a decision, then work through journal, `processChanges`, `lessons` and `aiContribution`
+  **with** you. It reads the vault at `${WURZEL_REPO:-/home/svenja/src/wurzel/wurzel}` *at the tag*,
+  never in its working tree — an iteration documents the practice as it was then.
 
 ## Language
 

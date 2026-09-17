@@ -7,7 +7,7 @@ import LevelNav from '../../../components/LevelNav.astro';
 import DiagramFigure from '../../../components/DiagramFigure.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import AdrCard from '../../../components/AdrCard.astro';
-import { allIterations, iterationsOf, currentOf, introducedIn, displayVersion, iterationLabel } from '../../../lib/iterations';
+import { allIterations, iterationsOf, currentOf, introducedIn, displayVersion, iterationLabel, iterationSlug } from '../../../lib/iterations';
 import { topicsOf, groupByTopic } from '../../../lib/topics';
 import { absoluteUrl, techArticleSchema } from '../../../lib/schema';
 
@@ -83,7 +83,7 @@ const levelOf = (e: { data: { introducedIn?: { id: string } | undefined } }) => 
   const it = e.data.introducedIn ? iterationById.get(e.data.introducedIn.id) : undefined;
   return it && {
     label: iterationLabel(it, t('iter.level')),
-    href: `/${lang}/case-studies/${caseId}/${it.data.version}`,
+    href: `/${lang}/case-studies/${caseId}/${iterationSlug(it, caseIterations)}`,
   };
 };
 
@@ -154,7 +154,7 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
       <ul class="reset">
         {caseIterations.map((it) => (
           <li class="card">
-            <a class="card-link" href={`/${lang}/case-studies/${caseId}/${it.data.version}`}>
+            <a class="card-link" href={`/${lang}/case-studies/${caseId}/${iterationSlug(it, caseIterations)}`}>
               <strong>{localize(it.data.title, lang)}</strong>
             </a>
             <span class="tag" style="margin-left:.5rem">v{it.data.version}</span>

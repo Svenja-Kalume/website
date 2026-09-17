@@ -12,7 +12,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { ui, localize, defaultLang } from '../i18n/ui';
-import { allIterations, iterationsOf } from '../lib/iterations';
+import { allIterations, iterationsOf, iterationSlug } from '../lib/iterations';
 import { SITE_URL } from '../lib/schema';
 
 const t = ui[defaultLang];
@@ -50,7 +50,7 @@ export const GET: APIRoute = async () => {
       out.push(
         `  ${line(
           `${localize(it.data.title, defaultLang) ?? it.id} (v${it.data.version}, ${it.data.date.toISOString().slice(0, 10)})`,
-          `/${defaultLang}/case-studies/${c.id}/${it.data.version}`,
+          `/${defaultLang}/case-studies/${c.id}/${iterationSlug(it, iterations)}`,
           localize(it.data.summary, defaultLang)
         )}`
       );
