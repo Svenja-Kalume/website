@@ -6,9 +6,15 @@
 name: "Deploy Now: Orchestration"
 run-name: "Deploy Now: Build website · ${{ github.event.head_commit.message || format('Triggered by {0}', github.triggering_actor) }}"
 
+# Deploys run for the deployable branches only. `main` is the live site and `develop` is
+# where work is collected; a feature branch is pushed to share it, not to publish it, and
+# the unfiltered `push` this file shipped with started a Deploy Now run for every branch.
 on:
-  - push
-  - workflow_dispatch
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
 
 jobs:
   retrieve-project:
