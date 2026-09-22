@@ -15,15 +15,15 @@ soThat:
 requirement: WZ-R-15
 acceptanceCriteria:
   en:
-    - "After a new invoice’s first successful save, **Vorschau**, **Exportieren** and **Löschen** are available without reloading or re-navigating"
+    - "After a new invoice’s first successful save, Vorschau, Exportieren and Löschen are available without reloading or re-navigating"
     - "The pending autosave is not interrupted by whatever makes them available — typing continues and nothing is lost"
     - "The actions behave identically to those on the edit page, including the save-first rule and where each action leaves the user afterwards"
     - "Both create paths are covered"
     - "Regression coverage drives a create page through its first save and asserts the actions are reachable"
   de:
-    - "Nach dem ersten erfolgreichen Speichern einer neuen Rechnung sind **Vorschau**, **Exportieren** und **Löschen** verfügbar, ohne Neuladen und ohne erneutes Navigieren"
+    - "Nach dem ersten erfolgreichen Speichern einer neuen Rechnung sind Vorschau, Exportieren und Löschen verfügbar, ohne Neuladen und ohne erneutes Navigieren"
     - "Das ausstehende Autosave wird durch den Mechanismus, der sie verfügbar macht, nicht unterbrochen — das Tippen läuft weiter, und nichts geht verloren"
-    - "Die Aktionen verhalten sich wie auf der Bearbeitungsseite, einschließlich der Speichern-zuerst-Regel und dessen, wo jede Aktion die Nutzerin danach zurücksetzt"
+    - "Die Aktionen verhalten sich wie auf der Bearbeitungsseite, einschließlich der Speichern-zuerst-Regel und der Frage, wohin jede Aktion die Nutzerin danach zurückführt"
     - "Beide Anlegewege sind abgedeckt"
     - "Ein Regressionstest führt eine Anlegeseite durch ihr erstes Speichern und prüft, dass die Aktionen erreichbar sind"
 codeUrl: Client/Invoices/InvoiceEditorActions.razor

@@ -30,7 +30,7 @@ priority: should
 status: done
 aiContribution:
   en: "The AI proposed reaching for a component library, which would have made this story small and the app’s look someone else’s. I declined: the shared controls are hand-rolled on purpose, and a dependency taken to save an afternoon on message styling is one the app then carries through every later level. The criterion forbidding it is in the story so the trade-off is on the record rather than in a conversation."
-  de: "Die KI schlug vor, zu einer Komponentenbibliothek zu greifen — das hätte diese Story klein gemacht und das Erscheinungsbild der Anwendung zu dem eines anderen. Ich habe abgelehnt: Die gemeinsamen Bedienelemente sind bewusst selbst gebaut, und eine Abhängigkeit, die einen Nachmittag Meldungs-Styling spart, trägt die Anwendung danach durch jedes weitere Level. Das Kriterium, das es verbietet, steht in der Story, damit die Abwägung aktenkundig ist und nicht nur ein Gespräch war."
+  de: "Die KI schlug vor, zu einer Komponentenbibliothek zu greifen — das hätte diese Story klein gemacht und das Erscheinungsbild der Anwendung zu dem einer anderen. Ich habe abgelehnt: Die gemeinsamen Bedienelemente sind bewusst selbst gebaut, und eine Abhängigkeit, die einen Nachmittag Meldungs-Styling spart, trägt die Anwendung danach durch jedes weitere Level. Das Kriterium, das es verbietet, steht in der Story, damit die Abwägung aktenkundig ist und nicht nur ein Gespräch war."
 introducedIn: WZ-0.3.0-level-4
 source: docs/user-stories/125-validation-messages-render-consistently.md
 ---

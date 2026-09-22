@@ -30,7 +30,7 @@ priority: must
 status: done
 aiContribution:
   en: "This was fixed as a one-off, for the invoice editor’s export button alone, and that is exactly what made it worth a decision later. The pattern — an action that acts on the stored record while the screen holds something newer — was never written down here, so the same gap survived on every other surface that offers the same button. The AI found them all at the next readiness gate, by reading the codebase rather than waiting for the next walk to trip over them one at a time."
-  de: "Das wurde als Einzelfall behoben, nur für die Export-Schaltfläche im Rechnungseditor — und genau das machte es später zu einer Entscheidung wert. Das Muster — eine Aktion wirkt auf den gespeicherten Datensatz, während der Bildschirm etwas Neueres hält — wurde hier nie festgehalten, also überlebte dieselbe Lücke auf jeder anderen Oberfläche mit derselben Schaltfläche. Die KI fand sie am nächsten Readiness-Gate alle, indem sie den Code las, statt zu warten, bis der nächste Durchlauf einzeln darüber stolpert."
+  de: "Das wurde als Einzelfall behoben, nur für die Export-Schaltfläche im Rechnungseditor — und genau deshalb war es später eine eigene Entscheidung wert. Das Muster — eine Aktion wirkt auf den gespeicherten Datensatz, während der Bildschirm etwas Neueres hält — wurde hier nie festgehalten, also überlebte dieselbe Lücke auf jeder anderen Oberfläche mit derselben Schaltfläche. Die KI fand sie am nächsten Readiness-Gate alle, indem sie den Code las, statt zu warten, bis der nächste Durchlauf einzeln darüber stolpert."
 introducedIn: WZ-0.3.0-level-4
 source: docs/user-stories/116-invoice-export-not-locked-on-failed-save.md
 changes: [WZ-US-39]

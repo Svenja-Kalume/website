@@ -31,11 +31,28 @@ const described = describeMermaid(code);
 <style>
   .mermaid-figure { margin: 0 0 1.4rem; }
   .mermaid-figure figcaption { margin-top: .5rem; }
+
+  /* Mermaid scales an SVG down to fit its container, and the page measure is narrow
+     (--max: 46rem). A wide graph with prose labels therefore shrank until the text was
+     unreadable. Scrolling a wide diagram is better than shrinking every diagram: the
+     labels keep their size, and only the graphs that genuinely do not fit ask the reader
+     to scroll. `useMaxWidth: false` below is the other half of this. */
+  .mermaid-wrap { overflow-x: auto; }
+  .mermaid-wrap :global(svg) { max-width: none; height: auto; }
 </style>
 
 <script>
   import mermaid from 'mermaid';
-  mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'neutral',
+    // Node labels are prose, not identifiers, so they are read rather than glanced at.
+    themeVariables: { fontSize: '16px' },
+    // Render at natural size; .mermaid-wrap scrolls when that is wider than the measure.
+    flowchart: { useMaxWidth: false },
+    sequence: { useMaxWidth: false },
+    state: { useMaxWidth: false },
+  });
   const run = () => mermaid.run({ querySelector: '.mermaid' });
   run();
   document.addEventListener('astro:page-load', run);

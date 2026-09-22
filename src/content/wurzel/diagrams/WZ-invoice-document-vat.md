@@ -19,7 +19,7 @@ code:
       M[One shared document model] --> P[On-screen preview]
       M --> F[Exported PDF and stored page images]
       M --> H[Header: title by type, Rechnungsnummer, dates, service period]
-      M --> L[Line table: the invoice's own frozen lines, never the live positions]
+      M --> L[Line table: the invoice's own copied lines, never the live positions]
       M --> S{Tax rate set?}
       S -->|yes| V[Nettobetrag / MwSt. rate % / Gesamtbetrag gross]
       S -->|Kleinunternehmer| N[§ 19 UStG note, Gesamtbetrag equals net]
@@ -31,7 +31,7 @@ code:
       M[Ein gemeinsames Dokumentmodell] --> P[Bildschirmvorschau]
       M --> F[Exportiertes PDF und gespeicherte Seitenbilder]
       M --> H[Kopf: Titel nach Rechnungsart, Rechnungsnummer, Daten, Leistungszeitraum]
-      M --> L[Positionstabelle: die eingefrorenen Zeilen der Rechnung, nie die Live-Positionen]
+      M --> L[Positionstabelle: die kopierten Zeilen der Rechnung, nie die Live-Positionen]
       M --> S{Steuersatz gesetzt?}
       S -->|ja| V[Nettobetrag / MwSt. Satz % / Gesamtbetrag brutto]
       S -->|Kleinunternehmer| N[Hinweis nach § 19 UStG, Gesamtbetrag gleich netto]

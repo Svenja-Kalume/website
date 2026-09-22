@@ -16,13 +16,13 @@ A Stornorechnung is issued as a new invoice row whose number is derived from the
 sequence, and deriving it keeps the two documents provably paired.
 
 That collides with how numbers are generated. The counter scan matches `^\d{4}-(\d+)$` and
-**throws on anything else**, over every number returned for the year. A `2026-034-S` row in that scan
+throws on anything else, over every number returned for the year. A `2026-034-S` row in that scan
 set does not match, so the next advance or final invoice of the year would have failed to generate at
 all — breaking invoice numbering from then on.
 
 ## Decision
-Correction-invoice rows are **excluded from the number-generation scan**. The regex is deliberately
-**not** loosened to tolerate the suffix.
+Correction-invoice rows are excluded from the number-generation scan. The regex is deliberately
+not loosened to tolerate the suffix.
 
 ## Consequences
 A Storno never consumes a counter value and never creates a gap; the only documented gap remains the

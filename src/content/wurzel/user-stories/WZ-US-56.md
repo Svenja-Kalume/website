@@ -17,14 +17,14 @@ acceptanceCriteria:
   en:
     - "Typing in a position row while an unrelated field’s autosave fires does not reset the table or discard the in-progress edit"
     - "An invalid or not-yet-committed row stays on screen with its validation state and is left out of the save; the save carries the committed rows"
-    - "A row switched off with **Deaktivieren** is still sent, carrying its last reconciled non-blank description rather than the blank on screen — sending the blank would fail model validation and block the whole save, not just that row"
+    - "A row switched off with Deaktivieren is still sent, carrying its last reconciled non-blank description rather than the blank on screen — sending the blank would fail model validation and block the whole save, not just that row"
     - "A held-back row is visibly marked, the autosave status stops reading “Gespeichert” while any row is held back, and leaving the page prompts as for any other unsaved edit"
     - "A row whose quantity or unit price is a deliberately typed `0` is held back rather than saved — the same gate that already applies when adding a new row"
     - "Positions the server actually changed are still reflected after a save; the fix does not stop the client learning about server-side changes"
   de:
     - "Das Tippen in einer Positionszeile, während das Autosave eines anderen Feldes auslöst, setzt die Tabelle nicht zurück und verwirft die begonnene Änderung nicht"
     - "Eine ungültige oder noch nicht bestätigte Zeile bleibt mit ihrem Validierungszustand am Bildschirm und wird vom Speichern ausgelassen; gespeichert werden die bestätigten Zeilen"
-    - "Eine mit **Deaktivieren** abgeschaltete Zeile wird dennoch gesendet und trägt ihre letzte abgeglichene, nicht leere Beschreibung statt der leeren am Bildschirm — die leere zu senden würde die Modellvalidierung verletzen und das gesamte Speichern blockieren, nicht nur diese Zeile"
+    - "Eine mit Deaktivieren abgeschaltete Zeile wird dennoch gesendet und trägt ihre letzte abgeglichene, nicht leere Beschreibung statt der leeren am Bildschirm — die leere zu senden würde die Modellvalidierung verletzen und das gesamte Speichern blockieren, nicht nur diese Zeile"
     - "Eine zurückgehaltene Zeile ist sichtbar gekennzeichnet, der Autosave-Status sagt nicht mehr „Gespeichert“, solange eine Zeile zurückgehalten wird, und das Verlassen der Seite fragt nach wie bei jeder anderen ungespeicherten Änderung"
     - "Eine Zeile, deren Menge oder Einzelpreis eine bewusst getippte `0` ist, wird zurückgehalten statt gespeichert — dieselbe Schranke, die beim Hinzufügen einer neuen Zeile schon gilt"
     - "Vom Server tatsächlich geänderte Positionen erscheinen nach dem Speichern weiterhin; die Korrektur nimmt dem Client nicht die Möglichkeit, von serverseitigen Änderungen zu erfahren"

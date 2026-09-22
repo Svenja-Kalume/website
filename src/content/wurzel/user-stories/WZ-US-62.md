@@ -15,14 +15,14 @@ soThat:
 requirement: WZ-R-15
 acceptanceCriteria:
   en:
-    - "**Exportieren** saves pending changes before it starts, wherever it is offered — the invoice editor, the offer editor, the latest-offer card and the project’s invoice list"
+    - "Exportieren saves pending changes before it starts, wherever it is offered — the invoice editor, the offer editor, the latest-offer card and the project’s invoice list"
     - "The export runs only if that save succeeded; on a pending or failed save it does not start and the user is told why"
     - "This holds on a create page as well as an edit page"
     - "An export started with an unsaved change on screen freezes a document that contains that change"
     - "A failed export on the project’s latest-offer card is reported to the user beside the button, matching every other export surface — today it is shown nowhere"
     - "Regression coverage drives an export with an unsaved change outstanding, once per surface"
   de:
-    - "**Exportieren** speichert ausstehende Änderungen, bevor es startet — überall, wo es angeboten wird: im Rechnungseditor, im Angebotseditor, auf der Karte des neuesten Angebots und in der Rechnungsliste des Projekts"
+    - "Exportieren speichert ausstehende Änderungen, bevor es startet — überall, wo es angeboten wird: im Rechnungseditor, im Angebotseditor, auf der Karte des neuesten Angebots und in der Rechnungsliste des Projekts"
     - "Der Export läuft nur, wenn dieses Speichern erfolgreich war; bei ausstehendem oder fehlgeschlagenem Speichern startet er nicht, und die Nutzerin erfährt warum"
     - "Das gilt auf einer Anlegeseite ebenso wie auf einer Bearbeitungsseite"
     - "Ein mit einer ungespeicherten Änderung am Bildschirm gestarteter Export friert ein Dokument ein, das diese Änderung enthält"

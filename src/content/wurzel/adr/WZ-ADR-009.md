@@ -21,8 +21,8 @@ number and states plainly that it will not be reused.
 
 ## Consequences
 Deleting a draft leaves a documented gap in the sequence — made explicit to the user rather than
-hidden, because **a documented gap is auditable and an issued bill that vanished is not**. The tidier
+hidden, because a documented gap is auditable and an issued bill that vanished is not. The tidier
 assign-at-issuing model was deliberately deferred, not rejected: adopting it mid-block would have
 contradicted a story already groomed to `Ready` and forked the shared number-generation pattern for
-one entity. This is also the first real use of the reserved term **Löschen**; everything shipped
-before used only **Entfernen**, which detaches and deletes nothing.
+one entity. This is also the first real use of the reserved term Löschen; everything shipped
+before used only Entfernen, which detaches and deletes nothing.

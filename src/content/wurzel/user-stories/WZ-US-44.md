@@ -8,21 +8,21 @@ asA:
   de: "GaLaBau-Betriebsinhaber"
 iWant:
   en: "to open a list of all invoices from the menu, across every project"
-  de: "über das Menü eine Liste aller Rechnungen über alle Projekte hinweg zu öffnen"
+  de: "über das Menü eine Liste aller Rechnungen aus allen Projekten öffnen"
 soThat:
   en: "I can find a bill again without first remembering which project it belonged to"
   de: "ich eine Rechnung wiederfinde, ohne mich erst erinnern zu müssen, zu welchem Projekt sie gehörte"
 requirement: WZ-R-13
 acceptanceCriteria:
   en:
-    - "A **Rechnungen** menu item opens the list, which shows every invoice in every state"
+    - "A Rechnungen menu item opens the list, which shows every invoice in every state"
     - "Rows are sorted newest first by invoice date falling back to creation date, so drafts — which have no invoice date — sort by when they were made instead of collapsing to the bottom; the user can switch to sorting by last change"
     - "Each row shows number, invoice date, due date, type, state, project number, customer number, gross amount and subject where set"
     - "A cancelled invoice is marked STORNIERT in the row"
     - "A draft row opens the editor, a frozen row opens the read-only view"
     - "With no invoices at all, the list shows an empty state"
   de:
-    - "Ein Menüpunkt **Rechnungen** öffnet die Liste, die jede Rechnung in jedem Status zeigt"
+    - "Ein Menüpunkt Rechnungen öffnet die Liste, die jede Rechnung in jedem Status zeigt"
     - "Zeilen sind neueste zuerst sortiert, nach Rechnungsdatum mit Rückfall auf das Anlagedatum — Entwürfe ohne Rechnungsdatum sortieren also nach ihrer Entstehung, statt ans Ende zu rutschen; umschaltbar auf Sortierung nach letzter Änderung"
     - "Jede Zeile zeigt Nummer, Rechnungsdatum, Fälligkeitsdatum, Art, Status, Projektnummer, Kundennummer, Gesamtbetrag und, falls gesetzt, den Betreff"
     - "Eine stornierte Rechnung ist in der Zeile als STORNIERT gekennzeichnet"

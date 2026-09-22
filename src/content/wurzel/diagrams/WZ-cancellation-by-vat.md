@@ -10,7 +10,7 @@ caption:
   de: "Für die Nutzerin ein Vorgang, im Recht zwei Pflichten. Der gemeinsame Übergang kennzeichnet die Rechnung als STORNIERT und gibt ihre Mengen zurück; eine Rechnung mit Umsatzsteuer braucht danach zusätzlich eine Stornorechnung als Gegendokument, nummeriert aus dem Original und aus der Nummernfolge ausgeschlossen. Bei einer Kleinunternehmer-Rechnung ist der Zustandswechsel die ganze Stornierung."
 aiContribution:
   en: "The split was a legal judgement, not the AI’s: to a user, cancelling is one action, and dividing it into two stories by VAT status comes from § 14c UStG. What the AI contributed sits at the bottom right of the diagram — the correction row must stay out of the number scan, or the next ordinary invoice of the year cannot be generated at all."
-  de: "Die Aufteilung war eine juristische Entscheidung und nicht die der KI: Für die Nutzerin ist Stornieren ein Vorgang, und ihn nach Umsatzsteuerstatus in zwei Stories zu teilen folgt aus § 14c UStG. Der Beitrag der KI steht unten rechts im Bild — die Stornozeile muss aus dem Nummernscan herausbleiben, sonst lässt sich die nächste reguläre Rechnung des Jahres gar nicht erzeugen."
+  de: "Die Aufteilung war eine juristische Entscheidung und nicht die der KI: Für die Nutzerin ist Stornieren ein Vorgang, und ihn nach Umsatzsteuerstatus in zwei Stories zu teilen, folgt aus § 14c UStG. Der Beitrag der KI steht unten rechts im Bild — die Stornozeile muss aus dem Nummernscan herausbleiben, sonst lässt sich die nächste reguläre Rechnung des Jahres gar nicht erzeugen."
 introducedIn: WZ-0.3.0-level-3
 source: docs/user-stories/099-cancel-invoice-kleinunternehmer.md
 code:
@@ -18,10 +18,10 @@ code:
     flowchart TD
       A([Stornieren on an Exported invoice]) --> C{Confirmed?}
       C -->|no| Z([Nothing happens])
-      C -->|yes| G{Final invoice stands on this project?}
-      G -->|yes, and this is an advance| K[/Conflict — cancel the final first/]
+      C -->|yes| G{Is the invoice being cancelled an advance invoice, and does a final invoice exist for the project?}
+      G -->|yes| K[/Conflict — cancel the final invoice first/]
       G -->|no| T[State becomes Cancelled, timestamp touched]
-      T --> M[Marked STORNIERT in both lists and the view]
+      T --> M[The invoice is marked STORNIERT in the general invoice list and in the project invoice list]
       T --> Q[Billed quantities return — remaining is computed, not stored]
       T --> V{VAT invoice?}
       V -->|no, § 19| D([Complete — no counter-document])
@@ -33,10 +33,10 @@ code:
     flowchart TD
       A([Stornieren auf einer exportierten Rechnung]) --> C{Bestätigt?}
       C -->|nein| Z([Nichts geschieht])
-      C -->|ja| G{Besteht eine Schlussrechnung im Projekt?}
-      G -->|ja, und dies ist eine Abschlagsrechnung| K[/Conflict — zuerst die Schlussrechnung stornieren/]
+      C -->|ja| G{Ist die zu stornierende Rechnung eine Abschlagsrechnung und existiert eine Schlussrechnung im Projekt?}
+      G -->|ja| K[/Conflict — zuerst die Schlussrechnung stornieren/]
       G -->|nein| T[Status wird Storniert, Zeitstempel aktualisiert]
-      T --> M[In beiden Listen und in der Ansicht als STORNIERT gekennzeichnet]
+      T --> M[In allgemeiner Rechnungsliste und projektbezogener Rechnungsliste wird die Rechnung als STORNIERT gekennzeichnet]
       T --> Q[Abgerechnete Mengen kehren zurück — die Restmenge wird berechnet, nicht gespeichert]
       T --> V{Rechnung mit Umsatzsteuer?}
       V -->|nein, § 19| D([Vollständig — kein Gegendokument])

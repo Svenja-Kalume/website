@@ -12,12 +12,12 @@ source: docs/adr/0032-preview-and-export-save-first.md
 
 ## Context
 Every previewable and exportable document is edited on an autosaving form with no Save button, while
-**Vorschau** and **Exportieren** act on the *persisted* record: the server renders what the database
+Vorschau and Exportieren act on the *persisted* record: the server renders what the database
 holds, not what is on screen.
 
 Two walks of the Level-3 checklist hit that seam from opposite sides. One found an invoice that
 reached *Exportiert* while a save error was on screen — and an exported invoice is immutable, so it
-could only be cancelled and re-issued. The other found **Vorschau** rendering the previously saved
+could only be cancelled and re-issued. The other found Vorschau rendering the previously saved
 invoice while the export button beside it flushed first: a user could approve one document and export
 a different one. Reviewing the codebase afterwards found the same gap on every surface the first fix
 had not touched.

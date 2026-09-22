@@ -15,18 +15,18 @@ soThat:
 requirement: WZ-R-15
 acceptanceCriteria:
   en:
-    - "Opening **Vorschau** renders the document as it stands on screen, including a change made immediately before the button was pressed"
+    - "Opening Vorschau renders the document as it stands on screen, including a change made immediately before the button was pressed"
     - "This holds on every surface that offers a preview, on a create page as well as an edit page"
     - "The preview and an export taken straight afterwards describe the same document, except for the invoice date, which the export stamps at its lock point and a draft preview cannot show"
     - "When the save is pending or has failed, the preview does not open and the user is told why"
-    - "The **Exportieren** button inside the preview opened from the project’s invoice list actually starts an export, through the same save-first gate as every other surface"
+    - "The Exportieren button inside the preview opened from the project’s invoice list actually starts an export, through the same save-first gate as every other surface"
     - "Regression coverage drives a preview with an unsaved change outstanding, once per surface"
   de:
-    - "Das Öffnen der **Vorschau** rendert das Dokument, wie es am Bildschirm steht — einschließlich einer Änderung unmittelbar vor dem Klick"
+    - "Das Öffnen der Vorschau rendert das Dokument, wie es am Bildschirm steht — einschließlich einer Änderung unmittelbar vor dem Klick"
     - "Das gilt auf jeder Oberfläche mit Vorschau, auf einer Anlegeseite ebenso wie auf einer Bearbeitungsseite"
     - "Vorschau und ein unmittelbar danach ausgelöster Export beschreiben dasselbe Dokument, bis auf das Rechnungsdatum, das der Export an seinem Sperrpunkt stempelt und das eine Entwurfsvorschau nicht zeigen kann"
     - "Steht ein Speichern aus oder ist es fehlgeschlagen, öffnet die Vorschau nicht, und die Nutzerin erfährt warum"
-    - "Die Schaltfläche **Exportieren** in der aus der Projekt-Rechnungsliste geöffneten Vorschau startet tatsächlich einen Export — durch dieselbe Speichern-zuerst-Schranke wie jede andere Oberfläche"
+    - "Die Schaltfläche Exportieren in der aus der Projekt-Rechnungsliste geöffneten Vorschau startet tatsächlich einen Export — durch dieselbe Speichern-zuerst-Schranke wie jede andere Oberfläche"
     - "Ein Regressionstest fährt je Oberfläche eine Vorschau mit ausstehender ungespeicherter Änderung"
 codeUrl: Client/Invoices/InvoicePreviewLauncher.razor
 adr: [WZ-ADR-011]

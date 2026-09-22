@@ -16,12 +16,12 @@ requirement: WZ-R-14
 acceptanceCriteria:
   en:
     - "A cancel request for an advance invoice whose project has a non-cancelled final invoice is rejected server-side with `Conflict`; the server is authoritative"
-    - "The **Stornieren** action is hidden or disabled in that situation, with a German explanation of why"
+    - "The Stornieren action is hidden or disabled in that situation, with a German explanation of why"
     - "Cancelling the final invoice first re-enables cancelling the advance"
     - "The guard does not affect projects with no final invoice, where cancellation behaves exactly as before"
   de:
     - "Eine Stornoanfrage für eine Abschlagsrechnung, deren Projekt eine nicht stornierte Schlussrechnung hat, wird serverseitig mit `Conflict` abgelehnt; der Server entscheidet"
-    - "Die Aktion **Stornieren** ist in dieser Lage ausgeblendet oder deaktiviert, mit einer deutschen Begründung"
+    - "Die Aktion Stornieren ist in dieser Lage ausgeblendet oder deaktiviert, mit einer deutschen Begründung"
     - "Wird zuerst die Schlussrechnung storniert, lässt sich die Abschlagsrechnung wieder stornieren"
     - "Die Sperre betrifft keine Projekte ohne Schlussrechnung; dort verhält sich das Stornieren genau wie zuvor"
 codeUrl: Server/Invoices/CancelGuard.cs
