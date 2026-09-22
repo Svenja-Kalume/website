@@ -43,7 +43,7 @@ code:
       D -->|"Ready"| E
       subgraph AI["KI — Technician-Subagenten"]
         E["Parallel planen"] --> F["Plan freigeben"]
-        F --> G["Verträge + Test-First"]
+        F --> G["Schnittstellen Informationen + Test-First"]
         G --> H["Client und Server umsetzen"]
         H --> I["Alle Tests ausführen"]
         I --> R["Reviewer liest die Änderung gegen"]

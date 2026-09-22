@@ -21,7 +21,7 @@ acceptanceCriteria:
     - "A regression test covers the failing-save path and asserts the invoice is still a draft afterwards"
   de:
     - "Ein während des Exports fehlgeschlagenes Speichern bricht den gesamten Export ab: kein PDF wird gerendert, nichts gespeichert, der Status bleibt Entwurf und das Rechnungsdatum ungesetzt"
-    - "Die Nutzerin sieht die deutsche Fehlermeldung des fehlgeschlagenen Speicherns, und die Rechnung bleibt bearbeitbar"
+    - "Der Nutzer sieht die deutsche Fehlermeldung des fehlgeschlagenen Speicherns, und die Rechnung bleibt bearbeitbar"
     - "Der Export bleibt atomar — Rendern, Speichern, Stempeln und Sperren geschehen ganz oder gar nicht"
     - "Ein Regressionstest deckt den Pfad des fehlgeschlagenen Speicherns ab und prüft, dass die Rechnung danach noch Entwurf ist"
 codeUrl: Client/Invoices/InvoiceExportLauncher.razor

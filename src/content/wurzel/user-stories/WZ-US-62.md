@@ -23,10 +23,10 @@ acceptanceCriteria:
     - "Regression coverage drives an export with an unsaved change outstanding, once per surface"
   de:
     - "Exportieren speichert ausstehende Änderungen, bevor es startet — überall, wo es angeboten wird: im Rechnungseditor, im Angebotseditor, auf der Karte des neuesten Angebots und in der Rechnungsliste des Projekts"
-    - "Der Export läuft nur, wenn dieses Speichern erfolgreich war; bei ausstehendem oder fehlgeschlagenem Speichern startet er nicht, und die Nutzerin erfährt warum"
+    - "Der Export läuft nur, wenn dieses Speichern erfolgreich war; bei ausstehendem oder fehlgeschlagenem Speichern startet er nicht, und der Nutzer erfährt warum"
     - "Das gilt auf einer Anlegeseite ebenso wie auf einer Bearbeitungsseite"
     - "Ein mit einer ungespeicherten Änderung am Bildschirm gestarteter Export friert ein Dokument ein, das diese Änderung enthält"
-    - "Ein fehlgeschlagener Export auf der Karte des neuesten Angebots wird der Nutzerin neben der Schaltfläche gemeldet, wie auf jeder anderen Export-Oberfläche — bisher wird er nirgends gezeigt"
+    - "Ein fehlgeschlagener Export auf der Karte des neuesten Angebots wird dem Nutzer neben der Schaltfläche gemeldet, wie auf jeder anderen Export-Oberfläche — bisher wird er nirgends gezeigt"
     - "Ein Regressionstest fährt je Oberfläche einen Export mit ausstehender ungespeicherter Änderung"
 codeUrl: Client/Invoices/InvoiceExportActions.razor
 adr: [WZ-ADR-011, WZ-ADR-013]

@@ -25,7 +25,7 @@ acceptanceCriteria:
     - "Das Öffnen der Vorschau rendert das Dokument, wie es am Bildschirm steht — einschließlich einer Änderung unmittelbar vor dem Klick"
     - "Das gilt auf jeder Oberfläche mit Vorschau, auf einer Anlegeseite ebenso wie auf einer Bearbeitungsseite"
     - "Vorschau und ein unmittelbar danach ausgelöster Export beschreiben dasselbe Dokument, bis auf das Rechnungsdatum, das der Export an seinem Sperrpunkt stempelt und das eine Entwurfsvorschau nicht zeigen kann"
-    - "Steht ein Speichern aus oder ist es fehlgeschlagen, öffnet die Vorschau nicht, und die Nutzerin erfährt warum"
+    - "Steht ein Speichern aus oder ist es fehlgeschlagen, öffnet die Vorschau nicht, und der Nutzer erfährt warum"
     - "Die Schaltfläche Exportieren in der aus der Projekt-Rechnungsliste geöffneten Vorschau startet tatsächlich einen Export — durch dieselbe Speichern-zuerst-Schranke wie jede andere Oberfläche"
     - "Ein Regressionstest fährt je Oberfläche eine Vorschau mit ausstehender ungespeicherter Änderung"
 codeUrl: Client/Invoices/InvoicePreviewLauncher.razor
@@ -34,7 +34,7 @@ priority: must
 status: done
 aiContribution:
   en: "The finding that turned a set of fixes into a rule: the preview rendered the previously saved invoice while the export button beside it flushed first, so a user could approve one document and export a different one. The AI’s contribution was the second-order one — it also found the export button inside that same preview modal doing nothing at all on one surface, because the list component never bound its event. Two defects behind one button, and only one of them was visible to the walk."
-  de: "Der Befund, der aus einer Reihe von Korrekturen eine Regel machte: Die Vorschau rendert die zuletzt gespeicherte Rechnung, während die Export-Schaltfläche daneben zuerst speichert — die Nutzerin konnte also ein Dokument freigeben und ein anderes exportieren. Der Beitrag der KI war der zweite Schritt: Sie fand zudem, dass die Export-Schaltfläche in genau dieser Vorschau auf einer Oberfläche gar nichts tat, weil die Listenkomponente ihr Ereignis nie gebunden hatte. Zwei Fehler hinter einer Schaltfläche, und nur einer davon war im Testdurchlauf sichtbar."
+  de: "Der Befund, der aus einer Reihe von Korrekturen eine Regel machte: Die Vorschau rendert die zuletzt gespeicherte Rechnung, während die Export-Schaltfläche daneben zuerst speichert — der Nutzer konnte also ein Dokument freigeben und ein anderes exportieren. Der Beitrag der KI war der zweite Schritt: Sie fand zudem, dass die Export-Schaltfläche in genau dieser Vorschau auf einer Oberfläche gar nichts tat, weil die Listenkomponente ihr Ereignis nie gebunden hatte. Zwei Fehler hinter einer Schaltfläche, und nur einer davon war im Testdurchlauf sichtbar."
 introducedIn: WZ-0.3.0-level-4
 source: docs/user-stories/130-invoice-preview-shows-unsaved-changes.md
 changes: [WZ-US-38]

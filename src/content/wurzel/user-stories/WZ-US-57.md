@@ -21,7 +21,7 @@ acceptanceCriteria:
     - "The rule holds on every screen where a service period can be entered — the invoice editor and both create pages"
     - "Exporting stays blocked while the service period is invalid, exactly as before"
   de:
-    - "Eine Rechnung, deren Leistungszeitraum-Beginn nach heute liegt, wird nicht gespeichert, und die Nutzerin sieht eine deutsche Meldung, dass der Leistungszeitraum nicht in der Zukunft liegen darf"
+    - "Eine Rechnung, deren Leistungszeitraum-Beginn nach heute liegt, wird nicht gespeichert, und der Nutzer sieht eine deutsche Meldung, dass der Leistungszeitraum nicht in der Zukunft liegen darf"
     - "Dasselbe gilt für das Ende des Leistungszeitraums, mit derselben Meldung"
     - "Die bestehende Regel, dass das Ende nicht vor dem Beginn liegen darf, gilt unverändert weiter"
     - "Die Regel gilt auf jedem Bildschirm, auf dem ein Leistungszeitraum eingegeben werden kann — im Rechnungseditor und auf beiden Anlegeseiten"

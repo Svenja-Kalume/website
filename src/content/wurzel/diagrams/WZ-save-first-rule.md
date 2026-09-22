@@ -34,20 +34,20 @@ code:
       end
   de: |
     sequenceDiagram
-      actor U as Nutzerin
+      actor U as Nutzer
       participant F as Formular
       participant A as Aktion
       participant S as Server
-      U->>F: tippt eine Änderung
-      U->>A: drückt die Schaltfläche
-      A->>F: ausstehende speichern
+      U->>F: tippt Änderung
+      U->>A: drückt Schaltfläche
+      A->>F: Ausstehendes speichern
       F->>S: speichern
-      alt Speichern fehlgeschlagen
+      alt Speichern scheitert
         S-->>A: Fehler
-        A-->>U: startet nicht, Grund
+        A-->>U: startet nicht
       else gespeichert
         S-->>A: ok
         A->>S: rendern / exportieren
-        S-->>U: Dokument mit der Änderung
+        S-->>U: geändertes Dokument
       end
 ---
