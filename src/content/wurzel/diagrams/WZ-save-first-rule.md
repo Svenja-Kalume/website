@@ -17,37 +17,37 @@ code:
   en: |
     sequenceDiagram
       actor U as User
-      participant F as Autosaving form
+      participant F as Form
       participant A as Action
       participant S as Server
       U->>F: types a change
       U->>A: presses the button
-      A->>F: flush pending changes
+      A->>F: flush pending
       F->>S: save
-      alt save failed or still pending
+      alt save failed or pending
         S-->>A: error
-        A-->>U: action does not start, reason shown
+        A-->>U: no start, reason shown
       else saved
         S-->>A: ok
-        A->>S: render preview / run export
-        S-->>U: the document that includes the change
+        A->>S: render / export
+        S-->>U: document with the change
       end
   de: |
     sequenceDiagram
       actor U as Nutzerin
-      participant F as Autospeicherndes Formular
+      participant F as Formular
       participant A as Aktion
       participant S as Server
       U->>F: tippt eine Änderung
       U->>A: drückt die Schaltfläche
-      A->>F: ausstehende Änderungen speichern
+      A->>F: ausstehende speichern
       F->>S: speichern
-      alt Speichern fehlgeschlagen oder noch offen
+      alt Speichern fehlgeschlagen
         S-->>A: Fehler
-        A-->>U: Aktion startet nicht, Grund wird gezeigt
+        A-->>U: startet nicht, Grund
       else gespeichert
         S-->>A: ok
-        A->>S: Vorschau rendern / Export ausführen
-        S-->>U: das Dokument mit der Änderung
+        A->>S: rendern / exportieren
+        S-->>U: Dokument mit der Änderung
       end
 ---

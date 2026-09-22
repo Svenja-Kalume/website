@@ -46,12 +46,30 @@ const described = describeMermaid(code);
   mermaid.initialize({
     startOnLoad: false,
     theme: 'neutral',
-    // Node labels are prose, not identifiers, so they are read rather than glanced at.
-    themeVariables: { fontSize: '16px' },
+    // Node labels are read, not glanced at, and a note is a remark rather than a warning:
+    // the neutral theme paints notes dark, which made them the loudest thing on the page.
+    themeVariables: {
+      fontSize: '16px',
+      noteBkgColor: '#f3f3f1',
+      noteTextColor: '#222',
+      noteBorderColor: '#bbb',
+    },
     // Render at natural size; .mermaid-wrap scrolls when that is wider than the measure.
-    flowchart: { useMaxWidth: false },
-    sequence: { useMaxWidth: false },
+    // The spacing is tighter than the default because these graphs are small and were
+    // reading as a scatter of boxes with a lot of air between them.
+    flowchart: {
+      useMaxWidth: false,
+      nodeSpacing: 34,
+      rankSpacing: 44,
+      padding: 8,
+      subGraphTitleMargin: { top: 4, bottom: 10 },
+    },
+    // mirrorActors repeats the whole actor row under the diagram, which doubles its height
+    // and says nothing the row at the top has not already said.
+    sequence: { useMaxWidth: false, mirrorActors: false, actorMargin: 28, width: 120, boxMargin: 8 },
     state: { useMaxWidth: false },
+    // A class with no attributes still got two empty compartments drawn under its name.
+    class: { useMaxWidth: false, hideEmptyMembersBox: true },
   });
   const run = () => mermaid.run({ querySelector: '.mermaid' });
   run();

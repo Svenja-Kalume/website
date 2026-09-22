@@ -16,24 +16,24 @@ source: docs/adr/0035-billing-raises-the-position-quantity.md
 code:
   en: |
     flowchart TD
-      A[Line bills a quantity] --> C{Above what is left?}
-      C -->|no| S1[Saved, position untouched]
-      C -->|yes| S2[Saved anyway]
-      S2 --> R[Position raised to the total billed]
-      R --> Z[Remainder zero, never negative]
-      R --> K[Kept on cancel or lowering]
-      R --> O{Open offers reference it?}
-      O -->|yes| M[/Notice names position, quantity, offers/]
-      O -->|no| M2[/Notice names position and quantity/]
+      A[Line bills a quantity] --> C{Above the rest?}
+      C -->|"no"| S1[Saved unchanged]
+      C -->|"yes"| S2[Saved anyway]
+      S2 --> R[Position raised]
+      R --> Z[Rest zero, never negative]
+      Z --> K[Kept on cancel]
+      R --> O{Open offers affected?}
+      O -->|"yes"| M[/Notice names the offers/]
+      O -->|"no"| M2[/Notice names the position/]
   de: |
     flowchart TD
-      A[Zeile rechnet eine Menge ab] --> C{Mehr als übrig ist?}
-      C -->|nein| S1[Gespeichert, Position unverändert]
-      C -->|ja| S2[Trotzdem gespeichert]
-      S2 --> R[Position auf die abgerechnete Menge angehoben]
-      R --> Z[Restmenge null, nie negativ]
-      R --> K[Bleibt beim Stornieren oder Senken]
-      R --> O{Offene Angebote betroffen?}
-      O -->|ja| M[/Hinweis nennt Position, Menge, Angebote/]
-      O -->|nein| M2[/Hinweis nennt Position und Menge/]
+      A[Zeile rechnet ab] --> C{Mehr als der Rest?}
+      C -->|"nein"| S1[Unverändert gespeichert]
+      C -->|"ja"| S2[Trotzdem gespeichert]
+      S2 --> R[Position angehoben]
+      R --> Z[Rest null, nie negativ]
+      Z --> K[Bleibt beim Stornieren]
+      R --> O{Angebote betroffen?}
+      O -->|"ja"| M[/Hinweis nennt die Angebote/]
+      O -->|"nein"| M2[/Hinweis nennt die Position/]
 ---

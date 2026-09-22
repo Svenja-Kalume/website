@@ -33,7 +33,7 @@ code:
       class ProjectPosition {
         Description, Unit, Quantity
         UnitPrice, IsDisabled
-        Duration (inert)
+        Duration, inert
       }
       class Offer {
         OfferNumber, OfferDate
@@ -60,7 +60,7 @@ code:
       class ProjectPosition {
         Beschreibung, Einheit, Menge
         Einzelpreis, Deaktiviert
-        Arbeitszeit (inert)
+        Arbeitszeit, inert
       }
       class Offer {
         Angebotsnummer, Angebotsdatum
