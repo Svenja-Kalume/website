@@ -6,8 +6,8 @@ case: wurzel
 type: bpmn
 tool: Mermaid
 caption:
-  en: "One action to the user, two obligations in law. The shared transition marks the bill STORNIERT and returns its quantities; a VAT bill then additionally needs a Stornorechnung counter-document, numbered from the original and excluded from the number sequence. A Kleinunternehmer bill is complete at the state change."
-  de: "Für die Nutzerin ein Vorgang, im Recht zwei Pflichten. Der gemeinsame Übergang kennzeichnet die Rechnung als STORNIERT und gibt ihre Mengen zurück; eine Rechnung mit Umsatzsteuer braucht danach zusätzlich eine Stornorechnung als Gegendokument, nummeriert aus dem Original und aus der Nummernfolge ausgeschlossen. Bei einer Kleinunternehmer-Rechnung ist der Zustandswechsel die ganze Stornierung."
+  en: "One action to the user, two obligations in law. The shared transition marks the bill STORNIERT and returns its quantities; a VAT bill then additionally needs a Stornorechnung counter-document, numbered from the original and excluded from the number sequence. A Kleinunternehmer bill is complete at the state change. Cancelling an advance invoice is refused with Conflict while a final invoice stands, so that one is cancelled first. The shared transition writes the state and the timestamp and nothing else — the remaining quantity is computed, not stored."
+  de: "Für die Nutzerin ein Vorgang, im Recht zwei Pflichten. Der gemeinsame Übergang kennzeichnet die Rechnung als STORNIERT und gibt ihre Mengen zurück; eine Rechnung mit Umsatzsteuer braucht danach zusätzlich eine Stornorechnung als Gegendokument, nummeriert aus dem Original und aus der Nummernfolge ausgeschlossen. Bei einer Kleinunternehmer-Rechnung ist der Zustandswechsel die ganze Stornierung. Das Stornieren einer Abschlagsrechnung wird mit Conflict abgelehnt, solange eine Schlussrechnung besteht; die wird also zuerst storniert. Der gemeinsame Übergang schreibt Status und Zeitstempel und sonst nichts — die Restmenge wird berechnet, nicht gespeichert."
 aiContribution:
   en: "The split was a legal judgement, not the AI’s: to a user, cancelling is one action, and dividing it into two stories by VAT status comes from § 14c UStG. What the AI contributed sits at the bottom right of the diagram — the correction row must stay out of the number scan, or the next ordinary invoice of the year cannot be generated at all."
   de: "Die Aufteilung war eine juristische Entscheidung und nicht die der KI: Für die Nutzerin ist Stornieren ein Vorgang, und ihn nach Umsatzsteuerstatus in zwei Stories zu teilen, folgt aus § 14c UStG. Der Beitrag der KI steht unten rechts im Bild — die Stornozeile muss aus dem Nummernscan herausbleiben, sonst lässt sich die nächste reguläre Rechnung des Jahres gar nicht erzeugen."
@@ -18,30 +18,30 @@ code:
     flowchart TD
       A([Stornieren on an Exported invoice]) --> C{Confirmed?}
       C -->|no| Z([Nothing happens])
-      C -->|yes| G{Is the invoice being cancelled an advance invoice, and does a final invoice exist for the project?}
-      G -->|yes| K[/Conflict — cancel the final invoice first/]
-      G -->|no| T[State becomes Cancelled, timestamp touched]
-      T --> M[The invoice is marked STORNIERT in the general invoice list and in the project invoice list]
-      T --> Q[Billed quantities return — remaining is computed, not stored]
+      C -->|yes| G{Advance invoice, and a final invoice exists?}
+      G -->|yes| K[/Conflict/]
+      G -->|no| T[State becomes Cancelled]
+      T --> M[Marked STORNIERT in both lists]
+      T --> Q[Billed quantities return]
       T --> V{VAT invoice?}
-      V -->|no, § 19| D([Complete — no counter-document])
+      V -->|no, § 19| D([Complete])
       V -->|yes| F[/Flagged: Stornorechnung noch nicht erstellt/]
-      F --> S[Stornorechnung created: numbered original-S, prices negated, born Exported]
-      S --> N[Excluded from the number sequence and from remaining-quantity sums]
-      N --> D2([Complete — the two documents sum to zero])
+      F --> S[Stornorechnung: original-S, prices negated]
+      S --> N[Excluded from the number sequence]
+      N --> D2([The two documents sum to zero])
   de: |
     flowchart TD
-      A([Stornieren auf einer exportierten Rechnung]) --> C{Bestätigt?}
+      A([Stornieren auf exportierter Rechnung]) --> C{Bestätigt?}
       C -->|nein| Z([Nichts geschieht])
-      C -->|ja| G{Ist die zu stornierende Rechnung eine Abschlagsrechnung und existiert eine Schlussrechnung im Projekt?}
-      G -->|ja| K[/Conflict — zuerst die Schlussrechnung stornieren/]
-      G -->|nein| T[Status wird Storniert, Zeitstempel aktualisiert]
-      T --> M[In allgemeiner Rechnungsliste und projektbezogener Rechnungsliste wird die Rechnung als STORNIERT gekennzeichnet]
-      T --> Q[Abgerechnete Mengen kehren zurück — die Restmenge wird berechnet, nicht gespeichert]
+      C -->|ja| G{Abschlagsrechnung, und Schlussrechnung vorhanden?}
+      G -->|ja| K[/Conflict/]
+      G -->|nein| T[Status wird Storniert]
+      T --> M[In beiden Listen STORNIERT]
+      T --> Q[Abgerechnete Mengen kehren zurück]
       T --> V{Rechnung mit Umsatzsteuer?}
-      V -->|nein, § 19| D([Vollständig — kein Gegendokument])
+      V -->|nein, § 19| D([Vollständig])
       V -->|ja| F[/Gekennzeichnet: Stornorechnung noch nicht erstellt/]
-      F --> S[Stornorechnung erzeugt: Nummer Original-S, Preise negiert, direkt exportiert]
-      S --> N[Aus Nummernfolge und Restmengensummen ausgeschlossen]
-      N --> D2([Vollständig — beide Dokumente ergeben null])
+      F --> S[Stornorechnung: Original-S, Preise negiert]
+      S --> N[Aus der Nummernfolge ausgeschlossen]
+      N --> D2([Beide Dokumente ergeben null])
 ---

@@ -16,38 +16,40 @@ source: docs/user-stories/082-invoice-pdf-generation.md
 code:
   en: |
     flowchart TD
-      A([Export pressed]) --> S[Save pending changes first]
-      S -->|save failed| X1[/Stays a draft, reason shown/]
-      S -->|saved| G1{Company settings complete — sender data and tax rate, or Kleinunternehmer?}
-      G1 -->|no| M1[Shared settings form opens]
-      M1 -->|filled in and saved| G2
-      M1 -->|cancelled| X1
-      G1 -->|yes| G2{At least one line?}
-      G2 -->|no| X1
-      G2 -->|yes| G3{Service period start set?}
-      G3 -->|no| X1
-      G3 -->|yes| T[One transaction]
-      T --> T1[Stamp the invoice date and set state Exported]
-      T1 --> T2[Render the document from the locked invoice]
-      T2 --> T3[Store PDF and page images] --> T4[Touch updated timestamp]
+      A([Export pressed]) --> S[Save pending changes]
+      S -->|"save failed"| X1[/Stays a draft, reason shown/]
+      S -->|"saved"| G1{Company settings complete?}
+      G1 -->|"no"| M1[Shared settings form opens]
+      M1 -->|"filled in"| G2
+      M1 -->|"cancelled"| X1
+      G1 -->|"yes"| G2{At least one line?}
+      G2 -->|"no"| X1
+      G2 -->|"yes"| G3{Service period start set?}
+      G3 -->|"no"| X1
+      G3 -->|"yes"| T[One transaction]
+      T --> T1[Stamp the date, set Exported]
+      T1 --> T2[Render from the locked invoice]
+      T2 --> T3[Store PDF and page images]
+      T3 --> T4[Touch the timestamp]
       T4 --> E([Issued, frozen, stored])
-      T -.->|any step fails, nothing committed| X1
+      T -.->|"any step fails, nothing committed"| X1
   de: |
     flowchart TD
-      A([Exportieren gedrückt]) --> S[Ausstehende Änderungen zuerst speichern]
-      S -->|Speichern fehlgeschlagen| X1[/Bleibt Entwurf, Grund wird gezeigt/]
-      S -->|gespeichert| G1{Firmeneinstellungen vollständig — Absenderdaten und Steuersatz, oder Kleinunternehmer?}
-      G1 -->|nein| M1[Gemeinsames Einstellungsformular öffnet]
-      M1 -->|ausgefüllt und gespeichert| G2
-      M1 -->|abgebrochen| X1
-      G1 -->|ja| G2{Mindestens eine Position?}
-      G2 -->|nein| X1
-      G2 -->|ja| G3{Leistungszeitraum von gesetzt?}
-      G3 -->|nein| X1
-      G3 -->|ja| T[Eine Transaktion]
-      T --> T1[Rechnungsdatum stempeln und Status Exportiert setzen]
-      T1 --> T2[Dokument aus der gesperrten Rechnung rendern]
-      T2 --> T3[PDF und Seitenbilder speichern] --> T4[Änderungszeitstempel aktualisieren]
+      A([Exportieren gedrückt]) --> S[Ausstehende Änderungen speichern]
+      S -->|"Speichern fehlgeschlagen"| X1[/Bleibt Entwurf, Grund wird gezeigt/]
+      S -->|"gespeichert"| G1{Firmeneinstellungen vollständig?}
+      G1 -->|"nein"| M1[Gemeinsames Einstellungsformular öffnet]
+      M1 -->|"ausgefüllt"| G2
+      M1 -->|"abgebrochen"| X1
+      G1 -->|"ja"| G2{Mindestens eine Position?}
+      G2 -->|"nein"| X1
+      G2 -->|"ja"| G3{Leistungszeitraum von gesetzt?}
+      G3 -->|"nein"| X1
+      G3 -->|"ja"| T[Eine Transaktion]
+      T --> T1[Datum stempeln, Status Exportiert]
+      T1 --> T2[Aus der gesperrten Rechnung rendern]
+      T2 --> T3[PDF und Seitenbilder speichern]
+      T3 --> T4[Änderungszeitstempel aktualisieren]
       T4 --> E([Gestellt, eingefroren, gespeichert])
-      T -.->|scheitert ein Schritt, wird nichts festgeschrieben| X1
+      T -.->|"scheitert ein Schritt, wird nichts festgeschrieben"| X1
 ---
