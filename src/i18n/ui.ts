@@ -84,6 +84,9 @@ export const ui = {
     'case.acceptance': 'Acceptance criteria',
     'case.adr': 'Architecture Decisions (ADR)',
     'adr.supersedes': 'Supersedes',
+    'adr.context': 'Context',
+    'adr.decision': 'Decision',
+    'adr.consequences': 'Consequences',
 
     'how.desc': 'The AI-assisted RE/BA workflow — practical, with real tools and MCP.',
     'how.h1': 'How I Work',
@@ -140,7 +143,7 @@ export const ui = {
     'iter.adr.one': 'Architecture decision',
     'topic.unassigned': 'Artifacts',
     'topic.unassignedIntro':
-      'Artifacts that describe the project as a whole rather than one domain topic — shown here once, not repeated per level.',
+      'What this level introduced that belongs to no single domain topic — the solution structure, the way of working.',
     'topic.requirements': 'Requirements:',
     'topic.glossary': 'Domain terms',
     'topic.technical': 'technical — no domain term',
@@ -254,6 +257,9 @@ export const ui = {
     'case.acceptance': 'Akzeptanzkriterien',
     'case.adr': 'Architekturentscheidungen (ADR)',
     'adr.supersedes': 'Ersetzt',
+    'adr.context': 'Kontext',
+    'adr.decision': 'Entscheidung',
+    'adr.consequences': 'Konsequenzen',
 
     'how.desc': 'Der KI-gestützte RE/BA-Workflow — praxisnah, mit echten Tools und MCP.',
     'how.h1': 'Arbeitsweise',
@@ -309,7 +315,7 @@ export const ui = {
     'iter.adr.one': 'Architekturentscheidung',
     'topic.unassigned': 'Artefakte',
     'topic.unassignedIntro':
-      'Artefakte, die das Projekt als Ganzes beschreiben statt eines einzelnen Fachthemas — hier einmal gezeigt, nicht pro Level wiederholt.',
+      'Was dieses Level eingeführt hat und zu keinem einzelnen Fachthema gehört — die Lösungsstruktur, die Arbeitsweise.',
     'topic.requirements': 'Anforderungen:',
     'topic.glossary': 'Fachbegriffe',
     'topic.technical': 'technisch — kein Fachbegriff',

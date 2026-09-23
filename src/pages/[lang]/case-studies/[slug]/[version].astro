@@ -57,10 +57,12 @@ const adrs = introducedIn(allAdrs, iteration.id);
 // traceability chain, and decisions — so a level reads as "what happened to the customer,
 // then to the project", not as three long lists you have to cross-reference yourself.
 const topics = topicsOf(await getCollection('topics'), caseEntry.id);
-// Only the topic sub-chapters here. What no topic claims describes the project as a
-// whole, not this level, so it is rendered once on the case study overview instead.
+// Every artifact renders on the level that introduced it, topic or no topic. What no topic
+// claims — the context map, the delivery pipeline — is still this level's work, so it goes
+// under its own heading here rather than on the case study overview: the overview is the
+// list of levels, and an artifact shown there is an artifact no level is accountable for.
 const caseStories = allStories.filter((s) => s.data.case.id === caseEntry.id);
-const { groups: topicGroups } = groupByTopic(topics, { diagrams, stories, adrs }, caseStories);
+const { groups: topicGroups, unassigned } = groupByTopic(topics, { diagrams, stories, adrs }, caseStories);
 const sections = topicGroups;
 
 // Where each topic continues. Someone who has just read what this level did to offers
@@ -178,6 +180,18 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
               </span>
             </li>
           ))}
+          {unassigned && (
+            <li>
+              <a href="#artifacts">{t('topic.unassigned')}</a>
+              <span class="muted">
+                {' '}{[
+                  count(unassigned.stories.length, 'iter.story.one', 'iter.stories'),
+                  count(unassigned.diagrams.length, 'iter.diagram.one', 'iter.diagrams'),
+                  count(unassigned.adrs.length, 'iter.adr.one', 'iter.adr'),
+                ].filter(Boolean).join(' · ')}
+              </span>
+            </li>
+          )}
         </ul>
       )}
     </li>
@@ -283,6 +297,41 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
       )}
     </section>
   ))}
+
+  {/* Last, because a domain sub-chapter is what a reader came for and this is the
+      cross-cutting remainder — the solution structure, the way of working. It carries no
+      topic heading and no glossary, since having neither is exactly what puts it here. */}
+  {unassigned && (
+    <section class="topic" id="artifacts">
+      <h2>{t('topic.unassigned')}</h2>
+      <p class="muted">{t('topic.unassignedIntro')}</p>
+
+      {unassigned.diagrams.length > 0 && (
+        <>
+          <h3>{t('iter.diagrams')}</h3>
+          {unassigned.diagrams.map((d) => (
+            <div id={d.id}><DiagramFigure diagram={d} lang={lang} titleTag="h4" /></div>
+          ))}
+        </>
+      )}
+
+      {unassigned.stories.length > 0 && (
+        <>
+          <h3>{t('case.storiesTrace')}</h3>
+          {unassigned.stories.map((story) => (
+            <StoryCard story={story} lang={lang} repoUrl={caseEntry.data.repoUrl} tag={iteration.data.version} />
+          ))}
+        </>
+      )}
+
+      {unassigned.adrs.length > 0 && (
+        <>
+          <h3>{t('case.adr')}</h3>
+          {unassigned.adrs.map((a) => <AdrCard adr={a} lang={lang} />)}
+        </>
+      )}
+    </section>
+  )}
 
   {(localize(iteration.data.lessons, lang) ?? []).length > 0 && (
     <>

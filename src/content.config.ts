@@ -309,6 +309,16 @@ const adr = defineCollection({
     status: z.enum(['proposed', 'accepted', 'superseded']).default('proposed'),
     date: z.coerce.date(),
     relatedRequirements: z.array(reference('requirements')).default([]),
+    // The three sections of the decision, per locale, one string per paragraph. The
+    // reasoning IS the ADR, so it is prose like every other prose field on this site and
+    // the bilingual rule applies to it: a German page rendering an English "Consequences"
+    // paragraph is half a translation. The headings come from the UI dictionary rather
+    // than from the text, so they read the same across every decision.
+    // Optional so the Markdown body still works as the single-language fallback, exactly
+    // as `diagrams.code` and `glossary.definition` do.
+    context: locArr.optional(),
+    decision: locArr.optional(),
+    consequences: locArr.optional(),
     ...versioned,
     // On the NEWER ADR, never `supersededBy` on the old one -- this also matches the
     // vault, where the superseding ADR is the newer file.

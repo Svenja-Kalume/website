@@ -21,10 +21,8 @@ code:
       T3[Leaving the page] --> G
       G{Form valid?}
       G -->|no| H[Held back]
-      G -->|yes| L{Record frozen?}
-      L -->|yes| N[No save]
-      L -->|no| S[Save]
-      S -->|failed| R[Retry button]
+      G -->|yes| S[Save]
+      S -->|failed| R([Retry button])
       S -->|"change during the save"| T1
   de: |
     flowchart TD
@@ -33,9 +31,7 @@ code:
       T3[Seite verlassen] --> G
       G{Formular gültig?}
       G -->|nein| H[Zurückgehalten]
-      G -->|ja| L{Datensatz eingefroren?}
-      L -->|ja| N[Kein Speichern]
-      L -->|nein| S[Speichern]
-      S -->|fehlgeschlagen| R[Erneut versuchen]
+      G -->|ja| S[Speichern]
+      S -->|fehlgeschlagen| R([Erneut versuchen])
       S -->|"Änderung beim Speichern"| T1
 ---

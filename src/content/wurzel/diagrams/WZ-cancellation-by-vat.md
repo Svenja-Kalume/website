@@ -18,7 +18,7 @@ code:
     flowchart TD
       A([Stornieren on an Exported bill]) --> C{Confirmed?}
       C -->|"no"| Z([Nothing happens])
-      C -->|"yes"| G{Final invoice in the way?}
+      C -->|"yes"| G{"Final invoice<br>exists?"}
       G -->|"yes"| K[/Conflict/]
       G -->|"no"| T[State becomes Cancelled]
       T --> M[Marked STORNIERT]
@@ -28,12 +28,12 @@ code:
       V -->|"yes"| F[/Flagged as missing/]
       F --> S[Stornorechnung, prices negated]
       S --> N[Out of the number sequence]
-      N --> D2([Both sum to zero])
+      N --> D2([Both sum to 0.00])
   de: |
     flowchart TD
       A([Stornieren, Rechnung exportiert]) --> C{Bestätigt?}
       C -->|"nein"| Z([Nichts geschieht])
-      C -->|"ja"| G{Schlussrechnung im Weg?}
+      C -->|"ja"| G{"Schlussrechnung<br>vorhanden?"}
       G -->|"ja"| K[/Conflict/]
       G -->|"nein"| T[Status wird Storniert]
       T --> M[Als STORNIERT gekennzeichnet]
@@ -43,5 +43,5 @@ code:
       V -->|"ja"| F[/Als fehlend gekennzeichnet/]
       F --> S[Stornorechnung, Preise negiert]
       S --> N[Aus der Nummernfolge heraus]
-      N --> D2([Beide ergeben null])
+      N --> D2([Beide ergeben 0,00])
 ---
