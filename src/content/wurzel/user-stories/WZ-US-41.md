@@ -15,14 +15,14 @@ soThat:
 requirement: WZ-R-13
 acceptanceCriteria:
   en:
-    - "Once exported, no invoice field and no line may be added, edited or removed; the server answers `Conflict` to any such write, and the freeze covers Exported, Paid and Cancelled alike"
+    - "Once exported, no invoice field and no line may be added, edited or removed; the server answers `Conflict` to any such write, and the freeze covers Exported and Cancelled alike"
     - "Draft is the only editable state; a frozen invoice is excluded from the edit path and opens read-only with its status badge"
     - "A draft can be deleted, after a confirmation whose German text names the number and states plainly that it will not be reused and that a gap appears in the sequence"
     - "On confirmation the invoice and all its lines are deleted in one transaction and disappear from both lists"
     - "The billed quantity of every deleted line returns to its position automatically, because the remaining quantity is computed over existing lines rather than stored"
     - "Deleting an invoice in any other state is impossible: the action is not offered and the request returns `Conflict`"
   de:
-    - "Nach dem Export darf kein Rechnungsfeld und keine Zeile mehr hinzugefügt, geändert oder entfernt werden; der Server antwortet auf jeden solchen Schreibversuch mit `Conflict`, und die Sperre gilt für Exportiert, Bezahlt und Storniert gleichermaßen"
+    - "Nach dem Export darf kein Rechnungsfeld und keine Zeile mehr hinzugefügt, geändert oder entfernt werden; der Server antwortet auf jeden solchen Schreibversuch mit `Conflict`, und die Sperre gilt für Exportiert und Storniert gleichermaßen"
     - "Entwurf ist der einzige änderbare Status; eine eingefrorene Rechnung ist vom Bearbeitungspfad ausgeschlossen und öffnet schreibgeschützt mit ihrem Status-Kennzeichen"
     - "Ein Entwurf kann gelöscht werden, nach einer Bestätigung, deren deutscher Text die Nummer nennt und klar sagt, dass sie nicht erneut vergeben wird und in der Nummernfolge eine Lücke entsteht"
     - "Nach der Bestätigung werden Rechnung und alle Zeilen in einer Transaktion gelöscht und verschwinden aus beiden Listen"
