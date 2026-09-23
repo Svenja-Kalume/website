@@ -22,7 +22,7 @@ code:
       G{Form valid?}
       G -->|no| H[Held back]
       G -->|yes| S[Save]
-      S -->|failed| R([Retry button])
+      S -->|failed| R([Retry])
       S -->|"change during the save"| T1
   de: |
     flowchart TD

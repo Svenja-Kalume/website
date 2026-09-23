@@ -18,7 +18,7 @@ introducedIn: WZ-0.3.0-level-4
 source: docs/adr/0035-billing-raises-the-position-quantity.md
 ---
 
-A rule that is correct in the model and wrong at the kerb. The cap on billing above a position's
+A rule that is correct in the model and wrong for the edge conditions. The cap on billing above a position's
 remaining quantity protected the arithmetic and made the common case — the job that took longer than
 quoted — unbillable. Reversing it is the clearest example in this iteration of a business fact
 overruling a technically sound design.
