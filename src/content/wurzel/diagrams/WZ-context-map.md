@@ -6,39 +6,35 @@ case: wurzel
 type: c4
 tool: Mermaid
 caption:
-  en: "One hosted deployment — Client, Server and a Shared contract project — no CORS, one code path."
-  de: "Ein Hosted-Deployment — Client, Server und ein gemeinsames Vertragsprojekt — kein CORS, ein Code-Pfad."
+  en: "One hosted deployment — client, server and one shared project for the interface data — no CORS, one code path. The browser is Windows or Android, the interface is labelled in German, and the server also serves the application itself. The interface data holds the models and structures both sides compile against, so a change to one of them breaks both sides rather than surfacing at runtime. Only the server talks to the database."
+  de: "Ein Hosted-Deployment — Client, Server und ein gemeinsames Projekt für die Schnittstellen Informationen — kein CORS, ein Code-Pfad. Der Browser ist Windows oder Android, die Oberfläche ist deutsch beschriftet, und der Server liefert zugleich die Anwendung aus. Die Schnittstellen Daten halten die Modelle und Datenstrukturen, gegen die Client und Server gemeinsam kompilieren, sodass eine Änderung an ihnen beide Seiten bricht, statt erst zur Laufzeit aufzufallen. Die Datenbank spricht allein der Server an."
 aiContribution:
-  en: "The AI proposed the three-project Hosted WASM layout; I confirmed Shared as the single home for DTOs so the shape of the data is settled before implementation."
-  de: "Die KI schlug das Drei-Projekt-Hosted-WASM-Layout vor; ich bestätigte Shared als einzigen Ort für DTOs, damit die Struktur der Daten vor der Umsetzung feststeht."
+  en: "The AI proposed the three-project Hosted WASM layout; I confirmed one single home for the interface data, so the shape of what crosses the wire is settled before implementation rather than during it."
+  de: "Die KI schlug das Drei-Projekt-Hosted-WASM-Layout vor; ich bestätigte einen einzigen Ort für die Schnittstellen Informationen, damit die Struktur dessen, was über die Leitung geht, vor der Umsetzung feststeht und nicht während ihr."
 introducedIn: WZ-0.1.0
 code:
   en: |
     flowchart TD
-      User["Owner (browser: Windows / Android)"]
-      User --> Client
-      subgraph App["Wurzel — one hosted deployment"]
-        Client["Client (Blazor WASM UI, German labels)"]
-        Server["Server (ASP.NET Core Web API + serves WASM)"]
-        Shared["Shared (DTOs / models / interfaces)"]
+      User["Owner in the browser"] --> Client
+      subgraph App["Wurzel"]
+        Client["Client — Blazor WASM"]
+        Server["Server — ASP.NET Core"]
+        Shared["Interface data"]
         Client -->|"HTTP JSON"| Server
         Client -.->|"contracts"| Shared
         Server -.->|"contracts"| Shared
       end
-      DB[("SQLite now / PostgreSQL later")]
-      Server --> DB
+      Server --> DB[(Database)]
   de: |
     flowchart TD
-      User["Inhaber (Browser: Windows / Android)"]
-      User --> Client
-      subgraph App["Wurzel — ein Hosted-Deployment"]
-        Client["Client (Blazor-WASM-Oberfläche, deutsche Beschriftungen)"]
-        Server["Server (ASP.NET Core Web API + liefert das WASM aus)"]
-        Shared["Shared (DTOs / Modelle / Schnittstellen)"]
+      User["Inhaber im Browser"] --> Client
+      subgraph App["Wurzel"]
+        Client["Client — Blazor WASM"]
+        Server["Server — ASP.NET Core"]
+        Shared["Schnittstellen Daten"]
         Client -->|"HTTP JSON"| Server
-        Client -.->|"Verträge"| Shared
-        Server -.->|"Verträge"| Shared
+        Client -.->|"Schnittstellen Informationen"| Shared
+        Server -.->|"Schnittstellen Informationen"| Shared
       end
-      DB[("SQLite jetzt / PostgreSQL später")]
-      Server --> DB
+      Server --> DB[(Datenbank)]
 ---

@@ -2,7 +2,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
-import { iterationLabel, byOrder } from '../../lib/iterations';
+import { iterationLabel, iterationSlug, byOrder } from '../../lib/iterations';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -19,7 +19,8 @@ const stories = await getCollection('user-stories');
 // The level a story shipped in, resolved once. It hangs off the story, not the requirement:
 // a requirement is worked across iterations, so a single level per row would be a lie as
 // soon as the second one touches it. Seeing which levels a requirement spans is the point.
-const iterations = new Map((await getCollection('iterations')).map((it) => [it.id, it]));
+const allIterationList = await getCollection('iterations');
+const iterations = new Map(allIterationList.map((it) => [it.id, it]));
 
 const rows = await Promise.all(
   requirements.map(async (req) => {
@@ -72,7 +73,7 @@ const showCase = groups.length > 1;
           <span class="muted small">{t('trace.filter')}</span>
           <button type="button" class="chip" data-level="" aria-pressed="true">{t('trace.filter.all')}</button>
           {g.levels.map((it) => (
-            <button type="button" class="chip" data-level={it.data.version} aria-pressed="false">
+            <button type="button" class="chip" data-level={it.id} aria-pressed="false">
               {iterationLabel(it, t('iter.level'))}
             </button>
           ))}
@@ -101,7 +102,7 @@ const showCase = groups.length > 1;
           <tbody>
             {g.items.map(({ req, caseEntry, stories }) => (
               <tr data-levels={[...new Set(stories
-                    .map((s) => s.data.introducedIn && iterations.get(s.data.introducedIn.id)?.data.version)
+                    .map((s) => s.data.introducedIn && iterations.get(s.data.introducedIn.id)?.id)
                     .filter(Boolean))].join(' ')}>
                 <td><strong>{req.id}</strong><br /><span class="small">{localize(req.data.title, lang)}</span></td>
                 {showCase && <td class="small">{caseEntry ? localize(caseEntry.data.title, lang) : req.data.case.id}</td>}
@@ -111,7 +112,7 @@ const showCase = groups.length > 1;
                     : stories.map((s) => {
                         const it = s.data.introducedIn ? iterations.get(s.data.introducedIn.id) : undefined;
                         return (
-                          <div data-level={it?.data.version ?? ''}>
+                          <div data-level={it?.id ?? ''}>
                             {s.id}: {localize(s.data.title, lang)}
                             {/* MoSCoW belongs to the story: the acceptance checklist assigns
                                 Must/Should per checklist item, and an item is a story. A
@@ -124,7 +125,7 @@ const showCase = groups.length > 1;
                             )}
                             {it && (
                               <a class="tag" style="margin-left:.4rem"
-                                 href={`/${lang}/case-studies/${it.data.case.id}/${it.data.version}`}>
+                                 href={`/${lang}/case-studies/${it.data.case.id}/${iterationSlug(it, allIterationList)}`}>
                                 {iterationLabel(it, t('iter.level'))}
                               </a>
                             )}

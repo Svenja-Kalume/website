@@ -159,6 +159,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
 
 .tag {
   display: inline-block;
+  white-space: nowrap;
   font-size: 0.78rem;
   padding: 0.1rem 0.55rem;
   background: var(--accent-soft);

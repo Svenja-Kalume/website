@@ -17,17 +17,21 @@
  * to its version. Nothing here requires an iteration to be anything but published.
  */
 import { useTranslations, localize, type Lang } from '../i18n/ui';
-import { iterationLabel, type Iteration } from '../lib/iterations';
+import { iterationLabel, iterationSlug, releaseBadge, type Iteration } from '../lib/iterations';
 
 interface Props {
   lang: Lang;
   caseId: string;
   /** Ascending by `order` — pass `iterationsOf(...)` straight in. */
   iterations: Iteration[];
-  /** The version being shown, or undefined on the case study's own page. */
-  currentVersion?: string;
+  /**
+   * The id of the iteration being shown, or undefined on the case study's own page.
+   * Deliberately the id and not the version: one release tag can ship two iterations
+   * (wurzel 0.3.0 = Levels 3 and 4), and comparing versions would mark both as current.
+   */
+  currentId?: string;
 }
-const { lang, caseId, iterations, currentVersion } = Astro.props;
+const { lang, caseId, iterations, currentId } = Astro.props;
 const t = useTranslations(lang);
 
 // A single iteration is not a sequence; the breadcrumbs already say where you are.
@@ -39,14 +43,16 @@ const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
   <nav class="levels small" aria-label={t('iter.nav')}>
     <a
       href={`/${lang}/case-studies/${caseId}`}
-      aria-current={currentVersion === undefined ? 'page' : undefined}
+      aria-current={currentId === undefined ? 'page' : undefined}
     >{t('iter.overview')}</a>
     {iterations.map((it) => (
       <a
-        href={`/${lang}/case-studies/${caseId}/${it.data.version}`}
-        aria-current={it.data.version === currentVersion ? 'page' : undefined}
+        href={`/${lang}/case-studies/${caseId}/${iterationSlug(it, iterations)}`}
+        aria-current={it.id === currentId ? 'page' : undefined}
         title={localize(it.data.title, lang)}
-      >{label(it)}</a>
+      >{label(it)}{releaseBadge(it, iterations) && (
+          <span class="ver">v{releaseBadge(it, iterations)}</span>
+        )}</a>
     ))}
   </nav>
 )}
@@ -56,10 +62,13 @@ const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
   .levels {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    margin: 0 0 1.5rem;
+    /* The badge overhangs the chip, so the row needs headroom of its own and a wider
+       column gap than a plain row of links would want. */
+    gap: 0.9rem 0.7rem;
+    margin: 0.55rem 0 1.5rem;
   }
   .levels a {
+    position: relative;
     color: var(--muted);
     text-decoration: none;
     padding: 0.25rem 0.65rem;
@@ -69,6 +78,33 @@ const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
   .levels a:hover {
     color: var(--accent-strong);
     border-color: var(--accent);
+  }
+  /* The release tag as a badge on the chip's top-right corner, not part of the label:
+     it says which release this level shipped in, and the level word stays the name. A
+     level sharing its tag with a later one shows no badge at all. */
+  .levels .ver {
+    position: absolute;
+    top: -0.55rem;
+    right: -0.35rem;
+    padding: 0.05rem 0.35rem;
+    font-size: 0.7rem;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .levels a:hover .ver {
+    color: var(--accent-strong);
+    border-color: var(--accent);
+  }
+  .levels a[aria-current='page'] .ver {
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    font-weight: 600;
   }
   .levels a[aria-current='page'] {
     color: var(--accent-strong);

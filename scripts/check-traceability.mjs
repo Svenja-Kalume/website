@@ -170,6 +170,27 @@ for (const s of stories) {
 for (const a of adrs) {
   checkRef(a.file, 'case', a.data.case, caseIds);
   for (const r of a.data.relatedRequirements ?? []) checkRef(a.file, 'relatedRequirements', r, reqIds);
+  // The reasoning is what an ADR is for, and it is prose: half a translation renders an
+  // English decision under a German heading. An ADR written before the section fields
+  // still has its Markdown body, which is single-language -- the fallback, not the target.
+  const sections = ['context', 'decision', 'consequences'];
+  const written = sections.filter((k) => a.data[k]);
+  if (written.length === 0) {
+    if ((a.body ?? '').trim() === '')
+      advise(warnings, a, `${a.file}: no reasoning -- neither context/decision/consequences nor a Markdown body.`);
+  } else {
+    for (const key of sections) {
+      const field = a.data[key];
+      if (!field) {
+        advise(warnings, a, `${a.file}: ${key} is missing, while the other sections are written.`);
+        continue;
+      }
+      for (const lang of ['en', 'de']) {
+        if (!(field[lang] ?? []).some((p) => (p ?? '').trim() !== ''))
+          advise(warnings, a, `${a.file}: ${key}.${lang} is empty -- that locale renders the heading with nothing under it.`);
+      }
+    }
+  }
 }
 
 // Requirements: coverage + AI contribution

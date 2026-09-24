@@ -31,11 +31,47 @@ const described = describeMermaid(code);
 <style>
   .mermaid-figure { margin: 0 0 1.4rem; }
   .mermaid-figure figcaption { margin-top: .5rem; }
+
+  /* Mermaid scales an SVG down to fit its container, and the page measure is narrow
+     (--max: 46rem). A wide graph with prose labels therefore shrank until the text was
+     unreadable. Scrolling a wide diagram is better than shrinking every diagram: the
+     labels keep their size, and only the graphs that genuinely do not fit ask the reader
+     to scroll. `useMaxWidth: false` below is the other half of this. */
+  .mermaid-wrap { overflow-x: auto; }
+  .mermaid-wrap :global(svg) { max-width: none; height: auto; }
 </style>
 
 <script>
   import mermaid from 'mermaid';
-  mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'neutral',
+    // Labels sit just under the caption's size (.small, 0.9rem): the diagram is read
+    // alongside the prose, not instead of it. A note is a remark rather than a warning,
+    // and the neutral theme paints notes dark, which made them the loudest thing here.
+    themeVariables: {
+      fontSize: '14px',
+      noteBkgColor: '#f3f3f1',
+      noteTextColor: '#222',
+      noteBorderColor: '#bbb',
+    },
+    // Render at natural size; .mermaid-wrap scrolls when that is wider than the measure.
+    // The spacing is tighter than the default because these graphs are small and were
+    // reading as a scatter of boxes with a lot of air between them.
+    flowchart: {
+      useMaxWidth: false,
+      nodeSpacing: 34,
+      rankSpacing: 44,
+      padding: 8,
+      subGraphTitleMargin: { top: 4, bottom: 10 },
+    },
+    // mirrorActors repeats the whole actor row under the diagram, which doubles its height
+    // and says nothing the row at the top has not already said.
+    sequence: { useMaxWidth: false, mirrorActors: false, actorMargin: 18, width: 100, boxMargin: 8 },
+    state: { useMaxWidth: false },
+    // A class with no attributes still got two empty compartments drawn under its name.
+    class: { useMaxWidth: false, hideEmptyMembersBox: true },
+  });
   const run = () => mermaid.run({ querySelector: '.mermaid' });
   run();
   document.addEventListener('astro:page-load', run);

@@ -26,7 +26,7 @@ interests:
     - EF Core als einziger Migrationsmechanismus; ein wiederholbarer Build
     - Namen, die ihrer Bedeutung entsprechen (z. B. Superseded statt Declined)
     - Jede Technologieebene parallel planen, dann test-first umsetzen
-    - Klare gemeinsame Verträge (DTOs) vor der Implementierung
+    - Klare gemeinsame Schnittstellen Informationen (DTOs) vor der Implementierung
     - Jede Änderung vor der Abnahme gegen die Akzeptanzkriterien reviewen
     - Kein Scope-Creep über die freigegebene Story hinaus
 ---

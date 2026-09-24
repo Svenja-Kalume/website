@@ -7,4 +7,5 @@ order: 3
 source: docs/epics.md
 glossary: [WZ-projektposition, WZ-positionspreis, WZ-einheit, WZ-arbeitszeit]
 requirements: [WZ-R-03]
+stories: [WZ-US-56]
 ---

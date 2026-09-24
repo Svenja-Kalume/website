@@ -382,7 +382,7 @@ interests:                       # optional
   de: [Schnellere Angebote, Weniger Preisfehler]
 heldBy:                          # optional: WHO holds the role, as a human
   en: The owner of the business — a real person, not a persona. Where the product goes is decided there.
-  de: Die Inhaberin des Betriebs — eine reale Person, keine Persona. Die Produktrichtung wird dort entschieden.
+  de: Der Inhaber des Betriebs — eine reale Person, keine Persona. Die Produktrichtung wird dort entschieden.
 aiSupport:                       # optional: WHICH agents assist, and where their authority stops
   en: A research agent prepares the options; the choice between them is never the agent's.
   de: Ein Recherche-Agent bereitet die Optionen auf; die Wahl zwischen ihnen trifft nie der Agent.
