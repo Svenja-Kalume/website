@@ -1,19 +1,31 @@
 ---
 /**
- * One architecture decision, with its body (Context / Decision / Consequences) — the
+ * One architecture decision, with its reasoning (Context / Decision / Consequences) — the
  * reasoning is the point of an ADR, so it is rendered rather than listed by title.
  * Shown on the level that introduced it; the case study page keeps only ADRs that
  * carry no `introducedIn`.
+ *
+ * The three sections come from locale-keyed fields, one string per paragraph, and the
+ * headings from the UI dictionary — so a German page reads German reasoning under German
+ * headings. An ADR written before those fields still renders its Markdown body, which is
+ * single-language; that is the fallback, not the target state.
  */
 import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { useTranslations, localize, type Lang } from '../i18n/ui';
+import { inlineMarkdown } from '../lib/inline-markdown';
 
 interface Props { adr: CollectionEntry<'adr'>; lang: Lang; }
 const { adr, lang } = Astro.props;
 const t = useTranslations(lang);
-const { Content } = await render(adr);
 const dateStr = adr.data.date.toISOString().slice(0, 10);
+
+const sections = (['context', 'decision', 'consequences'] as const)
+  .map((key) => ({ key, paragraphs: localize<string[]>(adr.data[key], lang) ?? [] }))
+  .filter((s) => s.paragraphs.length > 0);
+
+// Only an ADR with no section fields at all falls back to its body.
+const { Content } = sections.length === 0 ? await render(adr) : { Content: null };
 ---
 <div class="card">
   <strong>{adr.id}: {localize(adr.data.title, lang)}</strong>
@@ -28,13 +40,21 @@ const dateStr = adr.data.date.toISOString().slice(0, 10);
   {adr.data.supersedes && (
     <p class="small muted" style="margin:.3rem 0 0">{t('adr.supersedes')} {adr.data.supersedes.id}</p>
   )}
-  <div class="adr-body small"><Content /></div>
+  <div class="adr-body small">
+    {Content ? <Content /> : sections.map((s) => (
+      <>
+        <h4 id={`${adr.id}-${s.key}`}>{t(`adr.${s.key}`)}</h4>
+        {s.paragraphs.map((p: string) => <p set:html={inlineMarkdown(p)} />)}
+      </>
+    ))}
+  </div>
 </div>
 
 <style>
-  /* An ADR body uses `## Context / ## Decision / ## Consequences`. Inside a card those are
-     sub-headings of the section, not siblings of it: scripts/rehype-adr-headings.mjs moves
-     them to h4 in the outline, and this sizes them to match — neither touches the markdown. */
+  /* An ADR's three sections sit inside a card, under a topic's `<h2>` and an `<h3>` for the
+     decisions section, so they render as `h4`. A body-fallback ADR writes them as `##` in
+     its Markdown; scripts/rehype-adr-headings.mjs demotes those to match, without touching
+     the file. */
   .adr-body :global(h4) {
     font-size: 1rem;
     margin: .8rem 0 .2rem;

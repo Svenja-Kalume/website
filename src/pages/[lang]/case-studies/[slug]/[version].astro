@@ -9,7 +9,7 @@ import StoryCard from '../../../../components/StoryCard.astro';
 import AdrCard from '../../../../components/AdrCard.astro';
 import GlossaryTerms from '../../../../components/GlossaryTerms.astro';
 import { languages, useTranslations, localize, toLang, type UiKey } from '../../../../i18n/ui';
-import { iterationsOf, currentOf, introducedIn, iterationLabel } from '../../../../lib/iterations';
+import { iterationsOf, currentOf, introducedIn, iterationLabel, iterationSlug } from '../../../../lib/iterations';
 import { topicsOf, groupByTopic } from '../../../../lib/topics';
 
 /**
@@ -27,7 +27,7 @@ export async function getStaticPaths() {
   return Object.keys(languages).flatMap((lang) =>
     cases.flatMap((caseEntry) =>
       iterationsOf(all, caseEntry.id).map((iteration) => ({
-        params: { lang, slug: caseEntry.id, version: iteration.data.version },
+        params: { lang, slug: caseEntry.id, version: iterationSlug(iteration, all) },
         props: { caseEntry, iteration },
       }))
     )
@@ -57,17 +57,19 @@ const adrs = introducedIn(allAdrs, iteration.id);
 // traceability chain, and decisions — so a level reads as "what happened to the customer,
 // then to the project", not as three long lists you have to cross-reference yourself.
 const topics = topicsOf(await getCollection('topics'), caseEntry.id);
-// Only the topic sub-chapters here. What no topic claims describes the project as a
-// whole, not this level, so it is rendered once on the case study overview instead.
+// Every artifact renders on the level that introduced it, topic or no topic. What no topic
+// claims — the context map, the delivery pipeline — is still this level's work, so it goes
+// under its own heading here rather than on the case study overview: the overview is the
+// list of levels, and an artifact shown there is an artifact no level is accountable for.
 const caseStories = allStories.filter((s) => s.data.case.id === caseEntry.id);
-const { groups: topicGroups } = groupByTopic(topics, { diagrams, stories, adrs }, caseStories);
+const { groups: topicGroups, unassigned } = groupByTopic(topics, { diagrams, stories, adrs }, caseStories);
 const sections = topicGroups;
 
 // Where each topic continues. Someone who has just read what this level did to offers
 // wants the offers of the next level, not the top of its page — so the link carries the
 // topic anchor. Derived from what the later iteration actually publishes under that topic:
 // a link landing on a heading that is not there would be worse than no link at all.
-const continuedIn = new Map<string, { version: string; label: string }[]>();
+const continuedIn = new Map<string, { slug: string; label: string }[]>();
 for (const later of caseIterations.filter((i) => i.data.order > iteration.data.order)) {
   const { groups } = groupByTopic(
     topics,
@@ -80,7 +82,7 @@ for (const later of caseIterations.filter((i) => i.data.order > iteration.data.o
   );
   for (const g of groups) {
     const list = continuedIn.get(g.topic!.id) ?? [];
-    list.push({ version: later.data.version, label: iterationLabel(later, t('iter.level')) });
+    list.push({ slug: iterationSlug(later, all), label: iterationLabel(later, t('iter.level')) });
     continuedIn.set(g.topic!.id, list);
   }
 }
@@ -107,17 +109,21 @@ const levelLabel = iterationLabel(iteration, t('iter.level'));
 // its own singular form. Zero renders nothing at all.
 const count = (n: number, one: UiKey, many: UiKey) =>
   n === 0 ? undefined : `${n} ${t(n === 1 ? one : many)}`;
+// Two iterations can share one release tag (0.3.0 shipped Levels 3 and 4). Only then does
+// the page title need the level to tell them apart — an iteration alone under its tag keeps
+// the title it was published with.
+const sharesTag = caseIterations.filter((i) => i.data.version === iteration.data.version).length > 1;
 const hasProcessChanges = (localize(iteration.data.processChanges, lang) ?? []).length > 0;
 const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).length > 0;
 ---
 <BaseLayout
   lang={lang}
-  title={`${caseTitle} ${iteration.data.version}`}
+  title={sharesTag ? `${caseTitle} ${iteration.data.version} — ${levelLabel}` : `${caseTitle} ${iteration.data.version}`}
   description={localize(iteration.data.summary, lang)}
   jsonLd={techArticleSchema({
     headline: `${caseTitle} — ${title}`,
     description: localize(iteration.data.summary, lang),
-    url: absoluteUrl(`/${lang}/case-studies/${caseEntry.id}/${iteration.data.version}/`, Astro.site),
+    url: absoluteUrl(`/${lang}/case-studies/${caseEntry.id}/${iterationSlug(iteration, all)}/`, Astro.site),
     lang,
     datePublished: iteration.data.date,
     version: iteration.data.version,
@@ -132,7 +138,7 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
         ]),
     { label: levelLabel },
   ]} />
-  <LevelNav lang={lang} caseId={caseEntry.id} iterations={caseIterations} currentVersion={iteration.data.version} />
+  <LevelNav lang={lang} caseId={caseEntry.id} iterations={caseIterations} currentId={iteration.id} />
 
   <h1>{title}</h1>
   <p class="small">
@@ -174,6 +180,18 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
               </span>
             </li>
           ))}
+          {unassigned && (
+            <li>
+              <a href="#artifacts">{t('topic.unassigned')}</a>
+              <span class="muted">
+                {' '}{[
+                  count(unassigned.stories.length, 'iter.story.one', 'iter.stories'),
+                  count(unassigned.diagrams.length, 'iter.diagram.one', 'iter.diagrams'),
+                  count(unassigned.adrs.length, 'iter.adr.one', 'iter.adr'),
+                ].filter(Boolean).join(' · ')}
+              </span>
+            </li>
+          )}
         </ul>
       )}
     </li>
@@ -194,7 +212,7 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
       <h2 id="process-changes">{t('iter.processChanges')}</h2>
       <p class="muted">
         {t('iter.sameProcessAs')}{' '}
-        <a href={`/${lang}/case-studies/${caseEntry.id}/${sameProcess.data.version}`}>v{sameProcess.data.version}</a>.
+        <a href={`/${lang}/case-studies/${caseEntry.id}/${iterationSlug(sameProcess, all)}`}>{iterationLabel(sameProcess, t('iter.level'))}</a>.
       </p>
     </>
   )}
@@ -204,7 +222,7 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
       <h2 id="corrects">{t('iter.corrects')}</h2>
       <ul>
         {corrects.filter(Boolean).map((c: any) => (
-          <li><a href={`/${lang}/case-studies/${caseEntry.id}/${c.data.version}`}>{c.data.version}</a> — {localize(c.data.summary, lang)}</li>
+          <li><a href={`/${lang}/case-studies/${caseEntry.id}/${iterationSlug(c, all)}`}>{iterationLabel(c, t('iter.level'))}</a> — {localize(c.data.summary, lang)}</li>
         ))}
       </ul>
     </>
@@ -272,13 +290,48 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
           {continuedIn.get(g.topic!.id)!.map((next, i) => (
             <>
               {i > 0 && ', '}
-              <a href={`/${lang}/case-studies/${caseEntry.id}/${next.version}#${g.topic!.id}`}>{next.label} →</a>
+              <a href={`/${lang}/case-studies/${caseEntry.id}/${next.slug}#${g.topic!.id}`}>{next.label} →</a>
             </>
           ))}
         </p>
       )}
     </section>
   ))}
+
+  {/* Last, because a domain sub-chapter is what a reader came for and this is the
+      cross-cutting remainder — the solution structure, the way of working. It carries no
+      topic heading and no glossary, since having neither is exactly what puts it here. */}
+  {unassigned && (
+    <section class="topic" id="artifacts">
+      <h2>{t('topic.unassigned')}</h2>
+      <p class="muted">{t('topic.unassignedIntro')}</p>
+
+      {unassigned.diagrams.length > 0 && (
+        <>
+          <h3>{t('iter.diagrams')}</h3>
+          {unassigned.diagrams.map((d) => (
+            <div id={d.id}><DiagramFigure diagram={d} lang={lang} titleTag="h4" /></div>
+          ))}
+        </>
+      )}
+
+      {unassigned.stories.length > 0 && (
+        <>
+          <h3>{t('case.storiesTrace')}</h3>
+          {unassigned.stories.map((story) => (
+            <StoryCard story={story} lang={lang} repoUrl={caseEntry.data.repoUrl} tag={iteration.data.version} />
+          ))}
+        </>
+      )}
+
+      {unassigned.adrs.length > 0 && (
+        <>
+          <h3>{t('case.adr')}</h3>
+          {unassigned.adrs.map((a) => <AdrCard adr={a} lang={lang} />)}
+        </>
+      )}
+    </section>
+  )}
 
   {(localize(iteration.data.lessons, lang) ?? []).length > 0 && (
     <>

@@ -21,6 +21,42 @@ export function tagCounts(entries: CollectionEntry<'journal'>[]): { tag: string;
 }
 
 /**
+ * The groups the filter is laid out in. Tags stay plain strings on the entries — the group is
+ * how the site *reads* a tag, not part of it, so regrouping never touches an entry or a URL.
+ * A tag missing here lands in `other` rather than disappearing: a new tag shows up at once,
+ * and the empty map entry is the reminder to place it.
+ */
+export const tagGroups = ['domain', 'code', 'ai', 'other'] as const;
+export type TagGroup = (typeof tagGroups)[number];
+
+const groupOf: Record<string, Exclude<TagGroup, 'other'>> = {
+  'domain-driven': 'domain',
+  projects: 'domain',
+  positions: 'domain',
+  offers: 'domain',
+  invoices: 'domain',
+  address: 'domain',
+  lifecycle: 'domain',
+  architecture: 'code',
+  adr: 'code',
+  testing: 'code',
+  'code-quality': 'code',
+  simplification: 'code',
+  frontend: 'code',
+  mobile: 'code',
+  autosave: 'code',
+  'ai-driven': 'ai',
+  decision: 'ai',
+  discovery: 'ai',
+  'dead-end': 'ai',
+  retro: 'ai',
+};
+
+export function tagGroup(tag: string): TagGroup {
+  return groupOf[tag] ?? 'other';
+}
+
+/**
  * Every tag combination that actually has entries — the powerset of each entry's own tags,
  * deduplicated. A combination exists as a page exactly when some entry carries all of it,
  * so the filter can be additive (AND) without generating a page that would come up empty.
