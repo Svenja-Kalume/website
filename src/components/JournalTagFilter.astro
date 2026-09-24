@@ -11,10 +11,14 @@
  * combination does not have — and a tag that would empty the list is shown inert rather
  * than as a link into nothing. A selected chip carries no count: the number that matters
  * there is what the page is showing, and the heading above already states it.
+ *
+ * Chips are laid out in one labelled row per tag group (domain, code, AI), so the row reads
+ * as "what about" rather than one flat list. Grouping is layout only — selection still
+ * combines freely across groups. An empty group is not rendered.
  */
 import { useTranslations, type Lang } from '../i18n/ui';
 import type { CollectionEntry } from 'astro:content';
-import { tagCounts, filterByTags, tagsHref, toggleTag } from '../lib/journal';
+import { tagCounts, filterByTags, tagsHref, toggleTag, tagGroup, tagGroups } from '../lib/journal';
 
 interface Props { entries: CollectionEntry<'journal'>[]; lang: Lang; activeTags?: string[]; }
 const { entries, lang, activeTags = [] } = Astro.props;
@@ -30,29 +34,61 @@ const chips = tagCounts(entries).map(({ tag }) => {
     count: filterByTags(entries, next).length,
   };
 });
+const groups = tagGroups
+  .map((group) => ({ group, chips: chips.filter(({ tag }) => tagGroup(tag) === group) }))
+  .filter(({ chips }) => chips.length > 0);
 ---
 {chips.length > 0 && (
   <nav class="tag-filter small" aria-label={t('journal.filter')}>
-    <a href={`/${lang}/journal`} aria-current={activeTags.length === 0 ? 'page' : undefined}>
-      {t('journal.allTags')}
-    </a>
-    {chips.map(({ tag, active, href, count }) => (
-      count === 0 && !active
-        ? <span class="inert" aria-disabled="true">{tag} <span class="count">(0)</span></span>
-        : <a href={href} aria-current={active ? 'page' : undefined}>
-            {tag}{!active && <span class="count muted"> ({count})</span>}
-          </a>
+    <span class="label" aria-hidden="true"></span>
+    <div class="chips">
+      <a href={`/${lang}/journal`} aria-current={activeTags.length === 0 ? 'page' : undefined}>
+        {t('journal.allTags')}
+      </a>
+    </div>
+    {groups.map(({ group, chips }) => (
+      <>
+        <span class="label muted" id={`tag-group-${group}`}>{t(`journal.group.${group}`)}</span>
+        <div class="chips" role="group" aria-labelledby={`tag-group-${group}`}>
+          {chips.map(({ tag, active, href, count }) => (
+            count === 0 && !active
+              ? <span class="inert" aria-disabled="true">{tag} <span class="count">(0)</span></span>
+              : <a href={href} aria-current={active ? 'page' : undefined}>
+                  {tag}{!active && <span class="count muted"> ({count})</span>}
+                </a>
+          ))}
+        </div>
+      </>
     ))}
   </nav>
 )}
 
 <style>
+  /* Two columns — group label, then its chips — so every group starts at the same x and a
+     wrapped line of chips stays under its own group rather than under the label. */
   .tag-filter {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 1rem;
+    row-gap: 0.5rem;
+    align-items: baseline;
+    margin: 0 0 1.6rem;
+  }
+  .tag-filter .chips {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.4rem;
-    margin: 0 0 1.6rem;
+  }
+  .tag-filter .label {
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  @media (max-width: 40rem) {
+    .tag-filter { grid-template-columns: 1fr; row-gap: 0.3rem; }
+    .tag-filter .label:empty { display: none; }
+    .tag-filter .label { margin-top: 0.4rem; }
   }
   .tag-filter a,
   .tag-filter .inert {
@@ -61,6 +97,8 @@ const chips = tagCounts(entries).map(({ tag }) => {
     padding: 0.15rem 0.6rem;
     border: 1px solid var(--border);
     border-radius: 999px;
+    /* A tag and its count are one chip: wrap between chips, never inside one. */
+    white-space: nowrap;
   }
   .tag-filter a:hover { color: var(--accent-strong); border-color: var(--accent); }
   .tag-filter a[aria-current='page'] {
