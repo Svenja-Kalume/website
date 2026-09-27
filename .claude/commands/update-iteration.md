@@ -170,8 +170,40 @@ Then use `AskUserQuestion`, one topic at a time, and challenge the answers:
 4. **The AI contribution.** The interesting record is where the AI's proposal was **overridden**, and
    where it was **wrong and corrected in the open**. Ask for those, not for a list of what it helped
    with. Keep a superseded hypothesis visible instead of rewriting it away.
-5. **The journal.** Dated working-log entries, not a blog. Ask which days are worth an entry —
-   typically a dead end, a decision that flipped, a challenged assumption.
+5. **The journal.** Dated working-log entries, not a blog. Since 2026-09-27 the vault collects
+   **journal notes** in `docs/journal/` while the work happens: plain English facts under *What
+   happened*, *What was decided*, *What the AI proposed, and what the owner changed*, *What it cost or
+   caught*, *Sources*. A note is content, not an entry — **the entry is written here**, from the note.
+   Start with the notes at the tag:
+
+   ```bash
+   git -C "$REPO" ls-tree --name-only "<tag>" docs/journal/ | grep -v '/index.md$'
+   git -C "$REPO" show "<tag>:docs/journal/<note>.md"
+   ```
+
+   A note has an entry when `src/content/wurzel/journal/<note>.md` exists — the site id **is** the
+   note's filename (`WZ-YYYY-MM-DD-topic-headline`), so the match needs no extra field. For each note
+   without one, write the entry:
+
+   - **For the site's main audience** — a recruiter or client skimming, and a peer reading on. Lead
+     with what happened and why it matters; name the decision and the AI's part plainly. Explain
+     every abbreviation on first use (ADR, BDR, PRD …), drop file names, script names and record
+     numbers unless the point depends on them, and keep one or two figures, not all of them.
+     Aim for three to five short paragraphs.
+   - **In the owner's voice** — first person, like the existing entries. The note's "the owner" is
+     "I".
+   - **Nothing beyond the note.** Summarise, select, reword; never add a fact, a motive or a
+     consequence the note does not state. A gap is a question for the user, not a guess.
+   - **German written as German** — its own sentences and domain terms, not a transliteration.
+   - **The site's own fields**: `title` / `summary` reworded from the note's for this audience, `case:
+     wurzel`, `iteration` (the level the note reports on — ask if unclear), `tags` from the vocabulary
+     in `src/lib/journal.ts` (a new tag lands in `other` until placed there), `draft: true`.
+
+   Read each entry back in both languages; `draft` turns `false` only on the user's word. An entry
+   already on the site is never rewritten from a changed note — a published entry is the record, and
+   a correction is a new entry. Then ask whether any day **without** a note is worth an entry —
+   typically a dead end, a decision that flipped, a challenged assumption. The thirteen entries
+   written before 2026-09-27 have no note and stay as they are.
 6. **Open business questions.** Anything that surfaced and only a stakeholder can answer goes to the
    `questions` collection with `askedOf`, `blocks` and `consequence`. `re:check` errors if a blocked
    story moves past `backlog` — that error is the signal someone is about to synthesise the answer.

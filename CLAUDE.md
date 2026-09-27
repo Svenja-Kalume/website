@@ -228,6 +228,9 @@ pushing *any* branch to origin starts a Deploy Now run. Ask before pushing.
   without a decision, then work through journal, `processChanges`, `lessons` and `aiContribution`
   **with** you. It reads the vault at `${WURZEL_REPO:-/home/svenja/src/wurzel/wurzel}` *at the tag*,
   never in its working tree — an iteration documents the practice as it was then.
+  **Wurzel journal entries start as notes in the vault's `docs/journal/`** — plain English facts,
+  not the entry. `/update-iteration` writes the bilingual entry from each note at the tag, for the
+  site's main audience, under the note's filename as id; a published entry is never rewritten.
 
 ## Language
 
