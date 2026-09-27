@@ -210,7 +210,10 @@ set `site:` in `astro.config.mjs` to the real domain.
 
 **The site is live off `main`. Never commit to it and never merge into it.** Work on a feature branch
 and merge into **`develop`**; promoting `develop` to `main` is a publication decision and belongs to
-the owner alone. A branch per unit of work also keeps the append-only rule auditable — the whole point
+the owner alone. **The only way into `main` is a pull request the owner approves and merges on GitHub
+themselves** — `main` is never merged locally, and no agent pushes to it, merges or approves a pull
+request, or changes branch protection. Opening a PR against `main` is fine; the rest is theirs.
+`.claude/harness/git-guard.mjs` denies all of it. A branch per unit of work also keeps the append-only rule auditable — the whole point
 of an iteration update is that its diff can be read.
 
 `.github/workflows/website-orchestration.yaml` deploys on a push to **`main` or `develop`** only; a
@@ -220,7 +223,8 @@ ask before pushing.
 ## Harness (reminds you of the steps)
 
 - `.claude/settings.json` — hooks: **SessionStart** shows the guardrails; **PreToolUse** (Bash)
-  denies a commit or merge on `main` and asks before every `git push` / `gh pr merge`;
+  denies a commit, merge or push on `main`, any PR merge or approval, and API writes to branch
+  protection; asks before every other `git push`;
   **PostToolUse** (Write/Edit on `src/content/**`) surfaces the matching checklist (required fields,
   AI contribution, linking) and warns when the edited file is frozen — introduced in a published
   iteration, a published iteration itself, or a committed non-draft journal entry.
