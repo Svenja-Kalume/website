@@ -24,8 +24,8 @@ Published iterations are append-only: a change goes on the NEW artifact
 (\`changes:\` / \`supersedes:\`), never into a published file.
 
 Branching: \`main\` is the live site — never commit or merge into it.
-Work on a feature branch, merge into \`develop\`. Any push starts a
-Deploy Now run: ask before pushing.
+Work on a feature branch, merge into \`develop\`. A push to \`main\` or
+\`develop\` starts a Deploy Now run: ask before pushing.
 
 Before commit/deploy: \`npm run re:check\` (traceability & scope) and \`npm run build\`.
 ──────────────────────────────────────────────────────────────────────
