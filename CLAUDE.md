@@ -114,7 +114,8 @@ npm run preview     # preview the build locally
 npm run re:check    # check traceability & scope (before commit/deploy)
 ```
 
-Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanly.
+Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanly. CI enforces
+both (`website-build.yaml` runs `re:check` before the build, so an error stops the deploy).
 
 ## Architecture
 
@@ -212,8 +213,9 @@ and merge into **`develop`**; promoting `develop` to `main` is a publication dec
 the owner alone. A branch per unit of work also keeps the append-only rule auditable — the whole point
 of an iteration update is that its diff can be read.
 
-`.github/workflows/website-orchestration.yaml` triggers on **`push` with no branch filter**, so
-pushing *any* branch to origin starts a Deploy Now run. Ask before pushing.
+`.github/workflows/website-orchestration.yaml` deploys on a push to **`main` or `develop`** only; a
+feature branch can be pushed to share it without publishing it. Every push is still outward-facing:
+ask before pushing.
 
 ## Harness (reminds you of the steps)
 
@@ -224,7 +226,9 @@ pushing *any* branch to origin starts a Deploy Now run. Ask before pushing.
   iteration, a published iteration itself, or a committed non-draft journal entry.
 - `.claude/harness/*.mjs` — the hook scripts.
 - `scripts/check-traceability.mjs` (`npm run re:check`) — checks broken references, missing required
-  fields (acceptance criteria, AI contribution), coverage gaps and scope limits.
+  fields (acceptance criteria, AI contribution), coverage gaps and scope limits, and **errors on any
+  frozen content file modified or deleted since `origin/main`** (diffed from the merge base) — the
+  append-only rule for edits the Write/Edit hook never sees: by hand, by script, by merge.
 - Slash command **`/re-check`** runs the check and summarises it.
 - Slash command **`/update-iteration <tag>`** is the whole update in one run: pull the app repo at
   the tag, publish the implementation levels that have no iteration yet, refresh what is derivable

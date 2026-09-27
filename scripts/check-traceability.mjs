@@ -21,6 +21,7 @@
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join, isAbsolute, resolve } from 'node:path';
+import { execFileSync } from 'node:child_process';
 import matter from 'gray-matter';
 
 const CONTENT_ROOT = process.env.CONTENT_DIR
@@ -367,6 +368,45 @@ for (const [c, list] of iterationsByCase) {
     if (seen.has(o))
       errors.push(`${it.file}: order ${o} is already used by "${seen.get(o)}" in case "${c}". The current iteration is derived from the highest order, so a tie is ambiguous.`);
     else seen.set(o, it.id);
+  }
+}
+
+// ---- Append-only, checked against what is live ----
+// The change pointers below catch a published file that was edited to point forward. They
+// do not catch a published file that was simply edited — by hand, by a script, by a merge.
+// So diff the content against the live site (`origin/main`, from the merge base so work
+// on main that this branch lacks does not show up reversed) and error on every modified
+// or deleted file that is frozen: introduced in a published iteration, a published
+// iteration itself, or a journal entry that is live without `draft: true`. The frozen rule
+// is the same `isFrozen` the advisories use; the current iteration stays editable.
+// Without git or without `origin/main` (a shallow CI checkout) the check is skipped, loudly.
+{
+  const git = (...args) => execFileSync('git', ['-C', CONTENT_ROOT, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  let base = '';
+  try { base = git('merge-base', 'origin/main', 'HEAD').trim(); } catch { /* no git or no origin/main */ }
+  if (!base) {
+    warnings.push('append-only check skipped: no `origin/main` to diff against (fetch it, or use a full checkout in CI).');
+  } else {
+    const changed = git('diff', '--name-status', '--relative', base, '--', '.')
+      .split('\n').filter(Boolean).map((l) => l.split('\t'));
+    for (const [status, rel] of changed) {
+      if (!/^[MD]/.test(status) || !/\.(md|mdx)$/.test(rel)) continue;
+      const [, collection] = rel.split('/');
+      const id = rel.split('/').pop().replace(/\.(md|mdx)$/, '');
+      let live;
+      try { live = matter(git('show', `${base}:./${rel}`)).data; } catch { continue; }
+      let frozenBy = null;
+      if (collection === 'iterations') {
+        if (!currentIterationIds.has(id)) frozenBy = `published iteration ${id}`;
+      } else if (collection === 'journal') {
+        if (live.draft !== true) frozenBy = 'a live, non-draft journal entry';
+      } else {
+        const it = refId(live.introducedIn);
+        if (it !== undefined && !currentIterationIds.has(it)) frozenBy = `introduced in published iteration ${it}`;
+      }
+      if (frozenBy)
+        errors.push(`${rel}: ${status.startsWith('D') ? 'deleted' : 'modified'}, but it is frozen (${frozenBy}). Published iterations are append-only — revert, and put the change on a NEW artifact (\`changes:\` / \`supersedes:\`, or a new journal entry).`);
+    }
   }
 }
 

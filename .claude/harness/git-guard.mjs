@@ -4,8 +4,8 @@
  *
  * - `main` is the live site: a commit or merge while on it (or after switching to it in
  *   the same command) is DENIED. Promoting develop to main is the owner's decision.
- * - Every push starts a Deploy Now run (the workflow has no branch filter), and a PR
- *   merge can land on main: both ASK, so the owner confirms each one.
+ * - A push to `main` or `develop` starts a Deploy Now run, and every push is outward-facing;
+ *   a PR merge can land on main. Both ASK, so the owner confirms each one.
  *
  * Only this repo is checked for the branch. A command aimed at another repo via
  * `git -C <path>` (the wurzel vault) is left to the normal permission flow.
@@ -31,7 +31,7 @@ if (!/\b(git|gh)\b/.test(cmd)) process.exit(0);
 const otherRepo = /\bgit\s+-C\s+(?!\.(\s|\/|$))\S+/.test(cmd);
 
 if (/\bgit\b[^;&|]*\bpush\b/.test(cmd)) {
-  decide('ask', 'Every push starts a Deploy Now run (no branch filter in website-orchestration.yaml). Confirm this push.');
+  decide('ask', 'A push is outward-facing, and a push to main or develop starts a Deploy Now run. Confirm this push.');
 }
 if (/\bgh\s+pr\s+merge\b/.test(cmd)) {
   decide('ask', 'A PR merge may land on main, the live site. Confirm target branch and merge.');
