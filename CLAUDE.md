@@ -217,8 +217,11 @@ pushing *any* branch to origin starts a Deploy Now run. Ask before pushing.
 
 ## Harness (reminds you of the steps)
 
-- `.claude/settings.json` — hooks: **SessionStart** shows the guardrails; **PostToolUse** (Write/Edit
-  on `src/content/**`) surfaces the matching checklist (required fields, AI contribution, linking).
+- `.claude/settings.json` — hooks: **SessionStart** shows the guardrails; **PreToolUse** (Bash)
+  denies a commit or merge on `main` and asks before every `git push` / `gh pr merge`;
+  **PostToolUse** (Write/Edit on `src/content/**`) surfaces the matching checklist (required fields,
+  AI contribution, linking) and warns when the edited file is frozen — introduced in a published
+  iteration, a published iteration itself, or a committed non-draft journal entry.
 - `.claude/harness/*.mjs` — the hook scripts.
 - `scripts/check-traceability.mjs` (`npm run re:check`) — checks broken references, missing required
   fields (acceptance criteria, AI contribution), coverage gaps and scope limits.
