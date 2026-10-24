@@ -19,7 +19,7 @@ const Title = titleTag;
 // stays the fallback for a diagram that has only one language yet.
 const code = localize(d.data.code, lang) ?? d.body ?? '';
 ---
-<Title>{localize(d.data.title, lang)}</Title>
+<Title id={d.id}>{localize(d.data.title, lang)}</Title>
 <p class="muted small">{d.data.type.toUpperCase()} · {t('case.madeWith')} {d.data.tool}</p>
 {d.data.image ? (
   <>

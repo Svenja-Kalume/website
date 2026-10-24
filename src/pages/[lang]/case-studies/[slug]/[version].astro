@@ -310,7 +310,7 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
         <>
           <h3>{t('iter.diagrams')}</h3>
           {unassigned.diagrams.map((d) => (
-            <div id={d.id}><DiagramFigure diagram={d} lang={lang} titleTag="h4" /></div>
+            <DiagramFigure diagram={d} lang={lang} titleTag="h4" />
           ))}
         </>
       )}

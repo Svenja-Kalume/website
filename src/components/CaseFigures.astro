@@ -1,16 +1,21 @@
 ---
 /**
- * The opener of a case study: key figures, each with the one line that explains its term,
- * and the levels as a timeline.
+ * The opener of a case study: key figures, each with the one line that explains its term.
  *
  * It exists because the page used to open with vocabulary — Level, tag, ADR — that a
  * reader meets here for the first time. Every figure is COUNTED from the collections, so
- * nothing in the opener is maintained by hand and none of it can drift from the levels
- * below. A count of zero hides its tile rather than advertising an absence.
+ * nothing in the opener is maintained by hand and none of it can drift from the levels.
+ * A count of zero hides its tile rather than advertising an absence.
+ *
+ * Each tile is also the way in: clicking it opens what the figure counts, in one panel
+ * under the tiles — the levels (which replaced the page's separate iteration list), the
+ * requirements, the decisions, the diagrams, each linking to where it is rendered in full.
+ * One panel is open at a time; no animation, and the panels are plain links, so the same
+ * content is reachable through the level menu without the script.
  */
 import { getCollection } from 'astro:content';
 import { useTranslations, localize, type Lang, type UiKey } from '../i18n/ui';
-import { iterationLabel, iterationSlug, introducedIn, type Iteration } from '../lib/iterations';
+import { iterationLabel, iterationSlug, introducedIn, releaseBadge, type Iteration } from '../lib/iterations';
 
 interface Props {
   lang: Lang;
@@ -22,69 +27,162 @@ const { lang, caseId, iterations } = Astro.props;
 const t = useTranslations(lang);
 
 const inCase = (e: { data: { case?: { id: string } } }) => e.data.case?.id === caseId;
-const requirements = (await getCollection('requirements')).filter(inCase);
+const byIdThenTitle = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id, undefined, { numeric: true });
+const requirements = (await getCollection('requirements')).filter(inCase).sort(byIdThenTitle);
 const stories = (await getCollection('user-stories')).filter(inCase);
-const adrs = (await getCollection('adr')).filter(inCase);
+const adrs = (await getCollection('adr')).filter(inCase).sort(byIdThenTitle);
 const diagrams = (await getCollection('diagrams')).filter(inCase);
-const criteria = stories.reduce((n, s) => n + s.data.acceptanceCriteria.en.length, 0);
+const criteriaOf = (xs: typeof stories) => xs.reduce((n, s) => n + s.data.acceptanceCriteria.en.length, 0);
+
+const byId = new Map(iterations.map((i) => [i.id, i]));
+const levelHref = (it: Iteration | undefined, anchor?: string) =>
+  it ? `/${lang}/case-studies/${caseId}/${iterationSlug(it, iterations)}${anchor ? `#${anchor}` : ''}` : undefined;
+const iterOf = (e: { data: { introducedIn?: { id: string } } }) =>
+  e.data.introducedIn ? byId.get(e.data.introducedIn.id) : undefined;
+const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
+// The summary's first sentence is the short form; the level page carries the rest.
+const firstSentence = (s?: string) => s?.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? s;
 
 // "Levels" only when every iteration has one; a project that never sets `level` counts
 // iterations, in the same words its own level pages use.
 const leveled = iterations.length > 0 && iterations.every((i) => typeof i.data.level === 'number');
 
-const figures: { n: number; key: string }[] = [
-  { n: iterations.length, key: leveled ? 'levels' : 'iterations' },
-  { n: requirements.length, key: 'requirements' },
-  { n: stories.length, key: 'stories' },
-  { n: criteria, key: 'criteria' },
-  { n: adrs.length, key: 'adr' },
-  { n: diagrams.length, key: 'diagrams' },
+const perLevel = iterations.map((it) => {
+  const s = introducedIn(stories, it.id);
+  return { it, stories: s.length, criteria: criteriaOf(s), diagrams: introducedIn(diagrams, it.id).length, adrs: introducedIn(adrs, it.id).length };
+});
+
+const figures = [
+  { key: leveled ? 'levels' : 'iterations', n: iterations.length },
+  { key: 'requirements', n: requirements.length },
+  { key: 'stories', n: stories.length },
+  { key: 'criteria', n: criteriaOf(stories) },
+  { key: 'adr', n: adrs.length },
+  { key: 'diagrams', n: diagrams.length },
 ].filter((f) => f.n > 0);
 const k = (s: string) => `fig.${s}` as UiKey;
+const panelId = (key: string) => `fig-panel-${key}`;
 ---
 <section class="figures" aria-label={t('fig.label')}>
   <ul class="tiles reset">
     {figures.map((f) => (
-      <li class="tile">
-        <span class="n">{f.n}</span>
-        <span class="k">{t(k(f.key))}</span>
-        <span class="x">{t(k(`${f.key}.x`))}</span>
+      <li>
+        <button type="button" class="tile" aria-expanded="false" aria-controls={panelId(f.key)}>
+          <span class="n">{f.n}</span>
+          <span class="k">{t(k(f.key))}</span>
+          <span class="x">{t(k(`${f.key}.x`))}</span>
+        </button>
       </li>
     ))}
   </ul>
 
-  {iterations.length > 1 && (
-    <ol class="timeline reset">
-      {iterations.map((it) => (
-        <li class:list={['lv', { corrects: it.data.corrects.length > 0 }]}>
-          <a href={`/${lang}/case-studies/${caseId}/${iterationSlug(it, iterations)}`}>
-            <span class="d">{it.data.date.toISOString().slice(0, 10)}</span>
-            <span class="t">{iterationLabel(it, t('iter.level'))}</span>
-            <span class="s">{localize(it.data.title, lang)?.replace(/^.*?\s—\s/, '')}</span>
-            <span class="s">{introducedIn(stories, it.id).length} {t('iter.stories')}</span>
-          </a>
-        </li>
-      ))}
-    </ol>
-  )}
+  {figures.map((f) => (
+    <div class="panel" id={panelId(f.key)} hidden>
+      {(f.key === 'levels' || f.key === 'iterations') && (
+        <ul class="reset levels">
+          {perLevel.map(({ it, stories: ns, diagrams: nd, adrs: na }) => (
+            <li class:list={['lv', { corrects: it.data.corrects.length > 0 }]}>
+              <a href={levelHref(it)}>
+                <span class="head">
+                  <strong>{label(it)}</strong>
+                  {releaseBadge(it, iterations) && <span class="tag">v{releaseBadge(it, iterations)}</span>}
+                  <span class="muted small">{it.data.date.toISOString().slice(0, 10)}</span>
+                </span>
+                <span class="title">{localize(it.data.title, lang)?.replace(/^.*?\s—\s/, '')}</span>
+                <span class="muted small">{firstSentence(localize(it.data.summary, lang))}</span>
+                <span class="muted small">{ns} {t('iter.stories')} · {nd} {t('iter.diagrams')} · {na} {t('iter.adr')}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {f.key === 'requirements' && (
+        <ul class="reset rows">
+          {requirements.map((r) => (
+            <li><a href={`/${lang}/traceability#${r.id}`}><code>{r.id}</code> {localize(r.data.title, lang)}</a></li>
+          ))}
+        </ul>
+      )}
+
+      {(f.key === 'stories' || f.key === 'criteria') && (
+        <ul class="reset rows">
+          {perLevel.map(({ it, stories: ns, criteria: nc }) => (
+            <li><a href={levelHref(it, 'introduced')}>
+              <strong>{label(it)}</strong> {localize(it.data.title, lang)?.replace(/^.*?\s—\s/, '')}
+              <span class="count">{f.key === 'stories' ? `${ns} ${t('iter.stories')}` : `${nc} ${t('fig.criteria')} · ${ns} ${t('iter.stories')}`}</span>
+            </a></li>
+          ))}
+        </ul>
+      )}
+
+      {f.key === 'adr' && (
+        <ul class="reset rows">
+          {adrs.map((a) => (
+            <li><a href={levelHref(iterOf(a), a.id)}><code>{a.id}</code> {localize(a.data.title, lang)}</a></li>
+          ))}
+        </ul>
+      )}
+
+      {f.key === 'diagrams' && (
+        <ul class="reset rows">
+          {perLevel.flatMap(({ it }) => introducedIn(diagrams, it.id).map((d) => (
+            <li><a href={levelHref(it, d.id)}>{localize(d.data.title, lang)} <span class="count">{label(it)}</span></a></li>
+          )))}
+        </ul>
+      )}
+    </div>
+  ))}
 </section>
+
+<script>
+  // One panel open at a time; clicking the open tile again closes it.
+  for (const section of document.querySelectorAll<HTMLElement>('.figures')) {
+    const tiles = [...section.querySelectorAll<HTMLButtonElement>('button.tile')];
+    for (const tile of tiles) {
+      tile.addEventListener('click', () => {
+        const open = tile.getAttribute('aria-expanded') !== 'true';
+        for (const other of tiles) {
+          other.setAttribute('aria-expanded', String(other === tile && open));
+          const panel = document.getElementById(other.getAttribute('aria-controls')!);
+          if (panel) panel.hidden = !(other === tile && open);
+        }
+      });
+    }
+  }
+</script>
 
 <style>
   .figures { margin: 1.4rem 0 1.8rem; }
-  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; margin: 0; }
   @media (max-width: 560px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .tile { border: 1px solid var(--border); border-radius: 6px; padding: .75rem .85rem; min-width: 0; display: flex; flex-direction: column; }
+  .tiles li { display: flex; min-width: 0; }
+  .tile {
+    width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: .75rem .85rem; display: flex; flex-direction: column;
+  }
+  .tile:hover { border-color: var(--accent); }
+  .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tile[aria-expanded='true'] { border-color: var(--accent); background: var(--accent-soft); }
   .n { font-size: 1.7rem; font-weight: 800; color: var(--title); font-variant-numeric: tabular-nums; line-height: 1.1; }
   .k { font-weight: 700; font-size: .9rem; }
   .x { font-size: .8rem; color: var(--muted); line-height: 1.4; margin-top: .25rem; }
-  .timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .6rem; margin-top: 1rem; }
-  .lv { border-top: 3px solid var(--accent); min-width: 0; }
+
+  .panel { margin-top: .9rem; border: 1px solid var(--accent); border-radius: 6px; padding: .9rem 1rem; }
+  .levels { display: grid; gap: .6rem; margin: 0; }
+  .lv { border-left: 3px solid var(--accent); }
   /* A level that corrects an earlier one was built out of test findings, not a plan. */
-  .lv.corrects { border-top-color: var(--human); }
-  .lv a { display: flex; flex-direction: column; padding-top: .45rem; color: inherit; }
-  .lv a:hover { text-decoration: none; }
-  .lv a:hover .t { text-decoration: underline; }
-  .d { font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .t { font-weight: 700; font-size: .9rem; color: var(--title); }
-  .s { font-size: .8rem; color: var(--muted); line-height: 1.4; }
+  .lv.corrects { border-left-color: var(--human); }
+  .lv a { display: flex; flex-direction: column; gap: .1rem; padding: .3rem 0 .3rem .8rem; color: inherit; }
+  .lv a:hover { text-decoration: none; background: var(--surface); }
+  .lv a:hover .title { text-decoration: underline; }
+  .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; }
+  .head strong { color: var(--title); }
+  .title { color: var(--accent); font-weight: 600; }
+  .rows { margin: 0; display: grid; }
+  .rows li + li { border-top: 1px solid var(--border); }
+  .rows a { display: flex; flex-wrap: wrap; gap: .1rem .5rem; padding: .4rem 0; font-size: .92rem; }
+  .rows code { font-size: .8rem; }
+  .count { margin-left: auto; color: var(--muted); font-size: .85rem; }
 </style>
