@@ -75,7 +75,7 @@ const panelId = (key: string) => `fig-panel-${key}`;
   </ul>
 
   {figures.map((f) => (
-    <div class:list={['panel', { bare: f.key === 'levels' || f.key === 'iterations' }]} id={panelId(f.key)} hidden>
+    <div class:list={['panel', { overlay: f.key === 'levels' || f.key === 'iterations' }]} id={panelId(f.key)} hidden>
       {(f.key === 'levels' || f.key === 'iterations') && (
         <ol class="reset timeline">
           {perLevel.map(({ it, stories: ns }) => (
@@ -130,24 +130,34 @@ const panelId = (key: string) => `fig-panel-${key}`;
 </section>
 
 <script>
-  // One panel open at a time; clicking the open tile again closes it.
+  // One panel open at a time; clicking the open tile again closes it. An overlay panel
+  // (the levels) also closes on Escape and on a click anywhere outside the figures.
   for (const section of document.querySelectorAll<HTMLElement>('.figures')) {
     const tiles = [...section.querySelectorAll<HTMLButtonElement>('button.tile')];
-    for (const tile of tiles) {
-      tile.addEventListener('click', () => {
-        const open = tile.getAttribute('aria-expanded') !== 'true';
-        for (const other of tiles) {
-          other.setAttribute('aria-expanded', String(other === tile && open));
-          const panel = document.getElementById(other.getAttribute('aria-controls')!);
-          if (panel) panel.hidden = !(other === tile && open);
-        }
-      });
-    }
+    const show = (target: HTMLButtonElement | null) => {
+      for (const tile of tiles) {
+        tile.setAttribute('aria-expanded', String(tile === target));
+        const panel = document.getElementById(tile.getAttribute('aria-controls')!);
+        if (panel) panel.hidden = tile !== target;
+      }
+    };
+    const openOverlay = () =>
+      tiles.find((t) => t.getAttribute('aria-expanded') === 'true' &&
+        document.getElementById(t.getAttribute('aria-controls')!)?.classList.contains('overlay'));
+    for (const tile of tiles)
+      tile.addEventListener('click', () => show(tile.getAttribute('aria-expanded') === 'true' ? null : tile));
+    document.addEventListener('keydown', (e) => {
+      const t = openOverlay();
+      if (e.key === 'Escape' && t) { show(null); t.focus(); }
+    });
+    document.addEventListener('click', (e) => {
+      if (openOverlay() && !section.contains(e.target as Node)) show(null);
+    });
   }
 </script>
 
 <style>
-  .figures { margin: 1.4rem 0 1.8rem; }
+  .figures { margin: 1.4rem 0 1.8rem; position: relative; }
   .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; margin: 0; }
   @media (max-width: 560px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .tiles li { display: flex; min-width: 0; }
@@ -164,7 +174,12 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .x { font-size: .8rem; color: var(--muted); line-height: 1.4; margin-top: .25rem; }
 
   .panel { margin-top: .9rem; border: 1px solid var(--accent); border-radius: 6px; padding: .9rem 1rem; }
-  .panel.bare { border: 0; padding: 0; }
+  /* Floats over the page below instead of pushing it down. */
+  .panel.overlay {
+    position: absolute; left: 0; right: 0; top: 100%; z-index: 5; margin-top: .5rem;
+    background: var(--bg); border-color: var(--border); padding: 1rem 1.1rem 1.1rem;
+    box-shadow: 0 10px 28px rgba(42, 32, 36, .16), 0 2px 6px rgba(42, 32, 36, .08);
+  }
   .timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .6rem; margin: 0; }
   .lv { border-top: 3px solid var(--accent); min-width: 0; }
   /* A level that corrects an earlier one was built out of test findings, not a plan. */
