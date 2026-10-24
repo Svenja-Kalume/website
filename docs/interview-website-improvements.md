@@ -44,7 +44,7 @@ description (what search engines and link previews show).
 > sentence of 1.3 does ("… den nächsten Schritt in Richtung Requirements Engineering gehen") —
 > is that the goal sentence for the About intro, or do you want a separate one?
 
-**Answer:**
+**Answer:** Right, was confused. So there is the real goal: "Ich möchte in die echten Fragestellungen der Anwender rein gehen. Sie verstehen um Möglichkeiten zu finden, die ihnen ihre Herausforderungen im Alltag erleichtern. Das ist was ich im Requirements Engineering suche."
 
 
 1.2 How do you describe what you do on wurzel — the activity, not the title?
@@ -57,7 +57,7 @@ description (what search engines and link previews show).
 > business owner and turning them into an application that eases their paperwork." OK?
 > Where should it go — the case-study intro, the home page, or both?
 
-**Answer:**
+**Answer:** case-study intro. home page only a summary of the intro inside it's card
 
 
 1.3 How do the eleven years of software engineering read as the asset? What does that
@@ -73,7 +73,7 @@ description (what search engines and link previews show).
 > taught you about traceability. One sentence on that would make the eleven years the asset
 > rather than the history. Want to add it, or keep it as is?
 
-**Answer:**
+**Answer:** let's discuss about it
 
 
 1.4 IREB CPRE Foundation Level: year obtained? Link to verify it (IREB certificate register,
@@ -84,7 +84,7 @@ description (what search engines and link previews show).
 1.5 Should the site tagline ("An open working journal on insights from software development,
     requirements engineering, and the path to a solution") stay, or change with this?
 
-**Answer:** yes, just changed like described above
+**Answer:** yes
 
 ---
 
@@ -132,7 +132,7 @@ This one needs no new content, only decisions:
 > Recommendation: A, with the wording yours. Which, and should "Test walk" be called that?
 
 **Answer:**
-
+let's do it together becaus main content is the diagram
 
 2.2 Should the readiness gate get its own short paragraph on the home page, right under the
     diagram — as the one idea a visitor should take away?
@@ -162,7 +162,7 @@ résumé — a short fact block plus a CV link does not contradict that, but it 
 > work later), or fill it? Note: the industries from 1.3 (medical informatics, regulated,
 > warehousing, mechanical engineering, construction) and CPRE FL would already make a block.
 
-**Answer:**
+**Answer:** leave it for now, my cv is seen on linkedin already
 
 
 3.2 A CV to download (PDF)? If yes: do you have one ready, in which languages, and is it fine
@@ -191,12 +191,12 @@ real client · a legally required invoice date caught before it reached the clie
 
 4.1 Which figures belong in that line, which not? (Too many figures reads like a dashboard.)
 
-**Answer:** 
+**Answer:** maybe styling like a dashboard is the more intuitive way anyway? incl. using explaining text. Let's discuss!
 
 4.2 Should the jargon be explained on first use (e.g. "Level = an implementation stage signed
     off by the client"), or replaced with plainer words on the case-study page?
 
-**Answer:**
+**Answer:** See 4.1
 
 4.3 Is "real client" / "a real business" the right way to say it — or how do you want to
     describe the client without naming them?
@@ -215,7 +215,7 @@ real client · a legally required invoice date caught before it reached the clie
 > Or a mix: "a real landscaping business in Germany — not a persona". Which reads like you?
 > And 4.1 / 4.2 are still empty.
 
-**Answer:**
+**Answer:** mix
 
 
 ---
@@ -254,7 +254,7 @@ sentences plus a link to the journal entry or iteration where it is documented.
 > A and C are the most convincing to RE peers; D is the cheapest; B depends on the marker.
 > Which direction interests you?
 
-**Answer:**
+**Answer:** like A and C also most. I think A more for HR and C more for RE? How would they look on the website? Maybe we can try something with this dashboard style?
 
 
 5.2 For each: what did the AI propose, and what did you decide differently? (This is the part
@@ -284,7 +284,7 @@ So there is nothing to show yet — and the site must not invent any.
 > confirm or strike. Nothing is published that you have not confirmed. Where are the workshop
 > notes kept?
 
-**Answer:**
+**Answer:** introduced journal in wurzel repo, will be available next level
 
 
 6.2 If they exist: should the answered ones be published as `questions` entries (with who was
@@ -295,7 +295,7 @@ So there is nothing to show yet — and the site must not invent any.
 
 6.3 If there were none: is that worth saying, or does it stay silent?
 
-**Answer:** 
+**Answer:** stay silent to keep information more overviewable and not knocking down the reader
 
 ---
 
@@ -321,7 +321,7 @@ journal entry, or a new page section that reads the existing data).
 > `l3-prioritization.md` at `0.3.0`; is there a Level-1 equivalent, or was that decision only in
 > your head (then it is your sentence here)?
 
-**Answer:**
+**Answer:** depending on content, should journal on repo be extended containing this?
 
 
 7.2 Looking back across the levels: which prioritisation decision are you proudest of, and
@@ -352,7 +352,7 @@ journal entry, or a new page section that reads the existing data).
 > Recommendation: B now (cheap, append-only, the 7.2 story is ready to be told), A from the
 > next iteration. Your call.
 
-**Answer:**
+**Answer:** ok so B is also the answer for question just above
 
 
 ---
@@ -376,5 +376,5 @@ file can be changed.
 > is the masculine form, the role is held by you — intended as the generic form, or
 > "Produktverantwortliche"?
 
-**Answer:**
+**Answer:** yes, locale-keyed, "Produktverantwortlicher"
 
