@@ -26,14 +26,18 @@ const order = new Map(iterations.map((it, i) => [it.id, i]));
 const rows = requirements.map((r) => {
   const own = stories.filter((s) => s.data.requirement.id === r.id);
   const cells = iterations.map((it) => own.filter((s) => s.data.introducedIn?.id === it.id).length);
-  const first = order.get(r.data.introducedIn?.id ?? '') ?? cells.findIndex((n) => n > 0);
+  // -1: introduced by a level outside this table — on a level's own page, an earlier one.
+  const first = r.data.introducedIn
+    ? order.get(r.data.introducedIn.id) ?? -1
+    : cells.findIndex((n) => n > 0);
   const priority = own.some((s) => s.data.priority === 'must') ? 'must'
     : own.some((s) => s.data.priority === 'should') ? 'should' : undefined;
   return { r, cells, first, priority, total: own.length, revisited: cells.some((n, i) => n > 0 && i > first) };
 });
-const groups = iterations
-  .map((it, i) => ({ it, rows: rows.filter((x) => x.first === i) }))
-  .filter((g) => g.rows.length > 0);
+const groups = [
+  { title: t('figp.req.earlier'), rows: rows.filter((x) => x.first === -1) },
+  ...iterations.map((it, i) => ({ title: `${t('figp.introducedIn')} ${label(it)}`, rows: rows.filter((x) => x.first === i) })),
+].filter((g) => g.rows.length > 0);
 const busiest = [...rows].sort((a, b) => b.total - a.total)[0];
 const shade = (n: number) => (n === 0 ? 'c0' : n === 1 ? 'c1' : n === 2 ? 'c2' : n <= 4 ? 'c3' : 'c4');
 ---
@@ -49,7 +53,7 @@ const shade = (n: number) => (n === 0 ? 'c0' : n === 1 ? 'c1' : n === 2 ? 'c2' :
     <tbody>
       {groups.map((g) => (
         <>
-          <tr class="group"><td colspan={iterations.length + 1}>{t('figp.introducedIn')} {label(g.it)}</td></tr>
+          <tr class="group"><td colspan={iterations.length + 1}>{g.title}</td></tr>
           {g.rows.map((x) => (
             <tr class:list={{ revisit: x.revisited }}>
               <td class="name">

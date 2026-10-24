@@ -8,6 +8,7 @@ import DiagramFigure from '../../../../components/DiagramFigure.astro';
 import StoryCard from '../../../../components/StoryCard.astro';
 import AdrCard from '../../../../components/AdrCard.astro';
 import GlossaryTerms from '../../../../components/GlossaryTerms.astro';
+import CaseFigures from '../../../../components/CaseFigures.astro';
 import { languages, useTranslations, localize, toLang, type UiKey } from '../../../../i18n/ui';
 import { iterationsOf, currentOf, introducedIn, iterationLabel, iterationSlug } from '../../../../lib/iterations';
 import { topicsOf, groupByTopic } from '../../../../lib/topics';
@@ -150,6 +151,9 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
 
   <p>{localize(iteration.data.summary, lang)}</p>
   {(localize(iteration.data.intro, lang) ?? []).map((p: string) => <p>{p}</p>)}
+
+  {/* The same key figures as the case study, counted for this level only. */}
+  <CaseFigures lang={lang} caseId={caseEntry.id} iterations={caseIterations} scope={iteration} workedExample={caseEntry.data.workedExample?.id} />
 
   {iteration.data.blocks.length > 0 && (
     <p class="small muted">{t('iter.blocks')} {iteration.data.blocks.join(' · ')}</p>

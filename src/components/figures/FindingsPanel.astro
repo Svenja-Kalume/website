@@ -17,15 +17,17 @@ interface Props {
   journal: CollectionEntry<'journal'>[];
   workflow: CollectionEntry<'workflow'>[];
   workedExample?: string;
+  /** Only the fixes this level wrote, on the level's own page. */
+  scope?: Iteration;
   levelHref: (it: Iteration, anchor?: string) => string;
 }
-const { lang, iterations, stories, journal, workflow, workedExample, levelHref } = Astro.props;
+const { lang, iterations, stories, journal, workflow, workedExample, scope, levelHref } = Astro.props;
 const t = useTranslations(lang);
 const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
 const byId = new Map(iterations.map((i) => [i.id, i]));
 const storyById = new Map(stories.map((s) => [s.id, s]));
 
-const fixes = walkFixes(iterations, stories);
+const fixes = walkFixes(iterations, stories).filter((f) => !scope || f.data.introducedIn?.id === scope.id);
 const caseIdOf = (s: CollectionEntry<'user-stories'>) => s.data.case.id;
 // Where each finding came from: the level of the story it corrects.
 const originOf = (s: CollectionEntry<'user-stories'>) => {

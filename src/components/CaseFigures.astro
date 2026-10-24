@@ -32,21 +32,33 @@ interface Props {
   iterations: Iteration[];
   /** Story id of the case study's worked example, linked from the findings. */
   workedExample?: string;
+  /**
+   * One level, for its own page: every figure counts only what that level introduced
+   * (requirements: those its stories worked on), and the levels and roles tiles are left
+   * out — on a level page the level is the page, and the roles do not change per level.
+   */
+  scope?: Iteration;
 }
-const { lang, caseId, iterations, workedExample } = Astro.props;
+const { lang, caseId, iterations, workedExample, scope } = Astro.props;
 const t = useTranslations(lang);
 
 const inCase = (e: { data: { case?: { id: string } } }) => e.data.case?.id === caseId;
 const byIdThenTitle = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id, undefined, { numeric: true });
-const requirements = (await getCollection('requirements')).filter(inCase).sort(byIdThenTitle);
-const stories = (await getCollection('user-stories')).filter(inCase);
-const adrs = (await getCollection('adr')).filter(inCase).sort(byIdThenTitle);
-const diagrams = (await getCollection('diagrams')).filter(inCase);
+const caseStories = (await getCollection('user-stories')).filter(inCase);
+const inScope = <T extends { data: { introducedIn?: { id: string } } }>(xs: T[]) =>
+  scope ? xs.filter((x) => x.data.introducedIn?.id === scope.id) : xs;
+const stories = inScope(caseStories);
+const requirements = (await getCollection('requirements')).filter(inCase).sort(byIdThenTitle)
+  .filter((r) => !scope || stories.some((s) => s.data.requirement.id === r.id));
+const adrs = inScope((await getCollection('adr')).filter(inCase).sort(byIdThenTitle));
+const diagrams = inScope((await getCollection('diagrams')).filter(inCase));
+// The levels a chart lays out: all of them on the case page, the one level on its own page.
+const shown = scope ? [scope] : iterations;
 const topics = topicsOf(await getCollection('topics'), caseId);
 const roles = (await getCollection('stakeholders')).filter(inCase).sort((a, b) => a.data.order - b.data.order);
 const journal = await getCollection('journal');
 const workflow = await getCollection('workflow');
-const fixes = walkFixes(iterations, stories);
+const fixes = inScope(walkFixes(iterations, caseStories));
 const criteriaOf = (xs: typeof stories) => xs.reduce((n, s) => n + s.data.acceptanceCriteria.en.length, 0);
 
 const levelHref = (it: Iteration | undefined, anchor?: string) =>
@@ -63,8 +75,8 @@ const perLevel = iterations.map((it) => {
 });
 
 const figures = [
-  { key: leveled ? 'levels' : 'iterations', n: iterations.length },
-  { key: 'roles', n: roles.length },
+  { key: leveled ? 'levels' : 'iterations', n: scope ? 0 : iterations.length },
+  { key: 'roles', n: scope ? 0 : roles.length },
   { key: 'requirements', n: requirements.length },
   { key: 'stories', n: stories.length },
   { key: 'criteria', n: criteriaOf(stories) },
@@ -73,10 +85,12 @@ const figures = [
   { key: 'findings', n: fixes.length },
 ].filter((f) => f.n > 0);
 const k = (s: string) => `fig.${s}` as UiKey;
+// Rows the tiles fill: four or fewer in one row, five or six in rows of three, more in fours.
+const cols = figures.length <= 4 ? figures.length : figures.length <= 6 ? 3 : 4;
 const panelId = (key: string) => `fig-panel-${key}`;
 ---
 <section class="figures" aria-label={t('fig.label')}>
-  <ul class="tiles reset">
+  <ul class="tiles reset" style={`--cols:${cols}`}>
     {figures.map((f) => (
       <li>
         <button type="button" class="tile" aria-expanded="false" aria-controls={panelId(f.key)}>
@@ -105,12 +119,12 @@ const panelId = (key: string) => `fig-panel-${key}`;
         </ol>
       )}
       {f.key === 'roles' && <RolesPanel lang={lang} roles={roles} />}
-      {f.key === 'findings' && <FindingsPanel lang={lang} iterations={iterations} stories={stories} journal={journal} workflow={workflow} workedExample={workedExample} levelHref={(it, a) => levelHref(it, a)!} />}
-      {f.key === 'requirements' && <RequirementsHeat lang={lang} iterations={iterations} requirements={requirements} stories={stories} />}
-      {f.key === 'stories' && <StoriesBars lang={lang} iterations={iterations} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
-      {f.key === 'criteria' && <CriteriaDots lang={lang} iterations={iterations} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
-      {f.key === 'adr' && <DecisionTimeline lang={lang} iterations={iterations} adrs={adrs} levelHref={levelHref} />}
-      {f.key === 'diagrams' && <DiagramMatrix lang={lang} iterations={iterations} diagrams={diagrams} stories={stories} topics={topics} levelHref={(it, a) => levelHref(it, a)!} />}
+      {f.key === 'findings' && <FindingsPanel lang={lang} iterations={iterations} stories={caseStories} scope={scope} journal={journal} workflow={workflow} workedExample={workedExample} levelHref={(it, a) => levelHref(it, a)!} />}
+      {f.key === 'requirements' && <RequirementsHeat lang={lang} iterations={shown} requirements={requirements} stories={stories} />}
+      {f.key === 'stories' && <StoriesBars lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
+      {f.key === 'criteria' && <CriteriaDots lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
+      {f.key === 'adr' && <DecisionTimeline lang={lang} iterations={shown} adrs={adrs} levelHref={levelHref} />}
+      {f.key === 'diagrams' && <DiagramMatrix lang={lang} iterations={shown} diagrams={diagrams} stories={caseStories} topics={topics} levelHref={(it, a) => levelHref(it, a)!} />}
     </div>
   ))}
 </section>
@@ -159,7 +173,7 @@ const panelId = (key: string) => `fig-panel-${key}`;
 
 <style>
   .figures { margin: 1.4rem 0 1.8rem; position: relative; }
-  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; margin: 0; }
+  .tiles { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: .6rem; margin: 0; }
   @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .tiles li { display: flex; min-width: 0; }
   .tile {
