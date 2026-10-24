@@ -15,7 +15,7 @@
  */
 import { getCollection } from 'astro:content';
 import { useTranslations, localize, type Lang, type UiKey } from '../i18n/ui';
-import { iterationLabel, iterationSlug, introducedIn, type Iteration } from '../lib/iterations';
+import { iterationLabel, iterationSlug, introducedIn, releaseBadge, type Iteration } from '../lib/iterations';
 
 interface Props {
   lang: Lang;
@@ -82,7 +82,7 @@ const panelId = (key: string) => `fig-panel-${key}`;
             <li class:list={['lv', { corrects: it.data.corrects.length > 0 }]}>
               <a href={levelHref(it)}>
                 <span class="d">{it.data.date.toISOString().slice(0, 10)}</span>
-                <span class="t">{label(it)}</span>
+                <span class="t">{label(it)}{releaseBadge(it, iterations) && <span class="ver">v{releaseBadge(it, iterations)}</span>}</span>
                 <span class="s">{localize(it.data.title, lang)?.replace(/^.*?\s—\s/, '')}</span>
                 <span class="s">{ns} {t('iter.stories')}</span>
               </a>
@@ -174,6 +174,7 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .lv a:hover .t { text-decoration: underline; }
   .d { font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
   .t { font-weight: 700; font-size: .9rem; color: var(--title); }
+  .ver { margin-left: .4rem; font-weight: 500; font-size: .72rem; color: var(--accent-strong); background: var(--accent-soft); border-radius: 999px; padding: .05rem .45rem; font-variant-numeric: tabular-nums; }
   .s { font-size: .8rem; color: var(--muted); line-height: 1.4; }
   .rows { margin: 0; display: grid; }
   .rows li + li { border-top: 1px solid var(--border); }
