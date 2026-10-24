@@ -134,13 +134,26 @@ const panelId = (key: string) => `fig-panel-${key}`;
   // (the levels) also closes on Escape and on a click anywhere outside the figures.
   for (const section of document.querySelectorAll<HTMLElement>('.figures')) {
     const tiles = [...section.querySelectorAll<HTMLButtonElement>('button.tile')];
+    // An overlay hangs from the card that opened it: its top edge at the card's bottom,
+    // the pointer above the card's centre. Offsets are relative to `.figures`.
+    const place = (tile: HTMLButtonElement, panel: HTMLElement) => {
+      if (!panel.classList.contains('overlay')) return;
+      panel.style.top = `${tile.offsetTop + tile.offsetHeight}px`;
+      panel.style.setProperty('--pointer-x', `${tile.offsetLeft + tile.offsetWidth / 2}px`);
+    };
     const show = (target: HTMLButtonElement | null) => {
       for (const tile of tiles) {
         tile.setAttribute('aria-expanded', String(tile === target));
         const panel = document.getElementById(tile.getAttribute('aria-controls')!);
-        if (panel) panel.hidden = tile !== target;
+        if (!panel) continue;
+        panel.hidden = tile !== target;
+        if (tile === target) place(tile, panel);
       }
     };
+    window.addEventListener('resize', () => {
+      const t = openOverlay();
+      if (t) place(t, document.getElementById(t.getAttribute('aria-controls')!)!);
+    });
     const openOverlay = () =>
       tiles.find((t) => t.getAttribute('aria-expanded') === 'true' &&
         document.getElementById(t.getAttribute('aria-controls')!)?.classList.contains('overlay'));
@@ -176,9 +189,15 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .panel { margin-top: .9rem; border: 1px solid var(--accent); border-radius: 6px; padding: .9rem 1rem; }
   /* Floats over the page below instead of pushing it down. */
   .panel.overlay {
-    position: absolute; left: 0; right: 0; top: 100%; z-index: 5; margin-top: .5rem;
+    position: absolute; left: 0; right: 0; top: 100%; z-index: 5; margin-top: .55rem;
     background: var(--bg); border-color: var(--border); padding: 1rem 1.1rem 1.1rem;
     box-shadow: 0 10px 28px rgba(42, 32, 36, .16), 0 2px 6px rgba(42, 32, 36, .08);
+  }
+  /* The pointer: a small square turned on its corner, joined to the panel's top border. */
+  .panel.overlay::before {
+    content: ""; position: absolute; top: -7px; left: calc(var(--pointer-x, 2rem) - 6px);
+    width: 12px; height: 12px; background: var(--bg);
+    border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: rotate(45deg);
   }
   .timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .6rem; margin: 0; }
   .lv { border-top: 3px solid var(--accent); min-width: 0; }
