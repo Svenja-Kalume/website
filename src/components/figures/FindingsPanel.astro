@@ -26,6 +26,7 @@ const byId = new Map(iterations.map((i) => [i.id, i]));
 const storyById = new Map(stories.map((s) => [s.id, s]));
 
 const fixes = walkFixes(iterations, stories);
+const caseIdOf = (s: CollectionEntry<'user-stories'>) => s.data.case.id;
 // Where each finding came from: the level of the story it corrects.
 const originOf = (s: CollectionEntry<'user-stories'>) => {
   const old = storyById.get(s.data.changes[0].id);
@@ -63,7 +64,7 @@ const steps = workflow.filter((w) => w.data.introducedIn && fixIts.has(w.data.in
       <li>
         <a href={it ? levelHref(it, f.id) : undefined}>{localize(f.data.title, lang)}</a>
         <span class="muted">{t('walk.changes')} {f.data.changes.map((r) => r.id).join(', ')}</span>
-        {f.id === workedExample && <a class="chain" href="#worked-example">{t('walk.followChain')}</a>}
+        {f.id === workedExample && <a class="chain" href={`/${lang}/traceability#worked-example-${caseIdOf(f)}`}>{t('walk.followChain')}</a>}
       </li>
     );
   })}

@@ -2,7 +2,8 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
-import { iterationLabel, iterationSlug, byOrder } from '../../lib/iterations';
+import { iterationLabel, iterationSlug, byOrder, iterationsOf } from '../../lib/iterations';
+import EvidenceChain from '../../components/EvidenceChain.astro';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -40,6 +41,10 @@ const groups = [...byCase.entries()]
   .map(([caseId, items]) => ({
     caseId,
     title: items[0].caseEntry ? localize(items[0].caseEntry.data.title, lang) : caseId,
+    // The case study's worked example: one defect followed through every artifact it
+    // touched — what this table makes possible, shown on a real case.
+    workedExample: items[0].caseEntry?.data.workedExample?.id,
+    caseIterations: iterationsOf(allIterationList, caseId),
     items,
     // The levels this case actually has stories in — derived, so the filter can never
     // offer a level that would empty the table, and a third iteration adds its button
@@ -140,6 +145,9 @@ const showCase = groups.length > 1;
         </table>
       </div>
       <p class="muted small trace-empty" hidden>{t('trace.filterEmpty')}</p>
+      {g.workedExample && (
+        <EvidenceChain lang={lang} caseId={g.caseId} iterations={g.caseIterations} storyId={g.workedExample} />
+      )}
     </div>
   ))}
 </BaseLayout>

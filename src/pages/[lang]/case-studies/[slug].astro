@@ -8,7 +8,6 @@ import DiagramFigure from '../../../components/DiagramFigure.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import AdrCard from '../../../components/AdrCard.astro';
 import CaseFigures from '../../../components/CaseFigures.astro';
-import EvidenceChain from '../../../components/EvidenceChain.astro';
 import { allIterations, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
 import { absoluteUrl, techArticleSchema } from '../../../lib/schema';
 
@@ -90,11 +89,6 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
       : <Content />}
   </div>
 
-  {/* One finding followed through every artifact it touched; the findings themselves
-      open from their key figure. */}
-  {entry.data.workedExample && (
-    <EvidenceChain lang={lang} caseId={caseId} iterations={caseIterations} storyId={entry.data.workedExample.id} />
-  )}
 
   {looseDiagrams.length > 0 && (
     <>
