@@ -1,0 +1,82 @@
+---
+/**
+ * The page's contents, kept in view beside the text column on wide screens.
+ *
+ * A level page runs long — diagrams, a topic per domain object, the lessons at the foot —
+ * and the contents list at its top scrolls away with the first screen. On a screen with
+ * room beside the 46rem column this copy stays fixed there, appears only once the in-page
+ * list has left the viewport (so the two are never shown at once), and marks the section
+ * being read. Narrower screens keep the in-page list alone: there is no room beside the
+ * text, and an overlay would cover it.
+ *
+ * Built from the same entries as the in-page list, so the two cannot disagree.
+ */
+interface Item { href: string; label: string; children?: Item[] }
+interface Props {
+  items: Item[];
+  label: string;
+  /** Selector of the in-page contents list; the side copy shows once it is out of view. */
+  watch: string;
+}
+const { items, label, watch } = Astro.props;
+---
+<nav class="side-toc" aria-label={label} data-watch={watch}>
+  <p class="side-toc-label">{label}</p>
+  <ul>
+    {items.map((i) => (
+      <li>
+        <a href={i.href}>{i.label}</a>
+        {i.children && i.children.length > 0 && (
+          <ul>{i.children.map((c) => <li><a href={c.href}>{c.label}</a></li>)}</ul>
+        )}
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<script>
+  for (const nav of document.querySelectorAll<HTMLElement>('.side-toc')) {
+    const inPage = document.querySelector(nav.dataset.watch!);
+
+    // Mark the section being read: the last one whose heading has passed the top third.
+    const links = [...nav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+    const targets = links
+      .map((a) => ({ a, el: document.getElementById(decodeURIComponent(a.hash.slice(1))) }))
+      .filter((x): x is { a: HTMLAnchorElement; el: HTMLElement } => Boolean(x.el));
+    const mark = () => {
+      // Shown once the in-page list has scrolled away above the window.
+      nav.classList.toggle('show', !inPage || inPage.getBoundingClientRect().bottom < 0);
+      const line = window.innerHeight / 3;
+      let current: HTMLAnchorElement | undefined;
+      for (const { a, el } of targets) if (el.getBoundingClientRect().top <= line) current = a;
+      for (const a of links) a.toggleAttribute('aria-current', a === current);
+    };
+    addEventListener('scroll', mark, { passive: true });
+    addEventListener('resize', mark);
+    mark();
+  }
+</script>
+
+<style>
+  .side-toc { display: none; }
+  /* Only where the space beside the 46rem column holds a list of ~12rem. */
+  @media (min-width: 80rem) {
+    .side-toc {
+      display: block; visibility: hidden;
+      position: fixed; top: 2rem; z-index: 4;
+      left: calc(50% + var(--max) / 2 + 2rem);
+      width: min(15rem, calc(50vw - var(--max) / 2 - 3rem));
+      max-height: calc(100vh - 4rem); overflow-y: auto;
+      font-size: .82rem; line-height: 1.35;
+      border-left: 1px solid var(--border); padding-left: .9rem;
+    }
+    .side-toc.show { visibility: visible; }
+  }
+  .side-toc-label { margin: 0 0 .4rem; font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+  .side-toc ul { list-style: none; margin: 0; padding: 0; }
+  .side-toc li { margin: .25rem 0; }
+  .side-toc ul ul { margin: .15rem 0 .3rem .7rem; }
+  .side-toc a { color: var(--muted); }
+  .side-toc a:hover { color: var(--accent); text-decoration: none; }
+  .side-toc a[aria-current] { color: var(--accent); font-weight: 700; }
+</style>

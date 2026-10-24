@@ -9,6 +9,7 @@ import StoryCard from '../../../../components/StoryCard.astro';
 import AdrCard from '../../../../components/AdrCard.astro';
 import GlossaryTerms from '../../../../components/GlossaryTerms.astro';
 import CaseFigures from '../../../../components/CaseFigures.astro';
+import SideToc from '../../../../components/SideToc.astro';
 import { languages, useTranslations, localize, toLang, type UiKey } from '../../../../i18n/ui';
 import { iterationsOf, currentOf, introducedIn, iterationLabel, iterationSlug } from '../../../../lib/iterations';
 import { topicsOf, groupByTopic } from '../../../../lib/topics';
@@ -116,6 +117,19 @@ const count = (n: number, one: UiKey, many: UiKey) =>
 const sharesTag = caseIterations.filter((i) => i.data.version === iteration.data.version).length > 1;
 const hasProcessChanges = (localize(iteration.data.processChanges, lang) ?? []).length > 0;
 const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).length > 0;
+// The same entries as the in-page contents list, for the copy kept beside the text.
+const toc = [
+  ...((hasProcessChanges || sameProcess) ? [{ href: '#process-changes', label: t('iter.processChanges') }] : []),
+  ...(corrects.filter(Boolean).length > 0 ? [{ href: '#corrects', label: t('iter.corrects') }] : []),
+  {
+    href: '#introduced', label: t('iter.introduced'),
+    children: [
+      ...sections.map((g) => ({ href: `#${g.topic!.id}`, label: localize(g.topic!.data.title, lang) ?? g.topic!.id })),
+      ...(unassigned ? [{ href: '#artifacts', label: t('topic.unassigned') }] : []),
+    ],
+  },
+  ...(hasLessons ? [{ href: '#lessons', label: t('iter.lessons') }] : []),
+];
 ---
 <BaseLayout
   lang={lang}
@@ -163,7 +177,7 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
       under the one that introduces them. Derived from what actually renders — a section
       the contents list omits is a section the reader never learns is there, which is how
       the lessons at the foot of the page went missing. */}
-  <ul class="reset contents">
+  <ul class="reset contents" id="page-contents">
     {(hasProcessChanges || sameProcess) && (
       <li><a href="#process-changes">{t('iter.processChanges')}</a></li>
     )}
@@ -201,6 +215,8 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
     </li>
     {hasLessons && <li><a href="#lessons">{t('iter.lessons')}</a></li>}
   </ul>
+
+  <SideToc items={toc} label={t('toc.label')} watch="#page-contents" />
 
   {/* The headline of the whole concept: not what shipped, but what changed in how you work. */}
   {(localize(iteration.data.processChanges, lang) ?? []).length > 0 && (
