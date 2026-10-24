@@ -8,7 +8,6 @@ import DiagramFigure from '../../../components/DiagramFigure.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import AdrCard from '../../../components/AdrCard.astro';
 import CaseFigures from '../../../components/CaseFigures.astro';
-import WalkEvidence from '../../../components/WalkEvidence.astro';
 import EvidenceChain from '../../../components/EvidenceChain.astro';
 import { allIterations, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
 import { absoluteUrl, techArticleSchema } from '../../../lib/schema';
@@ -29,9 +28,6 @@ const { Content } = await render(entry);
 
 const inCase = (e: { data: { case?: { id: string } } }) => e.data.case?.id === caseId;
 
-const stakeholders = (await getCollection('stakeholders'))
-  .filter(inCase)
-  .sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
 const stories = (await getCollection('user-stories')).filter(inCase);
 const adrs = (await getCollection('adr')).filter(inCase);
 const diagrams = (await getCollection('diagrams')).filter(inCase);
@@ -86,7 +82,7 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
   {localize(entry.data.lede, lang) && <p class="lede">{localize(entry.data.lede, lang)}</p>}
 
   {/* The opener: what the work amounts to, counted, before any of its vocabulary. */}
-  <CaseFigures lang={lang} caseId={caseId} iterations={caseIterations} />
+  <CaseFigures lang={lang} caseId={caseId} iterations={caseIterations} workedExample={entry.data.workedExample?.id} />
 
   <div>
     {entry.data.intro
@@ -94,43 +90,10 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
       : <Content />}
   </div>
 
-  {/* The evidence: what walking the running application found, then one of those
-      findings followed through every artifact it touched. */}
-  <WalkEvidence lang={lang} caseId={caseId} iterations={caseIterations} workedExample={entry.data.workedExample?.id} />
+  {/* One finding followed through every artifact it touched; the findings themselves
+      open from their key figure. */}
   {entry.data.workedExample && (
     <EvidenceChain lang={lang} caseId={caseId} iterations={caseIterations} storyId={entry.data.workedExample.id} />
-  )}
-
-  {/* Derived from what this page actually renders, so it cannot list a section that is not
-      there. The diagrams are named individually: they are the furthest down and the most
-      likely thing a reader came for. */}
-  <ul class="reset contents">
-    {stakeholders.length > 0 && <li><a href="#stakeholders">{t('case.stakeholders')}</a></li>}
-  </ul>
-
-  {stakeholders.length > 0 && (
-    <>
-      <h2 id="stakeholders">{t('case.stakeholders')}</h2>
-      <ul class="reset">
-        {stakeholders.map((s) => (
-          <li class="card">
-            <strong>{localize(s.data.name, lang)}</strong> — {localize(s.data.role, lang)}
-            <span class="tag" style="margin-left:.5rem">{t('case.influence')} {s.data.influence}</span>
-            {localize<string[]>(s.data.interests, lang)!.length > 0 && (
-              <p class="muted small" style="margin:.3rem 0 0">{t('case.interests')} {localize<string[]>(s.data.interests, lang)!.join(', ')}</p>
-            )}
-            {/* Who holds the role as a human, and where the assisting agents stop. On a site
-                about working with AI, leaving that implicit invites the opposite reading. */}
-            {localize(s.data.heldBy, lang) && (
-              <p class="small" style="margin:.3rem 0 0"><strong>{t('case.heldBy')}</strong> {localize(s.data.heldBy, lang)}</p>
-            )}
-            {localize(s.data.aiSupport, lang) && (
-              <p class="ai-note"><strong>{t('case.aiSupport')}</strong> {localize(s.data.aiSupport, lang)}</p>
-            )}
-          </li>
-        ))}
-      </ul>
-    </>
   )}
 
   {looseDiagrams.length > 0 && (

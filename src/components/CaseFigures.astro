@@ -15,7 +15,9 @@
  */
 import { getCollection } from 'astro:content';
 import { useTranslations, localize, type Lang, type UiKey } from '../i18n/ui';
-import { iterationLabel, iterationSlug, introducedIn, releaseBadge, type Iteration } from '../lib/iterations';
+import { iterationLabel, iterationSlug, introducedIn, releaseBadge, walkFixes, type Iteration } from '../lib/iterations';
+import RolesPanel from './figures/RolesPanel.astro';
+import FindingsPanel from './figures/FindingsPanel.astro';
 import RequirementsHeat from './figures/RequirementsHeat.astro';
 import StoriesBars from './figures/StoriesBars.astro';
 import CriteriaDots from './figures/CriteriaDots.astro';
@@ -28,8 +30,10 @@ interface Props {
   caseId: string;
   /** Ascending by `order` — pass `iterationsOf(...)` straight in. */
   iterations: Iteration[];
+  /** Story id of the case study's worked example, linked from the findings. */
+  workedExample?: string;
 }
-const { lang, caseId, iterations } = Astro.props;
+const { lang, caseId, iterations, workedExample } = Astro.props;
 const t = useTranslations(lang);
 
 const inCase = (e: { data: { case?: { id: string } } }) => e.data.case?.id === caseId;
@@ -39,6 +43,10 @@ const stories = (await getCollection('user-stories')).filter(inCase);
 const adrs = (await getCollection('adr')).filter(inCase).sort(byIdThenTitle);
 const diagrams = (await getCollection('diagrams')).filter(inCase);
 const topics = topicsOf(await getCollection('topics'), caseId);
+const roles = (await getCollection('stakeholders')).filter(inCase).sort((a, b) => a.data.order - b.data.order);
+const journal = await getCollection('journal');
+const workflow = await getCollection('workflow');
+const fixes = walkFixes(iterations, stories);
 const criteriaOf = (xs: typeof stories) => xs.reduce((n, s) => n + s.data.acceptanceCriteria.en.length, 0);
 
 const levelHref = (it: Iteration | undefined, anchor?: string) =>
@@ -56,11 +64,13 @@ const perLevel = iterations.map((it) => {
 
 const figures = [
   { key: leveled ? 'levels' : 'iterations', n: iterations.length },
+  { key: 'roles', n: roles.length },
   { key: 'requirements', n: requirements.length },
   { key: 'stories', n: stories.length },
   { key: 'criteria', n: criteriaOf(stories) },
   { key: 'adr', n: adrs.length },
   { key: 'diagrams', n: diagrams.length },
+  { key: 'findings', n: fixes.length },
 ].filter((f) => f.n > 0);
 const k = (s: string) => `fig.${s}` as UiKey;
 const panelId = (key: string) => `fig-panel-${key}`;
@@ -79,7 +89,7 @@ const panelId = (key: string) => `fig-panel-${key}`;
   </ul>
 
   {figures.map((f) => (
-    <div class:list={['panel', 'overlay', { wide: f.key === 'diagrams' }]} id={panelId(f.key)} hidden>
+    <div class:list={['panel', 'overlay', { wide: f.key === 'diagrams' || f.key === 'roles' }]} id={panelId(f.key)} hidden>
       {(f.key === 'levels' || f.key === 'iterations') && (
         <ol class="reset timeline">
           {perLevel.map(({ it, stories: ns }) => (
@@ -94,6 +104,8 @@ const panelId = (key: string) => `fig-panel-${key}`;
           ))}
         </ol>
       )}
+      {f.key === 'roles' && <RolesPanel lang={lang} roles={roles} />}
+      {f.key === 'findings' && <FindingsPanel lang={lang} iterations={iterations} stories={stories} journal={journal} workflow={workflow} workedExample={workedExample} levelHref={(it, a) => levelHref(it, a)!} />}
       {f.key === 'requirements' && <RequirementsHeat lang={lang} iterations={iterations} requirements={requirements} stories={stories} />}
       {f.key === 'stories' && <StoriesBars lang={lang} iterations={iterations} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
       {f.key === 'criteria' && <CriteriaDots lang={lang} iterations={iterations} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
@@ -147,8 +159,8 @@ const panelId = (key: string) => `fig-panel-${key}`;
 
 <style>
   .figures { margin: 1.4rem 0 1.8rem; position: relative; }
-  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; margin: 0; }
-  @media (max-width: 560px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; margin: 0; }
+  @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .tiles li { display: flex; min-width: 0; }
   .tile {
     width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
@@ -159,8 +171,8 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .tile[aria-expanded='true'] { border-color: var(--accent); background: var(--accent-soft); }
   .n { font-size: 1.7rem; font-weight: 800; color: var(--title); font-variant-numeric: tabular-nums; line-height: 1.1; }
-  .k { font-weight: 700; font-size: .9rem; }
-  .x { font-size: .8rem; color: var(--muted); line-height: 1.4; margin-top: .25rem; }
+  .k { font-weight: 700; font-size: .9rem; hyphens: auto; overflow-wrap: break-word; }
+  .x { font-size: .8rem; color: var(--muted); line-height: 1.4; margin-top: .25rem; hyphens: auto; overflow-wrap: break-word; }
 
   .panel { margin-top: .9rem; border: 1px solid var(--accent); border-radius: 6px; padding: .9rem 1rem; }
   /* Floats over the page below instead of pushing it down. */
@@ -234,6 +246,30 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .figures .seg.must, .figures .sw.must { background: var(--accent); }
   .figures .seg.should, .figures .sw.should { background: #b98a96; }
   .figures .seg.other { background: var(--muted); }
+  .figures .seg.found { background: var(--human); }
+
+  /* Findings list */
+  .figures .fixlist { margin: .9rem 0 0; display: grid; font-size: .85rem; }
+  .figures .fixlist li { display: flex; flex-wrap: wrap; gap: .1rem .6rem; align-items: baseline; padding: .35rem 0; border-top: 1px solid var(--border); }
+  .figures .fixlist .chain { font-weight: 600; font-size: .78rem; }
+
+  /* Roles */
+  .figures .roles { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
+  .figures .side h4 { margin: 0 0 .5rem; font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+  .figures .side.self { display: grid; gap: .6rem; align-content: start; }
+  .figures .side.self { grid-template-columns: 1fr 1fr; }
+  .figures .side.self h4 { grid-column: 1 / -1; margin-bottom: 0; }
+  .figures .role { border: 1px solid var(--border); border-radius: 6px; padding: .7rem .8rem; font-size: .84rem; min-width: 0; }
+  .figures .side.client .role { border-color: var(--accent); background: var(--accent-soft); }
+  .figures .role .who { display: flex; flex-wrap: wrap; gap: .3rem .5rem; align-items: baseline; }
+  .figures .role .who strong { font-size: 1rem; color: var(--title); }
+  .figures .role p { margin: .35rem 0 0; line-height: 1.45; }
+  .figures .role .what { color: var(--muted); }
+  .figures .role .ai { color: var(--muted); border-left: 2px solid var(--border); padding-left: .55rem; }
+  .figures .role details { margin-top: .4rem; }
+  .figures .role summary { cursor: pointer; color: var(--accent); font-size: .8rem; }
+  .figures .role ul { margin: .3rem 0 0; padding-left: 1.1rem; }
+  @media (max-width: 720px) { .figures .roles, .figures .side.self { grid-template-columns: 1fr; } }
   /* Corrections: thin, rounded, inside the level's own bar — not a third priority. */
   .figures .fixline { position: absolute; left: 0; top: calc(100% + 3px); height: 4px; border-radius: 2px; background: var(--human); }
   .figures .sw.fix { background: var(--human); height: 4px; border-radius: 2px; vertical-align: 2px; }

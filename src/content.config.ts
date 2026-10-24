@@ -186,6 +186,11 @@ const stakeholders = defineCollection({
     aiSupport: loc.optional(),
     interests: locArr.default({ en: [], de: [] }),
     influence: z.enum(['low', 'medium', 'high']).default('medium'),
+    // Which side of the work the role is on. `client` is the real stakeholder — the one
+    // whose business it is and who alone decides where the product goes; `self` is a role
+    // the author fills, with agents assisting. Stated, not inferred from `heldBy` prose:
+    // the site separates the two, and a parsed sentence would be a guess.
+    party: z.enum(['client', 'self']).optional(),
     // Display order on the case study page. Influence is not the same thing — two
     // stakeholders can share it — so the sequence is stated rather than inferred.
     order: z.number().default(99),

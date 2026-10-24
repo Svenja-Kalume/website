@@ -121,6 +121,21 @@ export function groupByCase<T extends { data: { introducedIn?: { id: string } | 
 /** Convenience: load the collection once per page. */
 export const allIterations = () => getCollection('iterations');
 
+/**
+ * The findings a human walk produced and a later iteration fixed as stories of their own:
+ * every story in a corrective iteration (`corrects`) that `changes` an earlier story.
+ * Counted from data, so it reads "fixed as a story", never a raw tally of what was noted.
+ */
+export function walkFixes<T extends { id: string; data: { introducedIn?: { id: string } | undefined; changes: unknown[] } }>(
+  all: Iteration[],
+  stories: T[],
+): T[] {
+  return all
+    .filter((it) => it.data.corrects.length > 0)
+    .sort(byOrder)
+    .flatMap((it) => introducedIn(stories, it.id).filter((s) => s.data.changes.length > 0));
+}
+
 /** Artifacts introduced by one iteration, in id order. */
 export function introducedIn<T extends { id: string; data: { introducedIn?: { id: string } | undefined } }>(
   entries: T[],
