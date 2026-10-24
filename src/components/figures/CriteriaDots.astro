@@ -1,0 +1,50 @@
+---
+/**
+ * Acceptance criteria per story, per level, as a dot plot. The total says little; the
+ * density shows how much more precise the stories became as the work turned legal.
+ * Counted in English — the German criteria are the same list, one per entry.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, type Lang } from '../../i18n/ui';
+import { iterationLabel, introducedIn, type Iteration } from '../../lib/iterations';
+
+interface Props {
+  lang: Lang;
+  iterations: Iteration[];
+  stories: CollectionEntry<'user-stories'>[];
+  levelHref: (it: Iteration, anchor?: string) => string;
+}
+const { lang, iterations, stories, levelHref } = Astro.props;
+const t = useTranslations(lang);
+const count = (xs: typeof stories) => xs.reduce((n, s) => n + s.data.acceptanceCriteria.en.length, 0);
+
+const levels = iterations
+  .map((it) => {
+    const s = introducedIn(stories, it.id);
+    const total = count(s);
+    return { it, total, avg: s.length ? total / s.length : 0 };
+  })
+  .filter((l) => l.total > 0);
+const max = Math.ceil(Math.max(1, ...levels.map((l) => l.avg)));
+const top = [...levels].sort((a, b) => b.avg - a.avg)[0];
+const fmt = (n: number) => n.toLocaleString(lang, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const min = Math.min(...stories.map((s) => s.data.acceptanceCriteria.en.length));
+---
+<div class="kpis">
+  <div class="kpi"><span class="v">{fmt(count(stories) / Math.max(1, stories.length))}</span><span class="l">{t('figp.crit.avg')}</span></div>
+  {top && <div class="kpi"><span class="v">{fmt(top.avg)}</span><span class="l">{t('figp.crit.top')} {iterationLabel(top.it, t('iter.level'))}</span></div>}
+  <div class="kpi"><span class="v">≥ {min}</span><span class="l">{t('figp.crit.min')}</span></div>
+</div>
+<div class="bars">
+  {levels.map((l) => (
+    <div class="bar">
+      <a class="lab" href={levelHref(l.it, 'introduced')}>{iterationLabel(l.it, t('iter.level'))}</a>
+      <div class="dotline"><span class="rail"></span><span class="avg" style={`left:${(l.avg / max) * 100}%`}></span></div>
+      <span class="val"><b>{fmt(l.avg)}</b> · {l.total}</span>
+    </div>
+  ))}
+</div>
+<div class="foot">
+  <span>{t('figp.crit.legend')} 0–{max}</span>
+  <span>{t('figp.crit.lang')}</span>
+</div>

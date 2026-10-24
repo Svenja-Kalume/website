@@ -1,0 +1,53 @@
+---
+/**
+ * Diagrams as a kind × level matrix with the diagram names inside the cells, so the count
+ * and the items share one place and 18 diagrams stay readable. Rows appear only for the
+ * kinds present.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, localize, type Lang, type UiKey } from '../../i18n/ui';
+import { iterationLabel, introducedIn, type Iteration } from '../../lib/iterations';
+
+interface Props {
+  lang: Lang;
+  iterations: Iteration[];
+  diagrams: CollectionEntry<'diagrams'>[];
+  levelHref: (it: Iteration, anchor?: string) => string;
+}
+const { lang, iterations, diagrams, levelHref } = Astro.props;
+const t = useTranslations(lang);
+
+const TYPES = ['bpmn', 'uml', 'c4', 'event-storming', 'mermaid'] as const;
+const types = TYPES.filter((ty) => diagrams.some((d) => d.data.type === ty));
+const cell = (ty: string, it: Iteration) => introducedIn(diagrams, it.id).filter((d) => d.data.type === ty);
+const perLevel = iterations.map((it) => introducedIn(diagrams, it.id).length);
+const topIdx = perLevel.indexOf(Math.max(...perLevel));
+---
+<div class="kpis">
+  <div class="kpi">
+    <span class="v">{types.map((ty) => diagrams.filter((d) => d.data.type === ty).length).join(' · ')}</span>
+    <span class="l">{types.map((ty) => t(`figp.dia.${ty}.short` as UiKey)).join(' · ')}</span>
+  </div>
+  {topIdx >= 0 && <div class="kpi"><span class="v">{perLevel[topIdx]}</span><span class="l">{t('figp.dia.top')} {iterationLabel(iterations[topIdx], t('iter.level'))}</span></div>}
+</div>
+<div class="scroll">
+  <table class="mx">
+    <thead><tr><th class="row"></th>{iterations.map((it) => <th>{iterationLabel(it, t('iter.level'))}</th>)}</tr></thead>
+    <tbody>
+      {types.map((ty) => (
+        <tr>
+          <th class="row">{t(`figp.dia.${ty}` as UiKey)}<br /><span class="muted">{t(`figp.dia.${ty}.short` as UiKey)}</span></th>
+          {iterations.map((it) => {
+            const ds = cell(ty, it);
+            return ds.length === 0
+              ? <td class="empty"></td>
+              : <td><span class="cnt">{ds.length}</span>{ds.map((d) => <a class="chip" href={levelHref(it, d.id)}>{localize(d.data.title, lang)}</a>)}</td>;
+          })}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<div class="foot">
+  <span>{t('figp.dia.legend')}</span>
+</div>
