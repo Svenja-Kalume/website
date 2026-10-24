@@ -120,7 +120,7 @@ const panelId = (key: string) => `fig-panel-${key}`;
       )}
       {f.key === 'roles' && <RolesPanel lang={lang} roles={roles} />}
       {f.key === 'findings' && <FindingsPanel lang={lang} iterations={iterations} stories={caseStories} scope={scope} journal={journal} workflow={workflow} workedExample={workedExample} levelHref={(it, a) => levelHref(it, a)!} />}
-      {f.key === 'requirements' && <RequirementsHeat lang={lang} iterations={shown} requirements={requirements} stories={stories} />}
+      {f.key === 'requirements' && <RequirementsHeat lang={lang} iterations={shown} requirements={requirements} stories={stories} {...(scope ? { allIterations: iterations, allStories: caseStories, levelHref: (it: Iteration, a?: string) => levelHref(it, a)! } : {})} />}
       {f.key === 'stories' && <StoriesBars lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
       {f.key === 'criteria' && <CriteriaDots lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
       {f.key === 'adr' && <DecisionTimeline lang={lang} iterations={shown} adrs={adrs} levelHref={levelHref} />}
@@ -239,6 +239,10 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .figures .heat td.name a:hover { color: var(--accent); }
   .figures .heat td.c { width: 3.2rem; height: 1.45rem; padding: 0; text-align: center; border-radius: 3px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .figures .heat td.c0 { background: var(--surface); }
+  .figures .heat th.later { border-left: 2px dashed var(--border); padding-left: .3rem; }
+  .figures .heat td.later { border-left: 2px dashed var(--border); width: 4.2rem; font-weight: 700; }
+  .figures .heat td.later.hit { background: var(--accent-soft); }
+  .figures .heat td.later a { color: var(--accent); }
   .figures td.c1, .figures .sw.c1 { background: #f5e7ea; color: var(--title); }
   .figures td.c2, .figures .sw.c2 { background: #e3b8c2; color: var(--title); }
   .figures td.c3, .figures .sw.c3 { background: #c27588; color: #fff; }

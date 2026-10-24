@@ -14,14 +14,29 @@ import { iterationLabel, type Iteration } from '../../lib/iterations';
 
 interface Props {
   lang: Lang;
+  /** The levels laid out as columns: all of them on the case page, one on a level page. */
   iterations: Iteration[];
   requirements: CollectionEntry<'requirements'>[];
+  /** Stories counted in the columns. */
   stories: CollectionEntry<'user-stories'>[];
+  /**
+   * On a level page: every level of the case and every story, so the table can say which of
+   * this level's requirements a LATER level came back to — the one fact a single column
+   * cannot show. Omitted on the case page, where the later levels are columns already.
+   */
+  allIterations?: Iteration[];
+  allStories?: CollectionEntry<'user-stories'>[];
+  levelHref?: (it: Iteration, anchor?: string) => string;
 }
-const { lang, iterations, requirements, stories } = Astro.props;
+const { lang, iterations, requirements, stories, allIterations, allStories, levelHref } = Astro.props;
 const t = useTranslations(lang);
 const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
 const order = new Map(iterations.map((it, i) => [it.id, i]));
+
+// Levels after the last column: where a requirement was picked up again, off this page.
+const lastOrder = Math.max(...iterations.map((it) => it.data.order));
+const later = (allIterations ?? []).filter((it) => it.data.order > lastOrder);
+const laterIds = new Set(later.map((it) => it.id));
 
 const rows = requirements.map((r) => {
   const own = stories.filter((s) => s.data.requirement.id === r.id);
@@ -30,9 +45,15 @@ const rows = requirements.map((r) => {
   const first = r.data.introducedIn
     ? order.get(r.data.introducedIn.id) ?? -1
     : cells.findIndex((n) => n > 0);
+  const laterStories = (allStories ?? []).filter((s) => s.data.requirement.id === r.id && laterIds.has(s.data.introducedIn?.id ?? ''));
+  const laterLevels = later.filter((it) => laterStories.some((s) => s.data.introducedIn?.id === it.id));
   const priority = own.some((s) => s.data.priority === 'must') ? 'must'
     : own.some((s) => s.data.priority === 'should') ? 'should' : undefined;
-  return { r, cells, first, priority, total: own.length, revisited: cells.some((n, i) => n > 0 && i > first) };
+  return {
+    r, cells, first, priority, total: own.length, laterStories: laterStories.length, laterLevels,
+    // Picked up again AFTER it was introduced: a later column here, or a later level off-page.
+    revisited: first >= 0 && (cells.some((n, i) => n > 0 && i > first) || laterStories.length > 0),
+  };
 });
 const groups = [
   { title: t('figp.req.earlier'), rows: rows.filter((x) => x.first === -1) },
@@ -40,20 +61,22 @@ const groups = [
 ].filter((g) => g.rows.length > 0);
 const busiest = [...rows].sort((a, b) => b.total - a.total)[0];
 const shade = (n: number) => (n === 0 ? 'c0' : n === 1 ? 'c1' : n === 2 ? 'c2' : n <= 4 ? 'c3' : 'c4');
+const earlier = rows.filter((x) => x.first === -1).length;
 ---
 <div class="kpis">
   <div class="kpi"><span class="v">{rows.filter((x) => x.priority === 'must').length} / {rows.filter((x) => x.priority === 'should').length}</span><span class="l">{t('figp.mustShould')}</span></div>
   <div class="kpi"><span class="v">{rows.filter((x) => x.total > 0).length} / {rows.length}</span><span class="l">{t('figp.req.covered')}</span></div>
   <div class="kpi"><span class="v">{rows.filter((x) => x.revisited).length}</span><span class="l">{t('figp.req.revisited')}</span></div>
+  {earlier > 0 && <div class="kpi"><span class="v">{earlier}</span><span class="l">{t('figp.req.earlierKpi')}</span></div>}
   {busiest && <div class="kpi"><span class="v">{busiest.total}</span><span class="l">{t('figp.req.busiest')} {busiest.r.id}</span></div>}
 </div>
 <div class="scroll">
   <table class="heat">
-    <thead><tr><th class="rq">{t('chain.requirement')}</th>{iterations.map((it) => <th>{label(it)}</th>)}</tr></thead>
+    <thead><tr><th class="rq">{t('chain.requirement')}</th>{iterations.map((it) => <th>{label(it)}</th>)}{later.length > 0 && <th class="later">{t('figp.req.laterCol')}</th>}</tr></thead>
     <tbody>
       {groups.map((g) => (
         <>
-          <tr class="group"><td colspan={iterations.length + 1}>{g.title}</td></tr>
+          <tr class="group"><td colspan={iterations.length + 1 + (later.length > 0 ? 1 : 0)}>{g.title}</td></tr>
           {g.rows.map((x) => (
             <tr class:list={{ revisit: x.revisited }}>
               <td class="name">
@@ -61,6 +84,13 @@ const shade = (n: number) => (n === 0 ? 'c0' : n === 1 ? 'c1' : n === 2 ? 'c2' :
                 {x.priority && <span class:list={['pill', x.priority]}>{x.priority}</span>}
               </td>
               {x.cells.map((n) => <td class:list={['c', shade(n)]}>{n > 0 ? n : ''}</td>)}
+              {later.length > 0 && (
+                <td class:list={['c', 'later', x.laterStories > 0 ? 'hit' : 'c0']}>
+                  {x.laterStories > 0 && x.laterLevels.map((it, i) => (
+                    <>{i > 0 && ' '}<a href={levelHref ? levelHref(it, 'introduced') : undefined} title={`${x.laterStories} ${t('iter.stories')}`}>{label(it).replace(/^\D+/, 'L')}</a></>
+                  ))}
+                </td>
+              )}
             </tr>
           ))}
         </>
