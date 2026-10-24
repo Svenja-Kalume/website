@@ -216,7 +216,15 @@ const toc = [
     {hasLessons && <li><a href="#lessons">{t('iter.lessons')}</a></li>}
   </ul>
 
-  <SideToc items={toc} label={t('toc.label')} watch="#page-contents" />
+  <SideToc
+    items={toc}
+    label={t('toc.label')}
+    trail={[
+      { label: caseTitle.split(' — ')[0], href: `/${lang}/case-studies/${caseEntry.id}` },
+      { label: levelLabel },
+    ]}
+    watch="#page-contents"
+  />
 
   {/* The headline of the whole concept: not what shipped, but what changed in how you work. */}
   {(localize(iteration.data.processChanges, lang) ?? []).length > 0 && (

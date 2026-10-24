@@ -9,19 +9,26 @@
  * being read. Narrower screens keep the in-page list alone: there is no room beside the
  * text, and an overlay would cover it.
  *
- * Built from the same entries as the in-page list, so the two cannot disagree.
+ * Built from the same entries as the in-page list, so the two cannot disagree. Its heading
+ * is where the reader is — a short trail such as "wurzel · Level 3" — since the page's own
+ * breadcrumb has scrolled away with the top of the page.
  */
 interface Item { href: string; label: string; children?: Item[] }
 interface Props {
   items: Item[];
+  /** Accessible name of the navigation. */
   label: string;
+  /** The visible heading: where this page sits, as a short breadcrumb. */
+  trail: { label: string; href?: string }[];
   /** Selector of the in-page contents list; the side copy shows once it is out of view. */
   watch: string;
 }
-const { items, label, watch } = Astro.props;
+const { items, label, trail, watch } = Astro.props;
 ---
 <nav class="side-toc" aria-label={label} data-watch={watch}>
-  <p class="side-toc-label">{label}</p>
+  <p class="side-toc-label">
+    {trail.map((c, i) => <>{i > 0 && ' · '}{c.href ? <a href={c.href}>{c.label}</a> : <span>{c.label}</span>}</>)}
+  </p>
   <ul>
     {items.map((i) => (
       <li>
@@ -72,7 +79,8 @@ const { items, label, watch } = Astro.props;
     }
     .side-toc.show { visibility: visible; }
   }
-  .side-toc-label { margin: 0 0 .4rem; font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+  .side-toc-label { margin: 0 0 .5rem; font-size: .85rem; font-weight: 700; color: var(--title); }
+  .side-toc-label a { color: var(--accent); font-weight: 700; }
   .side-toc ul { list-style: none; margin: 0; padding: 0; }
   .side-toc li { margin: .25rem 0; }
   .side-toc ul ul { margin: .15rem 0 .3rem .7rem; }
