@@ -5,6 +5,11 @@
  * Shown on the level that introduced it; the case study page keeps only ADRs that
  * carry no `introducedIn`.
  *
+ * The DECISION is always shown; context and consequences open on demand. Three full
+ * sections per decision, five decisions a level, made the decision itself the hardest
+ * thing on the page to find. The status tag appears only when it is not `accepted` —
+ * every published decision so far is, and a tag that never varies says nothing.
+ *
  * The three sections come from locale-keyed fields, one string per paragraph, and the
  * headings from the UI dictionary — so a German page reads German reasoning under German
  * headings. An ADR written before those fields still renders its Markdown body, which is
@@ -20,33 +25,50 @@ const { adr, lang } = Astro.props;
 const t = useTranslations(lang);
 const dateStr = adr.data.date.toISOString().slice(0, 10);
 
-const sections = (['context', 'decision', 'consequences'] as const)
-  .map((key) => ({ key, paragraphs: localize<string[]>(adr.data[key], lang) ?? [] }))
-  .filter((s) => s.paragraphs.length > 0);
+const section = (key: 'context' | 'decision' | 'consequences') =>
+  ({ key, paragraphs: localize<string[]>(adr.data[key], lang) ?? [] });
+const decision = section('decision');
+const more = [section('context'), section('consequences')].filter((s) => s.paragraphs.length > 0);
+const hasSections = decision.paragraphs.length > 0 || more.length > 0;
 
 // Only an ADR with no section fields at all falls back to its body.
-const { Content } = sections.length === 0 ? await render(adr) : { Content: null };
+const { Content } = hasSections ? { Content: null } : await render(adr);
 ---
 <div class="card" id={adr.id}>
   <strong>{adr.id}: {localize(adr.data.title, lang)}</strong>
-  <span class="tag" style="margin-left:.5rem">{adr.data.status}</span>
+  {adr.data.status !== 'accepted' && <span class="tag" style="margin-left:.5rem">{adr.data.status}</span>}
   <span class="muted small" style="margin-left:.5rem">{dateStr}</span>
   {adr.data.relatedRequirements.length > 0 && (
     <p class="small" style="margin:.4rem 0 0">
       {t('case.requirement')}{' '}
-      <a href={`/${lang}/traceability`}>{adr.data.relatedRequirements.map((r) => r.id).join(', ')}</a>
+      {adr.data.relatedRequirements.map((r, i) => <>{i > 0 && ', '}<a href={`/${lang}/traceability#${r.id}`}>{r.id}</a></>)}
     </p>
   )}
   {adr.data.supersedes && (
     <p class="small muted" style="margin:.3rem 0 0">{t('adr.supersedes')} {adr.data.supersedes.id}</p>
   )}
   <div class="adr-body small">
-    {Content ? <Content /> : sections.map((s) => (
+    {Content ? <Content /> : (
       <>
-        <h4 id={`${adr.id}-${s.key}`}>{t(`adr.${s.key}`)}</h4>
-        {s.paragraphs.map((p: string) => <p set:html={inlineMarkdown(p)} />)}
+        {decision.paragraphs.length > 0 && (
+          <>
+            <h4 id={`${adr.id}-decision`}>{t('adr.decision')}</h4>
+            {decision.paragraphs.map((p: string) => <p set:html={inlineMarkdown(p)} />)}
+          </>
+        )}
+        {more.length > 0 && (
+          <details>
+            <summary>{more.map((s) => t(`adr.${s.key}`)).join(' & ')}</summary>
+            {more.map((s) => (
+              <>
+                <h4 id={`${adr.id}-${s.key}`}>{t(`adr.${s.key}`)}</h4>
+                {s.paragraphs.map((p: string) => <p set:html={inlineMarkdown(p)} />)}
+              </>
+            ))}
+          </details>
+        )}
       </>
-    ))}
+    )}
   </div>
 </div>
 
@@ -60,4 +82,6 @@ const { Content } = sections.length === 0 ? await render(adr) : { Content: null 
     margin: .8rem 0 .2rem;
   }
   .adr-body :global(p) { margin: .2rem 0; }
+  .adr-body details { margin-top: .5rem; }
+  .adr-body summary { cursor: pointer; color: var(--accent); }
 </style>

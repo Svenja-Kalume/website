@@ -5,9 +5,15 @@
  * vocabulary is what makes the grouping a domain grouping rather than a label.
  *
  * References are resolved here, so callers pass the topic's `glossary` refs unchanged.
+ *
+ * Closed by default, with the terms themselves in the summary line: the vocabulary still
+ * heads the sub-chapter and is read at a glance, while nine full definitions no longer
+ * stand between the reader and the topic's stories. Definitions carry inline `code`, so
+ * they go through the same inline-markdown step as an ADR's reasoning.
  */
 import { getEntry, render } from 'astro:content';
 import { useTranslations, localize, type Lang } from '../i18n/ui';
+import { inlineMarkdown } from '../lib/inline-markdown';
 
 interface Props { refs: { id: string }[]; lang: Lang; }
 const { refs, lang } = Astro.props;
@@ -27,18 +33,22 @@ const terms = await Promise.all(
 const resolved = terms.filter((x): x is NonNullable<typeof x> => Boolean(x));
 ---
 {resolved.length > 0 && (
-  <dl class="glossary small">
-    <dt class="muted">{t('topic.glossary')}</dt>
-    {resolved.map(({ entry, definition, Definition }) => (
-      <dd>
-        <strong>{localize(entry.data.term, lang)}</strong> — {definition ?? (Definition && <Definition />)}
-      </dd>
-    ))}
-  </dl>
+  <details class="glossary small">
+    <summary><span class="muted">{t('topic.glossary')}:</span> {resolved.map(({ entry }) => localize(entry.data.term, lang)).join(' · ')}</summary>
+    <dl>
+      {resolved.map(({ entry, definition, Definition }) => (
+        <dd>
+          <strong>{localize(entry.data.term, lang)}</strong> — {definition ? <span set:html={inlineMarkdown(definition)} /> : (Definition && <Definition />)}
+        </dd>
+      ))}
+    </dl>
+  </details>
 )}
 
 <style>
   .glossary { margin: .4rem 0 .8rem; }
+  .glossary summary { cursor: pointer; }
+  .glossary dl { margin: .4rem 0 0; }
   .glossary dd { margin: .2rem 0 .2rem 0; }
   /* The definition is a markdown paragraph; keep it on the term's line. */
   .glossary dd :global(p) { display: inline; margin: 0; }
