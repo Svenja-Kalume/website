@@ -151,7 +151,7 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
       <ul class="reset">
         {stakeholders.map((s) => (
           <li class="card">
-            <strong>{s.data.name}</strong> — {localize(s.data.role, lang)}
+            <strong>{localize(s.data.name, lang)}</strong> — {localize(s.data.role, lang)}
             <span class="tag" style="margin-left:.5rem">{t('case.influence')} {s.data.influence}</span>
             {localize<string[]>(s.data.interests, lang)!.length > 0 && (
               <p class="muted small" style="margin:.3rem 0 0">{t('case.interests')} {localize<string[]>(s.data.interests, lang)!.join(', ')}</p>

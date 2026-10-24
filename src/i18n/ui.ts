@@ -36,7 +36,7 @@ export const ui = {
     'lang.switch.aria': 'Auf Deutsch anzeigen',
     'site.title': 'Understanding Before Solving',
     'site.subtitle':
-      'An open working journal on insights from software development, requirements engineering, and the path to a solution.',
+      'Software Development · Requirements Engineering · AI-driven Development',
     'footer': 'Complexity is my dopamine',
     'footer.impressum': 'Imprint',
     'footer.datenschutz': 'Privacy',
@@ -245,6 +245,11 @@ export const ui = {
       'This website documents exactly that process — not as a collection of perfect projects, but as an open working journal of my learning path, including wrong turns, new insights, and the question of how good solutions grow out of understanding.',
     'about.p4':
       'Professionally, I have worked as a software engineer for over eleven years. My focus is increasingly moving towards requirements engineering, because that is where I rediscover the very things that have driven me since the start of my career: understanding problems, connecting people, and structuring complexity.',
+    // The goal, in the owner's words: the role is what they are heading for, not a title claimed.
+    'about.goal':
+      "I want to get into the real questions users face — to understand them, so I can find ways to make their everyday challenges easier. That is what I am looking for in requirements engineering.",
+    'about.cert': 'Certified: IREB CPRE Foundation Level, February 2026 —',
+    'about.certVerify': 'verify the certificate',
     'about.contact': 'Contact',
 
     'og.imageAlt':
@@ -264,7 +269,7 @@ export const ui = {
     'lang.switch.aria': 'Show in English',
     'site.title': 'Verstehen kommt vor Lösen',
     'site.subtitle':
-      'Ein offenes Arbeitsjournal über Erkenntnisse aus Softwareentwicklung, Requirements Engineering und dem Weg zur Lösung.',
+      'Softwareentwicklung · Requirements Engineering · AI-driven Development',
     'footer': 'Komplexität ist mein Dopamin',
     'footer.impressum': 'Impressum',
     'footer.datenschutz': 'Datenschutz',
@@ -470,6 +475,10 @@ export const ui = {
       'Diese Website dokumentiert genau diesen Prozess. Nicht als Sammlung perfekter Projekte, sondern als offenes Arbeitsjournal meines Lernwegs — inklusive Irrwegen, neuen Erkenntnissen und der Frage, wie aus Verständnis gute Lösungen entstehen.',
     'about.p4':
       'Beruflich arbeite ich seit über elf Jahren als Software Engineer. Mein Schwerpunkt entwickelt sich zunehmend in Richtung Requirements Engineering, weil ich dort genau die Themen wiederfinde, die mich seit Beginn meiner Laufbahn antreiben: Probleme verstehen, Menschen verbinden und Komplexität strukturieren.',
+    'about.goal':
+      'Ich möchte in die echten Fragestellungen der Anwender rein gehen. Sie verstehen, um Möglichkeiten zu finden, die ihnen ihre Herausforderungen im Alltag erleichtern. Das ist, was ich im Requirements Engineering suche.',
+    'about.cert': 'Zertifiziert: IREB CPRE Foundation Level, Februar 2026 —',
+    'about.certVerify': 'Zertifikat prüfen',
     'about.contact': 'Kontakt',
 
     'og.imageAlt':

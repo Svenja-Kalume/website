@@ -86,6 +86,11 @@ description (what search engines and link previews show).
 
 **Answer:** yes
 
+> **Done (2026-10-24), except 1.3.** Tagline is the three fields (1.1/1.5); the goal sentence opens
+> About (1.1); the CPRE line with the verify link follows the eleven-years paragraph (1.4); the
+> case-study summary — the home card — now summarises the 1.2 sentence. English translations are
+> drafts. 1.3 is still to discuss.
+
 ---
 
 ## 2 · The red thread on the home page is outdated
@@ -377,7 +382,7 @@ journal entry, or a new page section that reads the existing data).
 
 ## 8 · "ProductOwner" shows without a space
 
-Status: open — one detail left
+Status: answered
 
 **Finding.** The stakeholder list shows "ProductOwner" — the raw `name` field of
 `src/content/wurzel/stakeholders/WZ-product-owner.md`. Stakeholders are not versioned, so the
@@ -395,4 +400,6 @@ file can be changed.
 > "Produktverantwortliche"?
 
 **Answer:** yes, locale-keyed, "Produktverantwortlicher"
+
+> **Done (2026-10-24).** `name` accepts `{ en, de }`; Product Owner / Produktverantwortlicher.
 

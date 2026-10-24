@@ -171,7 +171,9 @@ const versioned = {
 const stakeholders = defineCollection({
   loader: base('stakeholders'),
   schema: z.object({
-    name: z.string(), // proper noun -- language-neutral
+    // A proper noun stays one string; a role word that translates ("Product Owner" /
+    // "Produktverantwortlicher") is locale-keyed like `role`.
+    name: z.union([z.string(), loc]),
     role: loc,
     case: reference('case-studies'),
     // WHO holds the role, as a human. Every role on this project is AI-assisted, which is

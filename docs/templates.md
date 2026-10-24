@@ -377,7 +377,7 @@ aiContribution:                  # optional
 
 ```markdown
 ---
-name: Management                 # proper noun — language-neutral
+name: Management                 # proper noun: one string; a translatable role word: { en, de }
 role:
   en: Owner & decision-maker
   de: Eigentümer & Entscheider

@@ -1,5 +1,7 @@
 ---
-name: ProductOwner
+name:
+  en: Product Owner
+  de: Produktverantwortlicher
 role:
   en: Product Owner (grooming & readiness gate)
   de: Product Owner (Grooming & Readiness-Gate)

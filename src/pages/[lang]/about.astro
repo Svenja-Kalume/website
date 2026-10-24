@@ -16,10 +16,15 @@ const t = useTranslations(lang);
   jsonLd={personSchema(lang, absoluteUrl(`/${lang}/about/`, Astro.site))}
 >
   <h1>{t('about.h1')}</h1>
+  <p class="lede">{t('about.goal')}</p>
   <p>{t('about.p1')}</p>
   <p>{t('about.p2')}</p>
   <p>{t('about.p3')}</p>
   <p>{t('about.p4')}</p>
+  <p>
+    {t('about.cert')}{' '}
+    <a href="https://www.certible.com/de/verify/eead157ddd0166be44b8dea46fe4580d/">{t('about.certVerify')}</a>
+  </p>
   <h2>{t('about.contact')}</h2>
   <p class="muted">
     <a href="mailto:kontakt@svenjakalume.de">kontakt@svenjakalume.de</a>

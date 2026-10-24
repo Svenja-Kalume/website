@@ -3,8 +3,8 @@ title:
   en: wurzel — business admin for a landscaping trade
   de: wurzel — Betriebsverwaltung für den GaLaBau
 summary:
-  en: How a landscaping business gets a web app to manage customers, projects and priced offers — modelled requirements-first, built AI-assisted, every step under human judgement.
-  de: Wie ein Garten- und Landschaftsbaubetrieb eine Web-App für Kunden, Projekte und bepreiste Angebote bekommt — anforderungsgetrieben modelliert, KI-gestützt gebaut, jeder Schritt unter menschlichem Urteil.
+  en: Understanding what a small landscaping business needs and building the application that eases its paperwork — requirements-first, AI-assisted, every step under human judgement.
+  de: Verstehen, was ein kleiner GaLaBau-Betrieb braucht, und daraus die Anwendung entwickeln, die ihm die Papierarbeit erleichtert — anforderungsgetrieben, KI-gestützt, jeder Schritt unter menschlichem Urteil.
 intro:
   en:
     - A German landscaping and garden-maintenance business (Garten- und Landschaftsbau, sole proprietor or small team) quotes by hand — calculator, word processor, copy-paste between documents. Offers are hard to revise and nothing ties a job together. The goal — a usable web application, quickly — to manage customers, projects and offers in one simple workflow.
