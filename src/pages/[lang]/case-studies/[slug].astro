@@ -7,6 +7,9 @@ import LevelNav from '../../../components/LevelNav.astro';
 import DiagramFigure from '../../../components/DiagramFigure.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import AdrCard from '../../../components/AdrCard.astro';
+import CaseFigures from '../../../components/CaseFigures.astro';
+import WalkEvidence from '../../../components/WalkEvidence.astro';
+import EvidenceChain from '../../../components/EvidenceChain.astro';
 import { allIterations, iterationsOf, currentOf, introducedIn, displayVersion, iterationSlug } from '../../../lib/iterations';
 import { absoluteUrl, techArticleSchema } from '../../../lib/schema';
 
@@ -90,12 +93,23 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
     <span class="tag">{entry.data.status}</span>
     {entry.data.demoUrl && <a class="button" style="margin-left:.6rem" href={entry.data.demoUrl}>{t('cases.openDemo')}</a>}
   </p>
+  {localize(entry.data.lede, lang) && <p class="lede">{localize(entry.data.lede, lang)}</p>}
+
+  {/* The opener: what the work amounts to, counted, before any of its vocabulary. */}
+  <CaseFigures lang={lang} caseId={caseId} iterations={caseIterations} />
 
   <div>
     {entry.data.intro
       ? localize<string[]>(entry.data.intro, lang)!.map((p) => <p>{p}</p>)
       : <Content />}
   </div>
+
+  {/* The evidence: what walking the running application found, then one of those
+      findings followed through every artifact it touched. */}
+  <WalkEvidence lang={lang} caseId={caseId} iterations={caseIterations} workedExample={entry.data.workedExample?.id} />
+  {entry.data.workedExample && (
+    <EvidenceChain lang={lang} caseId={caseId} iterations={caseIterations} storyId={entry.data.workedExample.id} />
+  )}
 
   {/* Derived from what this page actually renders, so it cannot list a section that is not
       there. The diagrams are named individually: they are the furthest down and the most

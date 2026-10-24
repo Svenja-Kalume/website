@@ -1,0 +1,90 @@
+---
+/**
+ * The opener of a case study: key figures, each with the one line that explains its term,
+ * and the levels as a timeline.
+ *
+ * It exists because the page used to open with vocabulary — Level, tag, ADR — that a
+ * reader meets here for the first time. Every figure is COUNTED from the collections, so
+ * nothing in the opener is maintained by hand and none of it can drift from the levels
+ * below. A count of zero hides its tile rather than advertising an absence.
+ */
+import { getCollection } from 'astro:content';
+import { useTranslations, localize, type Lang, type UiKey } from '../i18n/ui';
+import { iterationLabel, iterationSlug, introducedIn, type Iteration } from '../lib/iterations';
+
+interface Props {
+  lang: Lang;
+  caseId: string;
+  /** Ascending by `order` — pass `iterationsOf(...)` straight in. */
+  iterations: Iteration[];
+}
+const { lang, caseId, iterations } = Astro.props;
+const t = useTranslations(lang);
+
+const inCase = (e: { data: { case?: { id: string } } }) => e.data.case?.id === caseId;
+const requirements = (await getCollection('requirements')).filter(inCase);
+const stories = (await getCollection('user-stories')).filter(inCase);
+const adrs = (await getCollection('adr')).filter(inCase);
+const diagrams = (await getCollection('diagrams')).filter(inCase);
+const criteria = stories.reduce((n, s) => n + s.data.acceptanceCriteria.en.length, 0);
+
+// "Levels" only when every iteration has one; a project that never sets `level` counts
+// iterations, in the same words its own level pages use.
+const leveled = iterations.length > 0 && iterations.every((i) => typeof i.data.level === 'number');
+
+const figures: { n: number; key: string }[] = [
+  { n: iterations.length, key: leveled ? 'levels' : 'iterations' },
+  { n: requirements.length, key: 'requirements' },
+  { n: stories.length, key: 'stories' },
+  { n: criteria, key: 'criteria' },
+  { n: adrs.length, key: 'adr' },
+  { n: diagrams.length, key: 'diagrams' },
+].filter((f) => f.n > 0);
+const k = (s: string) => `fig.${s}` as UiKey;
+---
+<section class="figures" aria-label={t('fig.label')}>
+  <ul class="tiles reset">
+    {figures.map((f) => (
+      <li class="tile">
+        <span class="n">{f.n}</span>
+        <span class="k">{t(k(f.key))}</span>
+        <span class="x">{t(k(`${f.key}.x`))}</span>
+      </li>
+    ))}
+  </ul>
+
+  {iterations.length > 1 && (
+    <ol class="timeline reset">
+      {iterations.map((it) => (
+        <li class:list={['lv', { corrects: it.data.corrects.length > 0 }]}>
+          <a href={`/${lang}/case-studies/${caseId}/${iterationSlug(it, iterations)}`}>
+            <span class="d">{it.data.date.toISOString().slice(0, 10)}</span>
+            <span class="t">{iterationLabel(it, t('iter.level'))}</span>
+            <span class="s">{localize(it.data.title, lang)?.replace(/^.*?\s—\s/, '')}</span>
+            <span class="s">{introducedIn(stories, it.id).length} {t('iter.stories')}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  )}
+</section>
+
+<style>
+  .figures { margin: 1.4rem 0 1.8rem; }
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
+  @media (max-width: 560px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tile { border: 1px solid var(--border); border-radius: 6px; padding: .75rem .85rem; min-width: 0; display: flex; flex-direction: column; }
+  .n { font-size: 1.7rem; font-weight: 800; color: var(--title); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .k { font-weight: 700; font-size: .9rem; }
+  .x { font-size: .8rem; color: var(--muted); line-height: 1.4; margin-top: .25rem; }
+  .timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .6rem; margin-top: 1rem; }
+  .lv { border-top: 3px solid var(--accent); min-width: 0; }
+  /* A level that corrects an earlier one was built out of test findings, not a plan. */
+  .lv.corrects { border-top-color: var(--human); }
+  .lv a { display: flex; flex-direction: column; padding-top: .45rem; color: inherit; }
+  .lv a:hover { text-decoration: none; }
+  .lv a:hover .t { text-decoration: underline; }
+  .d { font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .t { font-weight: 700; font-size: .9rem; color: var(--title); }
+  .s { font-size: .8rem; color: var(--muted); line-height: 1.4; }
+</style>

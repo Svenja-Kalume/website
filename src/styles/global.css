@@ -10,6 +10,9 @@
   --accent: #7a1e33;
   --accent-strong: #58121f;
   --accent-soft: #f5e7ea;
+  /* A human decision point (a test walk, a changed practice), set apart from the accent. */
+  --human: #1f5f4a;
+  --human-soft: #e4f1ec;
   --title: #2a2024;
   --subtitle: #574a4f;
   --menu: #3b3035;
@@ -231,7 +234,8 @@ th { background: var(--code-bg); }
 }
 .ai-note strong { color: var(--fg); }
 
-ul.reset { list-style: none; padding: 0; }
+ul.reset, ol.reset { list-style: none; padding: 0; }
+.lede { font-size: 1.1rem; color: var(--title); }
 
 .flow { display: flex; flex-direction: column; gap: 0.3rem; }
 .flow .step { padding: 0.2rem 0; }

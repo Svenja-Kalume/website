@@ -30,7 +30,7 @@ const adrs = await Promise.all(story.data.adr.map((r) => getEntry(r)));
 const bpmn = story.data.bpmn ? await getEntry(story.data.bpmn) : undefined;
 const sourceHref = resolveRepoPath(story.data.source, repoUrl, tag);
 ---
-<div class="card">
+<div class="card" id={story.id}>
   <strong>{story.id}: {localize(story.data.title, lang)}</strong>
   <span class="tag" style="margin-left:.5rem">{story.data.status}</span>
   {story.data.jiraKey && <span class="tag" style="margin-left:.3rem">Jira {story.data.jiraKey}</span>}

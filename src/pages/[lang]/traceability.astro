@@ -101,7 +101,7 @@ const showCase = groups.length > 1;
           </thead>
           <tbody>
             {g.items.map(({ req, caseEntry, stories }) => (
-              <tr data-levels={[...new Set(stories
+              <tr id={req.id} data-levels={[...new Set(stories
                     .map((s) => s.data.introducedIn && iterations.get(s.data.introducedIn.id)?.id)
                     .filter(Boolean))].join(' ')}>
                 <td><strong>{req.id}</strong><br /><span class="small">{localize(req.data.title, lang)}</span></td>

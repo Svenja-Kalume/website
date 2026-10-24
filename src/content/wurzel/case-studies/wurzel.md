@@ -16,6 +16,10 @@ intro:
     - Diese Fallstudie verfolgt ein fachliches Problem durchgängig — von Problem und Stakeholdern über Glossar, Domänenmodell, Context Map und BPMN bis zu Anforderungen, User Stories, Architekturentscheidungen und Code. An jeder Station stehen das Artefakt, die Begründung („Warum habe ich mich so entschieden?“) und der KI-Anteil („Was hat die KI vorgeschlagen, was habe ich geändert?“).
     - Die Anwendung ist real, und die Arbeitsweise ist der Punkt. Stories werden von einem menschlichen Product Owner gegen explizite Akzeptanzkriterien und ein Readiness-Gate gegroomt; die Umsetzung übernehmen dann KI-Technician-Subagenten (Backend, Frontend, Tester), die parallel planen und test-first implementieren. Der Mensch besitzt Absicht, Scope und jedes Gate; die KI beschleunigt die mechanische Mitte.
     - "Der veröffentlichte Stand hat Level 4 erreicht (Tag 0.3.0). Level 3 ergänzte die Rechnungsstrecke — Abschlags- und Schlussrechnungen, das Rechnungsdokument und den Export, der eine Rechnung stellt und einfriert. Level 4 korrigiert diese Strecke gegen das, was drei manuelle Testdurchläufe gefunden haben. Level 1 bis 3 bleiben in der Iterations-Timeline sichtbar, und der lebende Stand entwickelt sich auf dem main-Branch weiter."
+lede:
+  en: Understanding the requirements of a small business owner and turning them into an application that eases their paperwork — for a real landscaping business in Germany, not a persona.
+  de: Anforderungen eines Kleinunternehmers verstehen und daraus eine Anwendung entwickeln, die ihm die Papierarbeiten erleichtert — für einen echten GaLaBau-Betrieb in Deutschland, keine Persona.
+workedExample: WZ-US-50
 status: active
 repoAccess: private
 repoNote:

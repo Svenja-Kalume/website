@@ -76,6 +76,15 @@ const caseStudies = defineCollection({
     // Localized narrative shown on the case-study page (one entry per paragraph,
     // per locale). Preferred over the Markdown body so the intro is bilingual.
     intro: locArr.optional(),
+    // One or two sentences above the key figures: what the work is, for a reader who has
+    // not met the project's vocabulary yet. The summary is the card text elsewhere; this
+    // is the page's own opener.
+    lede: loc.optional(),
+    // The story whose chain the page follows end to end — requirement, decision, the walk
+    // that found the defect, the fix, the change in practice. The chain itself is DERIVED
+    // from the story's reference fields (`changes`, `requirement`, `adr`, `introducedIn`),
+    // so naming one story is the whole choice; nothing on the chain is typed twice.
+    workedExample: reference('user-stories').optional(),
     status: z.enum(['draft', 'in-progress', 'active', 'archived']).default('in-progress'),
     // DEPRECATED -- being retired by the `iterations` collection. The displayed version
     // must be DERIVED from the current iteration (highest `order`), otherwise publishing
@@ -139,6 +148,10 @@ const iterations = defineCollection({
     // A later iteration may correct an earlier one; never the reverse (re:check errors).
     corrects: z.array(reference('iterations')).default([]),
     lessons: locArr.optional(),
+    // How many findings the human walks of this iteration produced. Optional and NOT
+    // backfilled: iterations published before the field existed keep no count, and a
+    // chart of the counts waits until enough iterations carry one.
+    walkFindings: z.number().int().nonnegative().optional(),
     sourceUrl: z.string().url().optional(),
     aiContribution: loc.optional(),
   }),

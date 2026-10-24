@@ -27,7 +27,7 @@ const sections = (['context', 'decision', 'consequences'] as const)
 // Only an ADR with no section fields at all falls back to its body.
 const { Content } = sections.length === 0 ? await render(adr) : { Content: null };
 ---
-<div class="card">
+<div class="card" id={adr.id}>
   <strong>{adr.id}: {localize(adr.data.title, lang)}</strong>
   <span class="tag" style="margin-left:.5rem">{adr.data.status}</span>
   <span class="muted small" style="margin-left:.5rem">{dateStr}</span>

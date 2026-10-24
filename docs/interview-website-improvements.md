@@ -134,6 +134,13 @@ This one needs no new content, only decisions:
 **Answer:**
 let's do it together becaus main content is the diagram
 
+> **Decided (2026-10-24).** Worked out on a mockup page for 2.1, 4.1 and 5.1 together; the owner
+> took its recommendation as the starting point. Option A, vertical, two gates drawn with their
+> loop-backs; "Intent-driven AI Harness" is the line under the diagram, not a station; the second
+> gate is labelled "Test walk" / "Testdurchgang". Built on `feature/case-study-dashboard`
+> (`RedThread.astro`); the 2.2 paragraph sits under it. All wording there is a draft for the owner
+> to rewrite.
+
 2.2 Should the readiness gate get its own short paragraph on the home page, right under the
     diagram — as the one idea a visitor should take away?
 
@@ -198,6 +205,11 @@ real client · a legally required invoice date caught before it reached the clie
 
 **Answer:** See 4.1
 
+> **Decided (2026-10-24).** Key figures with one explaining line each, then the levels as a
+> timeline, above the intro (`CaseFigures.astro`). Every figure is counted from the collections.
+> Correction to the mockup: acceptance criteria are **272** per language; `re:check`'s 544 counts
+> both locales.
+
 4.3 Is "real client" / "a real business" the right way to say it — or how do you want to
     describe the client without naming them?
 
@@ -255,6 +267,12 @@ sentences plus a link to the journal entry or iteration where it is documented.
 > Which direction interests you?
 
 **Answer:** like A and C also most. I think A more for HR and C more for RE? How would they look on the website? Maybe we can try something with this dashboard style?
+
+> **Decided (2026-10-24).** Both, derived from data. A (`WalkEvidence.astro`): the corrective
+> level's stories that `changes` an earlier one, each a fixed walk finding, plus the walk's journal
+> entry and the workflow step it introduced; no chart yet. C (`EvidenceChain.astro`): follows the
+> reference fields from the case study's `workedExample` (WZ-US-50, the dateless invoice PDF).
+> Walk counts get an optional `walkFindings` field on iterations, filled from the next one on.
 
 
 5.2 For each: what did the AI propose, and what did you decide differently? (This is the part

@@ -48,7 +48,7 @@ const mcpFlow = t('how.mcp.code');
       {showGroupHeadings && <h3>{g.title ?? t('how.ungrouped')}</h3>}
       <ol>
         {g.steps.map((s) => (
-          <li class="card" style="list-style:none">
+          <li class="card" id={s.id} style="list-style:none">
             <strong>{localize(s.data.title, lang)}</strong>
             {s.data.tools.length > 0 && <p class="small muted" style="margin:.3rem 0">{t('how.tools')} {s.data.tools.join(', ')}</p>}
             <p class="ai-note"><strong>{t('case.aiContribution')}</strong> {localize(s.data.aiRole, lang)}</p>
