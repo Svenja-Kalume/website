@@ -152,6 +152,11 @@ const iterations = defineCollection({
     // backfilled: iterations published before the field existed keep no count, and a
     // chart of the counts waits until enough iterations carry one.
     walkFindings: z.number().int().nonnegative().optional(),
+    // How many `Done` stories the vault holds for this level at the tag — the pool the
+    // published stories were curated from (the guardrail allows 15–25 per iteration). Lets
+    // the site say "15 of 24" instead of a total that reads as all the work. Optional and
+    // NOT backfilled: iterations published before the field keep their bare count.
+    storiesDone: z.number().int().nonnegative().optional(),
     sourceUrl: z.string().url().optional(),
     aiContribution: loc.optional(),
   }),

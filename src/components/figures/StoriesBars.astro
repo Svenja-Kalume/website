@@ -27,15 +27,19 @@ const levels = iterations.map((it) => {
     should: s.filter((x) => x.data.priority === 'should').length,
     other: s.filter((x) => x.data.priority !== 'must' && x.data.priority !== 'should').length,
     corrects: s.filter((x) => x.data.changes.length > 0).length,
+    pool: it.data.storiesDone,
   };
 });
 const max = Math.max(1, ...levels.map((l) => l.total));
 const pct = (n: number) => `${(n / max) * 100}%`;
 const done = stories.filter((s) => s.data.status === 'done').length;
 const corrections = levels.reduce((n, l) => n + l.corrects, 0);
+// The pool is only summed when every level records it; a partial sum would read as a total.
+const pool = levels.every((l) => l.pool !== undefined) ? levels.reduce((n, l) => n + l.pool!, 0) : undefined;
 ---
 <div class="kpis">
   <div class="kpi"><span class="v">{done} / {stories.length}</span><span class="l">{t('figp.stories.done')}</span></div>
+  {pool !== undefined && <div class="kpi"><span class="v">{stories.length} {t('figp.stories.of')} {pool}</span><span class="l">{t('figp.stories.selection')}</span></div>}
   <div class="kpi"><span class="v">{levels.reduce((n, l) => n + l.must, 0)} / {levels.reduce((n, l) => n + l.should, 0)}</span><span class="l">{t('figp.mustShould')}</span></div>
   {corrections > 0 && <div class="kpi"><span class="v">{corrections}</span><span class="l">{t('figp.stories.corrects')}</span></div>}
 </div>
@@ -51,7 +55,7 @@ const corrections = levels.reduce((n, l) => n + l.corrects, 0);
         </div>
         {l.corrects > 0 && <span class="fixline" style={`width:${pct(l.corrects)}`} title={`${l.corrects} ${t('figp.stories.corrects')}`}></span>}
       </div>
-      <span class="val"><b>{l.total}</b>{l.corrects > 0 && <span class="fixnote"> · {l.corrects} {t('figp.stories.correctsShort')}</span>}</span>
+      <span class="val"><b>{l.total}</b>{l.pool !== undefined && ` ${t('figp.stories.of')} ${l.pool}`}{l.corrects > 0 && <span class="fixnote"> · {l.corrects} {t('figp.stories.correctsShort')}</span>}</span>
     </div>
   ))}
 </div>

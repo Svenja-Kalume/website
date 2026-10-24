@@ -97,6 +97,8 @@ sameProcessAs: WZ-0.1.0  # use INSTEAD of processChanges when nothing changed in
                          # you work — an unchanged practice is a finding, but it has
                          # to be said. re:check requires one of the two.
 corrects: [WZ-0.1.0]     # optional; only ever points BACKWARDS
+storiesDone: 24          # optional: the level's Done stories in the vault at the tag —
+                         # the pool the published stories were curated from. Not backfilled.
 walkFindings: 18         # optional: findings from the human walks of this iteration.
                          # Not backfilled into published iterations.
 lessons:                 # optional
