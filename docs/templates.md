@@ -97,6 +97,10 @@ sameProcessAs: WZ-0.1.0  # use INSTEAD of processChanges when nothing changed in
                          # you work — an unchanged practice is a finding, but it has
                          # to be said. re:check requires one of the two.
 corrects: [WZ-0.1.0]     # optional; only ever points BACKWARDS
+storiesDone: 24          # optional: the level's Done stories in the vault at the tag —
+                         # the pool the published stories were curated from. Not backfilled.
+walkFindings: 18         # optional: findings from the human walks of this iteration.
+                         # Not backfilled into published iterations.
 lessons:                 # optional
   en: [What you would do differently.]
   de: [Was du anders machen würdest.]
@@ -153,6 +157,11 @@ title:
 summary:
   en: One sentence describing the problem.
   de: Ein Satz, der das Problem beschreibt.
+lede:                    # optional: the opener above the key figures — what the work is,
+  en: One sentence, in plain words.          # before any of the project's vocabulary
+  de: Ein Satz, in einfachen Worten.
+workedExample: XX-US-12  # optional: a story that `changes` an earlier one; the page follows
+                         # its chain (requirement → story → ADR → walk → fix → practice)
 status: in-progress      # draft | in-progress | active | archived
 repoAccess: private      # private (default; the repo stays closed) | pending (it is meant to open)
 repoNote:                # optional, no longer rendered: why the code is not linked
@@ -370,7 +379,7 @@ aiContribution:                  # optional
 
 ```markdown
 ---
-name: Management                 # proper noun — language-neutral
+name: Management                 # proper noun: one string; a translatable role word: { en, de }
 role:
   en: Owner & decision-maker
   de: Eigentümer & Entscheider

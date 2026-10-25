@@ -1,0 +1,54 @@
+---
+/**
+ * Who is involved, split by side: the client — the one real stakeholder, whose business it
+ * is and who alone decides where the product goes — and the roles the author fills with
+ * agents assisting. Each role states who holds it and where the agents' authority stops;
+ * on a site about working with AI, leaving that implicit invites the opposite reading.
+ * Replaces the case page's separate stakeholder list.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, localize, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  roles: CollectionEntry<'stakeholders'>[];
+}
+const { lang, roles } = Astro.props;
+const t = useTranslations(lang);
+
+const groups = [
+  { key: 'client', label: t('figp.roles.client'), roles: roles.filter((r) => r.data.party === 'client') },
+  { key: 'self', label: t('figp.roles.self'), roles: roles.filter((r) => r.data.party === 'self') },
+  { key: 'other', label: t('figp.roles.other'), roles: roles.filter((r) => !r.data.party) },
+].filter((g) => g.roles.length > 0);
+const n = (key: string) => groups.find((g) => g.key === key)?.roles.length ?? 0;
+---
+<div class="kpis">
+  {n('client') > 0 && <div class="kpi"><span class="v">{n('client')}</span><span class="l">{t('figp.roles.kpiClient')}</span></div>}
+  {n('self') > 0 && <div class="kpi"><span class="v">{n('self')}</span><span class="l">{t('figp.roles.kpiSelf')}</span></div>}
+</div>
+<div class="roles">
+  {groups.map((g) => (
+    <div class:list={['side', g.key]}>
+      <h4>{g.label}</h4>
+      {g.roles.map((r) => (
+        <div class="role">
+          <div class="who">
+            <strong>{localize(r.data.name, lang)}</strong>
+            <span class="pill">{t('case.influence')} {r.data.influence}</span>
+          </div>
+          <p class="what">{localize(r.data.role, lang)}</p>
+          {localize(r.data.heldBy, lang) && <p class="held"><b>{t('case.heldBy')}</b> {localize(r.data.heldBy, lang)}</p>}
+          {localize(r.data.aiSupport, lang) && <p class="ai"><b>{t('case.aiSupport')}</b> {localize(r.data.aiSupport, lang)}</p>}
+          {localize<string[]>(r.data.interests, lang)!.length > 0 && (
+            <details>
+              <summary>{t('case.interests')} {localize<string[]>(r.data.interests, lang)!.length}</summary>
+              <ul>{localize<string[]>(r.data.interests, lang)!.map((i) => <li>{i}</li>)}</ul>
+            </details>
+          )}
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+<div class="foot"><span>{t('figp.roles.legend')}</span></div>

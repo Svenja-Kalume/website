@@ -76,6 +76,15 @@ const caseStudies = defineCollection({
     // Localized narrative shown on the case-study page (one entry per paragraph,
     // per locale). Preferred over the Markdown body so the intro is bilingual.
     intro: locArr.optional(),
+    // One or two sentences above the key figures: what the work is, for a reader who has
+    // not met the project's vocabulary yet. The summary is the card text elsewhere; this
+    // is the page's own opener.
+    lede: loc.optional(),
+    // The story whose chain the page follows end to end — requirement, decision, the walk
+    // that found the defect, the fix, the change in practice. The chain itself is DERIVED
+    // from the story's reference fields (`changes`, `requirement`, `adr`, `introducedIn`),
+    // so naming one story is the whole choice; nothing on the chain is typed twice.
+    workedExample: reference('user-stories').optional(),
     status: z.enum(['draft', 'in-progress', 'active', 'archived']).default('in-progress'),
     // DEPRECATED -- being retired by the `iterations` collection. The displayed version
     // must be DERIVED from the current iteration (highest `order`), otherwise publishing
@@ -139,6 +148,15 @@ const iterations = defineCollection({
     // A later iteration may correct an earlier one; never the reverse (re:check errors).
     corrects: z.array(reference('iterations')).default([]),
     lessons: locArr.optional(),
+    // How many findings the human walks of this iteration produced. Optional and NOT
+    // backfilled: iterations published before the field existed keep no count, and a
+    // chart of the counts waits until enough iterations carry one.
+    walkFindings: z.number().int().nonnegative().optional(),
+    // How many `Done` stories the vault holds for this level at the tag — the pool the
+    // published stories were curated from (the guardrail allows 15–25 per iteration). Lets
+    // the site say "15 of 24" instead of a total that reads as all the work. Optional and
+    // NOT backfilled: iterations published before the field keep their bare count.
+    storiesDone: z.number().int().nonnegative().optional(),
     sourceUrl: z.string().url().optional(),
     aiContribution: loc.optional(),
   }),
@@ -158,7 +176,9 @@ const versioned = {
 const stakeholders = defineCollection({
   loader: base('stakeholders'),
   schema: z.object({
-    name: z.string(), // proper noun -- language-neutral
+    // A proper noun stays one string; a role word that translates ("Product Owner" /
+    // "Produktverantwortlicher") is locale-keyed like `role`.
+    name: z.union([z.string(), loc]),
     role: loc,
     case: reference('case-studies'),
     // WHO holds the role, as a human. Every role on this project is AI-assisted, which is
@@ -171,6 +191,11 @@ const stakeholders = defineCollection({
     aiSupport: loc.optional(),
     interests: locArr.default({ en: [], de: [] }),
     influence: z.enum(['low', 'medium', 'high']).default('medium'),
+    // Which side of the work the role is on. `client` is the real stakeholder — the one
+    // whose business it is and who alone decides where the product goes; `self` is a role
+    // the author fills, with agents assisting. Stated, not inferred from `heldBy` prose:
+    // the site separates the two, and a parsed sentence would be a guess.
+    party: z.enum(['client', 'self']).optional(),
     // Display order on the case study page. Influence is not the same thing — two
     // stakeholders can share it — so the sequence is stated rather than inferred.
     order: z.number().default(99),

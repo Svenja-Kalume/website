@@ -1,0 +1,69 @@
+---
+/**
+ * Stories per level as stacked bars by priority. A level that corrects earlier stories
+ * carries a thin green line INSIDE its own bar for the stories that do — priority and
+ * correction are independent (a correcting story can be must or should), so the line is
+ * drawn over the bar rather than as a third segment.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, type Lang } from '../../i18n/ui';
+import { iterationLabel, introducedIn, type Iteration } from '../../lib/iterations';
+
+interface Props {
+  lang: Lang;
+  iterations: Iteration[];
+  stories: CollectionEntry<'user-stories'>[];
+  levelHref: (it: Iteration, anchor?: string) => string;
+}
+const { lang, iterations, stories, levelHref } = Astro.props;
+const t = useTranslations(lang);
+
+const levels = iterations.map((it) => {
+  const s = introducedIn(stories, it.id);
+  return {
+    it,
+    total: s.length,
+    must: s.filter((x) => x.data.priority === 'must').length,
+    should: s.filter((x) => x.data.priority === 'should').length,
+    other: s.filter((x) => x.data.priority !== 'must' && x.data.priority !== 'should').length,
+    corrects: s.filter((x) => x.data.changes.length > 0).length,
+    pool: it.data.storiesDone,
+  };
+});
+const max = Math.max(1, ...levels.map((l) => l.total));
+const pct = (n: number) => `${(n / max) * 100}%`;
+const done = stories.filter((s) => s.data.status === 'done').length;
+const corrections = levels.reduce((n, l) => n + l.corrects, 0);
+// The pool is only summed when every level records it; a partial sum would read as a total.
+const pool = levels.every((l) => l.pool !== undefined) ? levels.reduce((n, l) => n + l.pool!, 0) : undefined;
+---
+<div class="kpis">
+  <div class="kpi"><span class="v">{done} / {stories.length}</span><span class="l">{t('figp.stories.done')}</span></div>
+  {pool !== undefined && <div class="kpi"><span class="v">{stories.length} {t('figp.stories.of')} {pool}</span><span class="l">{t('figp.stories.selection')}</span></div>}
+  <div class="kpi"><span class="v">{levels.reduce((n, l) => n + l.must, 0)} / {levels.reduce((n, l) => n + l.should, 0)}</span><span class="l">{t('figp.mustShould')}</span></div>
+  {corrections > 0 && <div class="kpi"><span class="v">{corrections}</span><span class="l">{t('figp.stories.corrects')}</span></div>}
+</div>
+<div class="bars">
+  {levels.map((l) => (
+    <div class="bar">
+      <a class="lab" href={levelHref(l.it, 'introduced')}>{iterationLabel(l.it, t('iter.level'))}</a>
+      <div class:list={['track', { 'has-fix': l.corrects > 0 }]}>
+        <div class="segs">
+        {l.must > 0 && <span class="seg must" style={`width:${pct(l.must)}`}>{l.must}</span>}
+        {l.should > 0 && <span class="seg should" style={`width:${pct(l.should)}`}>{l.should}</span>}
+        {l.other > 0 && <span class="seg other" style={`width:${pct(l.other)}`}>{l.other}</span>}
+        </div>
+        {l.corrects > 0 && <span class="fixline" style={`width:${pct(l.corrects)}`} title={`${l.corrects} ${t('figp.stories.corrects')}`}></span>}
+      </div>
+      <span class="val"><b>{l.total}</b>{l.pool !== undefined && ` ${t('figp.stories.of')} ${l.pool}`}{l.corrects > 0 && <span class="fixnote"> · {l.corrects} {t('figp.stories.correctsShort')}</span>}</span>
+    </div>
+  ))}
+</div>
+<div class="foot">
+  <span class="legend">
+    <span><span class="sw must"></span>must</span>
+    <span><span class="sw should"></span>should</span>
+    {corrections > 0 && <span><span class="sw fix"></span>{t('figp.stories.corrects')}</span>}
+  </span>
+  <span>{t('figp.scale')} 0–{max}</span>
+</div>

@@ -102,9 +102,11 @@ npm run content:new -- story wurzel --prefix WZ --requirement WZ-R-xx --iteratio
 
 **Curate, do not dump.** The guardrail is 15–25 stories *per iteration*, and the site publishes a cut
 of the vault's stories, not all of them (Level 1: 20 of 41). Propose the cut explicitly in the reply,
-ranked, with the reason per story — richest AI-override record, or most business-critical capability.
-This selection criterion is still an open question in `docs/iterations-and-publication-plan.md`;
-name which one you applied so the user can overrule it.
+ranked, with the reason per story. The criterion is settled (2026-10-24, publication plan): **richest
+AI-override record first, most business-critical capability as the tie-break.** Record the size of
+what was cut from as `storiesDone` on the iteration — the level's `Done` stories in the vault at the
+tag, counted with the `git grep` above — so the site can show "15 of 24" rather than a total that
+reads as all the work. Never estimate it; if the count is ambiguous, ask.
 
 Also per iteration, where the vault supports it:
 

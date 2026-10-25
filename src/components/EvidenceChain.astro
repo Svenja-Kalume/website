@@ -1,0 +1,103 @@
+---
+/**
+ * One defect followed through the whole chain — traceability shown rather than claimed.
+ *
+ * Given ONE story that `changes` an earlier one, every row is resolved from reference
+ * fields: the earlier story's requirement and decisions, the earlier story itself, the
+ * walk that found the defect (a `testing` journal entry on the earlier story's
+ * iteration), the fixing story with its AI contribution (which is where "why the tests
+ * were green" is written down), and the workflow step the fix's iteration introduced.
+ * A second chain therefore costs one story id on the case study, not a new page section.
+ * A row whose data is missing is left out rather than filled in.
+ */
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import { useTranslations, localize, type Lang } from '../i18n/ui';
+import { iterationLabel, iterationSlug, introducedIn, type Iteration } from '../lib/iterations';
+
+interface Props {
+  lang: Lang;
+  caseId: string;
+  iterations: Iteration[];
+  storyId: string;
+}
+const { lang, caseId, iterations, storyId } = Astro.props;
+const t = useTranslations(lang);
+
+const fix = await getEntry('user-stories', storyId);
+const byId = new Map(iterations.map((i) => [i.id, i]));
+const iterOf = (e?: { data: { introducedIn?: { id: string } } }) =>
+  e?.data.introducedIn ? byId.get(e.data.introducedIn.id) : undefined;
+const levelHref = (it: Iteration | undefined, anchor: string) =>
+  it ? `/${lang}/case-studies/${caseId}/${iterationSlug(it, iterations)}#${anchor}` : undefined;
+const label = (it?: Iteration) => (it ? iterationLabel(it, t('iter.level')) : undefined);
+
+type Row = { kind: string; id: string; href?: string; text: string; meta?: string; tone?: 'break' | 'human' };
+const rows: Row[] = [];
+
+if (fix) {
+  const earlier = (await Promise.all(fix.data.changes.map((r) => getEntry(r))))
+    .filter((s): s is CollectionEntry<'user-stories'> => !!s);
+  const uniq = <T extends { id: string }>(xs: (T | undefined)[]) =>
+    [...new Map(xs.filter((x): x is T => !!x).map((x) => [x.id, x])).values()];
+
+  for (const r of uniq(await Promise.all(earlier.map((s) => getEntry(s.data.requirement)))))
+    rows.push({ kind: t('chain.requirement'), id: r.id, href: `/${lang}/traceability#${r.id}`, text: localize(r.data.title, lang)! });
+
+  for (const s of earlier)
+    rows.push({ kind: t('chain.story'), id: s.id, href: levelHref(iterOf(s), s.id), text: localize(s.data.title, lang)!, meta: label(iterOf(s)) });
+
+  for (const a of uniq(await Promise.all(earlier.flatMap((s) => s.data.adr.map((r) => getEntry(r))))))
+    rows.push({ kind: t('chain.adr'), id: a.id, href: levelHref(iterOf(a), a.id), text: localize(a.data.title, lang)! });
+
+  const earlierIts = new Set(earlier.map((s) => s.data.introducedIn?.id).filter(Boolean));
+  const walks = (await getCollection('journal'))
+    .filter((j) => !j.data.draft && j.data.iteration && earlierIts.has(j.data.iteration.id) && j.data.tags.includes('testing'))
+    .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+  for (const j of walks)
+    rows.push({
+      kind: t('chain.walk'), id: j.data.date.toISOString().slice(0, 10), href: `/${lang}/journal/${j.id}`,
+      text: localize(j.data.summary, lang) ?? localize(j.data.title, lang)!, tone: 'human',
+    });
+
+  rows.push({
+    kind: t('chain.fix'), id: fix.id, href: levelHref(iterOf(fix), fix.id),
+    text: `${localize(fix.data.title, lang)}. ${localize(fix.data.aiContribution, lang)}`,
+    meta: label(iterOf(fix)), tone: 'break',
+  });
+
+  const fixIt = iterOf(fix);
+  if (fixIt)
+    for (const w of introducedIn(await getCollection('workflow'), fixIt.id))
+      rows.push({ kind: t('chain.practice'), id: w.id, href: `/${lang}/how-i-work#${w.id}`, text: localize(w.data.title, lang)!, tone: 'human' });
+}
+---
+{rows.length > 0 && (
+  <section class="chain" id={`worked-example-${caseId}`}>
+    <h2>{t('chain.h2')}</h2>
+    <p class="muted">{t('chain.intro')}</p>
+    <ol class="reset">
+      {rows.map((r) => (
+        <li class:list={['row', r.tone]}>
+          <span class="id">{r.href ? <a href={r.href}>{r.id}</a> : r.id}</span>
+          <div class="txt">
+            <span class="kind">{r.kind}{r.meta && ` · ${r.meta}`}</span>
+            <span>{r.text}</span>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}
+
+<style>
+  .chain { margin-top: 2.2rem; }
+  .row { display: grid; grid-template-columns: 6.5rem 1fr; gap: .9rem; padding: .7rem 0; border-bottom: 1px solid var(--border); }
+  .row:last-child { border-bottom: 0; }
+  .id { font-family: var(--mono); font-size: .8rem; padding-top: .15rem; overflow-wrap: anywhere; }
+  .txt { min-width: 0; display: flex; flex-direction: column; font-size: .95rem; }
+  .kind { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .row.break { background: var(--accent-soft); padding-left: .8rem; padding-right: .8rem; border-radius: 6px; border-bottom-color: transparent; }
+  .row.break .kind { color: var(--accent); }
+  .row.human .kind { color: var(--human); }
+  @media (max-width: 480px) { .row { grid-template-columns: 1fr; gap: .2rem; } }
+</style>

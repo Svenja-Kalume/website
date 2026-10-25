@@ -1,0 +1,327 @@
+---
+/**
+ * The opener of a case study: key figures, each with the one line that explains its term.
+ *
+ * It exists because the page used to open with vocabulary — Level, tag, ADR — that a
+ * reader meets here for the first time. Every figure is COUNTED from the collections, so
+ * nothing in the opener is maintained by hand and none of it can drift from the levels.
+ * A count of zero hides its tile rather than advertising an absence.
+ *
+ * Each tile is also the way in: clicking it opens what the figure counts as an overlay
+ * hanging from the tile. Every overlay has the same three layers, dashboard-style: a row
+ * of key numbers, one chart or matrix that holds every item, and every item a link to
+ * where it is rendered in full. The levels overlay replaced the page's separate
+ * iteration list. One overlay is open at a time; no animation.
+ */
+import { getCollection } from 'astro:content';
+import { useTranslations, localize, type Lang, type UiKey } from '../i18n/ui';
+import { iterationLabel, iterationSlug, introducedIn, releaseBadge, walkFixes, type Iteration } from '../lib/iterations';
+import RolesPanel from './figures/RolesPanel.astro';
+import FindingsPanel from './figures/FindingsPanel.astro';
+import RequirementsHeat from './figures/RequirementsHeat.astro';
+import StoriesBars from './figures/StoriesBars.astro';
+import CriteriaDots from './figures/CriteriaDots.astro';
+import DecisionTimeline from './figures/DecisionTimeline.astro';
+import DiagramMatrix from './figures/DiagramMatrix.astro';
+import { topicsOf } from '../lib/topics';
+
+interface Props {
+  lang: Lang;
+  caseId: string;
+  /** Ascending by `order` — pass `iterationsOf(...)` straight in. */
+  iterations: Iteration[];
+  /** Story id of the case study's worked example, linked from the findings. */
+  workedExample?: string;
+  /**
+   * One level, for its own page: every figure counts only what that level introduced
+   * (requirements: those its stories worked on), and the levels and roles tiles are left
+   * out — on a level page the level is the page, and the roles do not change per level.
+   */
+  scope?: Iteration;
+}
+const { lang, caseId, iterations, workedExample, scope } = Astro.props;
+const t = useTranslations(lang);
+
+const inCase = (e: { data: { case?: { id: string } } }) => e.data.case?.id === caseId;
+const byIdThenTitle = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id, undefined, { numeric: true });
+const caseStories = (await getCollection('user-stories')).filter(inCase);
+const inScope = <T extends { data: { introducedIn?: { id: string } } }>(xs: T[]) =>
+  scope ? xs.filter((x) => x.data.introducedIn?.id === scope.id) : xs;
+const stories = inScope(caseStories);
+const requirements = (await getCollection('requirements')).filter(inCase).sort(byIdThenTitle)
+  .filter((r) => !scope || stories.some((s) => s.data.requirement.id === r.id));
+const adrs = inScope((await getCollection('adr')).filter(inCase).sort(byIdThenTitle));
+const diagrams = inScope((await getCollection('diagrams')).filter(inCase));
+// The levels a chart lays out: all of them on the case page, the one level on its own page.
+const shown = scope ? [scope] : iterations;
+const topics = topicsOf(await getCollection('topics'), caseId);
+const roles = (await getCollection('stakeholders')).filter(inCase).sort((a, b) => a.data.order - b.data.order);
+const journal = await getCollection('journal');
+const workflow = await getCollection('workflow');
+const fixes = inScope(walkFixes(iterations, caseStories));
+const criteriaOf = (xs: typeof stories) => xs.reduce((n, s) => n + s.data.acceptanceCriteria.en.length, 0);
+
+const levelHref = (it: Iteration | undefined, anchor?: string) =>
+  it ? `/${lang}/case-studies/${caseId}/${iterationSlug(it, iterations)}${anchor ? `#${anchor}` : ''}` : undefined;
+const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
+
+// "Levels" only when every iteration has one; a project that never sets `level` counts
+// iterations, in the same words its own level pages use.
+const leveled = iterations.length > 0 && iterations.every((i) => typeof i.data.level === 'number');
+
+const perLevel = iterations.map((it) => {
+  const s = introducedIn(stories, it.id);
+  return { it, stories: s.length };
+});
+
+const figures = [
+  { key: leveled ? 'levels' : 'iterations', n: scope ? 0 : iterations.length },
+  { key: 'roles', n: scope ? 0 : roles.length },
+  { key: 'requirements', n: requirements.length },
+  { key: 'stories', n: stories.length },
+  { key: 'criteria', n: criteriaOf(stories) },
+  { key: 'adr', n: adrs.length },
+  { key: 'diagrams', n: diagrams.length },
+  { key: 'findings', n: fixes.length },
+].filter((f) => f.n > 0);
+const k = (s: string) => `fig.${s}` as UiKey;
+// Rows the tiles fill: four or fewer in one row, five or six in rows of three, more in fours.
+const cols = figures.length <= 4 ? figures.length : figures.length <= 6 ? 3 : 4;
+const panelId = (key: string) => `fig-panel-${key}`;
+---
+<section class="figures" aria-label={t('fig.label')}>
+  <ul class="tiles reset" style={`--cols:${cols}`}>
+    {figures.map((f) => (
+      <li>
+        <button type="button" class="tile" aria-expanded="false" aria-controls={panelId(f.key)}>
+          <span class="n">{f.n}</span>
+          <span class="k">{t(k(f.key))}</span>
+          <span class="x">{t(k(`${f.key}.x`))}</span>
+        </button>
+      </li>
+    ))}
+  </ul>
+
+  {figures.map((f) => (
+    <div class:list={['panel', 'overlay', { wide: f.key === 'diagrams' || f.key === 'roles' }]} id={panelId(f.key)} hidden>
+      {(f.key === 'levels' || f.key === 'iterations') && (
+        <ol class="reset timeline">
+          {perLevel.map(({ it, stories: ns }) => (
+            <li class:list={['lv', { corrects: it.data.corrects.length > 0 }]}>
+              <a href={levelHref(it)}>
+                <span class="d">{it.data.date.toISOString().slice(0, 10)}</span>
+                <span class="t">{label(it)}{releaseBadge(it, iterations) && <span class="ver">v{releaseBadge(it, iterations)}</span>}</span>
+                <span class="s">{localize(it.data.title, lang)?.replace(/^.*?\s—\s/, '')}</span>
+                <span class="s">{ns} {t('iter.stories')}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+      {f.key === 'roles' && <RolesPanel lang={lang} roles={roles} />}
+      {f.key === 'findings' && <FindingsPanel lang={lang} iterations={iterations} stories={caseStories} scope={scope} journal={journal} workflow={workflow} workedExample={workedExample} levelHref={(it, a) => levelHref(it, a)!} />}
+      {f.key === 'requirements' && <RequirementsHeat lang={lang} iterations={shown} requirements={requirements} stories={stories} {...(scope ? { allIterations: iterations, allStories: caseStories, levelHref: (it: Iteration, a?: string) => levelHref(it, a)! } : {})} />}
+      {f.key === 'stories' && <StoriesBars lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
+      {f.key === 'criteria' && <CriteriaDots lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
+      {f.key === 'adr' && <DecisionTimeline lang={lang} iterations={shown} adrs={adrs} levelHref={levelHref} />}
+      {f.key === 'diagrams' && <DiagramMatrix lang={lang} iterations={shown} diagrams={diagrams} stories={caseStories} topics={topics} levelHref={(it, a) => levelHref(it, a)!} />}
+    </div>
+  ))}
+</section>
+
+<script>
+  // One overlay open at a time; clicking the open tile again closes it, and so do Escape
+  // and a click anywhere outside the figures.
+  for (const section of document.querySelectorAll<HTMLElement>('.figures')) {
+    const tiles = [...section.querySelectorAll<HTMLButtonElement>('button.tile')];
+    // An overlay hangs from the card that opened it: its top edge at the card's bottom,
+    // the pointer above the card's centre. Offsets are relative to `.figures`.
+    const place = (tile: HTMLButtonElement, panel: HTMLElement) => {
+      if (!panel.classList.contains('overlay')) return;
+      panel.style.top = `${tile.offsetTop + tile.offsetHeight}px`;
+      // Measured on screen: a wide panel is centred on the page, not on the column.
+      const tr = tile.getBoundingClientRect();
+      panel.style.setProperty('--pointer-x', `${tr.left + tr.width / 2 - panel.getBoundingClientRect().left}px`);
+    };
+    const show = (target: HTMLButtonElement | null) => {
+      for (const tile of tiles) {
+        tile.setAttribute('aria-expanded', String(tile === target));
+        const panel = document.getElementById(tile.getAttribute('aria-controls')!);
+        if (!panel) continue;
+        panel.hidden = tile !== target;
+        if (tile === target) place(tile, panel); // after un-hiding: it measures the panel
+      }
+    };
+    window.addEventListener('resize', () => {
+      const t = openOverlay();
+      if (t) place(t, document.getElementById(t.getAttribute('aria-controls')!)!);
+    });
+    const openOverlay = () =>
+      tiles.find((t) => t.getAttribute('aria-expanded') === 'true' &&
+        document.getElementById(t.getAttribute('aria-controls')!)?.classList.contains('overlay'));
+    for (const tile of tiles)
+      tile.addEventListener('click', () => show(tile.getAttribute('aria-expanded') === 'true' ? null : tile));
+    document.addEventListener('keydown', (e) => {
+      const t = openOverlay();
+      if (e.key === 'Escape' && t) { show(null); t.focus(); }
+    });
+    document.addEventListener('click', (e) => {
+      if (openOverlay() && !section.contains(e.target as Node)) show(null);
+    });
+  }
+</script>
+
+<style>
+  .figures { margin: 1.4rem 0 1.8rem; position: relative; }
+  .tiles { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: .6rem; margin: 0; }
+  @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tiles li { display: flex; min-width: 0; }
+  .tile {
+    width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: .75rem .85rem; display: flex; flex-direction: column;
+  }
+  .tile:hover { border-color: var(--accent); }
+  .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tile[aria-expanded='true'] { border-color: var(--accent); background: var(--accent-soft); }
+  .n { font-size: 1.7rem; font-weight: 800; color: var(--title); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .k { font-weight: 700; font-size: .9rem; hyphens: auto; overflow-wrap: break-word; }
+  .x { font-size: .8rem; color: var(--muted); line-height: 1.4; margin-top: .25rem; hyphens: auto; overflow-wrap: break-word; }
+
+  .panel { margin-top: .9rem; border: 1px solid var(--accent); border-radius: 6px; padding: .9rem 1rem; }
+  /* Floats over the page below instead of pushing it down. */
+  .panel.overlay {
+    position: absolute; left: 0; right: 0; top: 100%; z-index: 5; margin-top: .55rem;
+    background: var(--bg); border-color: var(--border); padding: 1rem 1.1rem 1.1rem;
+    box-shadow: 0 10px 28px rgba(42, 32, 36, .16), 0 2px 6px rgba(42, 32, 36, .08);
+  }
+  /* A matrix with one column per domain object needs more than the text column. */
+  .panel.overlay.wide { width: min(62rem, calc(100vw - 32px)); left: 50%; right: auto; transform: translateX(-50%); }
+  /* The pointer: a small square turned on its corner, joined to the panel's top border. */
+  .panel.overlay::before {
+    content: ""; position: absolute; top: -7px; left: calc(var(--pointer-x, 2rem) - 6px);
+    width: 12px; height: 12px; background: var(--bg);
+    border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: rotate(45deg);
+  }
+  .timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .6rem; margin: 0; }
+  .lv { border-top: 3px solid var(--accent); min-width: 0; }
+  /* A level that corrects an earlier one was built out of test findings, not a plan. */
+  .lv.corrects { border-top-color: var(--human); }
+  .lv a { display: flex; flex-direction: column; padding-top: .45rem; color: inherit; }
+  .lv a:hover { text-decoration: none; }
+  .lv a:hover .t { text-decoration: underline; }
+  .d { font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .t { font-weight: 700; font-size: .9rem; color: var(--title); }
+  .ver { margin-left: .4rem; font-weight: 500; font-size: .72rem; color: var(--accent-strong); background: var(--accent-soft); border-radius: 999px; padding: .05rem .45rem; font-variant-numeric: tabular-nums; }
+  .s { font-size: .8rem; color: var(--muted); line-height: 1.4; }
+</style>
+
+<style is:global>
+  /* Shared by the overlay panels in ./figures/ — global, because Astro scopes a
+     component's styles to its own markup and these are drawn by the child components. */
+  .figures .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: .5rem 1rem; padding-bottom: .8rem; margin-bottom: .9rem; border-bottom: 1px solid var(--border); }
+  .figures .kpi { display: flex; flex-direction: column; }
+  .figures .kpi .v { font-size: 1.2rem; font-weight: 800; color: var(--title); font-variant-numeric: tabular-nums; }
+  .figures .kpi .l { font-size: .75rem; color: var(--muted); line-height: 1.35; }
+  .figures .foot { margin-top: .8rem; font-size: .8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: .3rem 1rem; justify-content: space-between; }
+  .figures .legend { display: flex; flex-wrap: wrap; gap: .3rem .9rem; align-items: center; }
+  .figures .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: .3rem; flex: none; }
+  .figures .scroll { overflow-x: auto; }
+  .figures code { font-size: .78rem; background: none; padding: 0; }
+
+  /* Heatmap */
+  .figures table.heat { border-collapse: separate; border-spacing: 3px; width: 100%; font-size: .82rem; table-layout: auto; }
+  .figures th, .figures td { border: 0; background: none; }
+  .figures .heat th { font-size: .7rem; font-weight: 700; color: var(--muted); text-align: center; padding: 0 0 .2rem; }
+  .figures .heat th.rq { text-align: left; }
+  .figures .heat td.name { padding: .2rem .5rem .2rem 0; line-height: 1.35; }
+  .figures .heat td.name a { color: var(--fg); }
+  .figures .heat td.name a:hover { color: var(--accent); }
+  .figures .heat td.c { width: 3.2rem; height: 1.45rem; padding: 0; text-align: center; border-radius: 3px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .figures .heat td.c0 { background: var(--surface); }
+  .figures .heat th.later { border-left: 2px dashed var(--border); padding-left: .3rem; }
+  .figures .heat td.later { border-left: 2px dashed var(--border); width: 4.2rem; font-weight: 700; }
+  .figures .heat td.later.hit { background: var(--accent-soft); }
+  .figures .heat td.later a { color: var(--accent); }
+  .figures td.c1, .figures .sw.c1 { background: #f5e7ea; color: var(--title); }
+  .figures td.c2, .figures .sw.c2 { background: #e3b8c2; color: var(--title); }
+  .figures td.c3, .figures .sw.c3 { background: #c27588; color: #fff; }
+  .figures td.c4, .figures .sw.c4 { background: var(--accent); color: #fff; }
+  .figures .pill { display: inline-block; font-size: .64rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 0 .35rem; border-radius: 999px; margin-left: .3rem; border: 1px solid var(--border); color: var(--muted); }
+  .figures .pill.must { border-color: var(--accent); color: var(--accent); }
+  .figures .revisit td.name a::after { content: " ↻"; color: var(--accent); font-weight: 700; }
+  .figures .re { color: var(--accent); }
+  .figures .heat tr.group td { font-size: .68rem; font-weight: 700; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; padding-top: .5rem; }
+
+  /* Bars and dots */
+  .figures .bars { display: grid; gap: .6rem; }
+  .figures .bar { display: grid; grid-template-columns: 4.2rem 1fr 9rem; gap: .7rem; align-items: center; font-size: .85rem; }
+  .figures .bar .lab { font-weight: 700; color: var(--title); }
+  .figures .track { position: relative; height: 18px; }
+  .figures .track.has-fix { margin-bottom: 7px; }
+  .figures .segs { display: flex; height: 100%; border-radius: 3px; overflow: hidden; background: var(--surface); }
+  .figures .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; color: #fff; }
+  .figures .seg.must, .figures .sw.must { background: var(--accent); }
+  .figures .seg.should, .figures .sw.should { background: #b98a96; }
+  .figures .seg.other { background: var(--muted); }
+  .figures .seg.found { background: var(--human); }
+
+  /* Findings list */
+  .figures .fixlist { margin: .9rem 0 0; display: grid; font-size: .85rem; }
+  .figures .fixlist li { display: flex; flex-wrap: wrap; gap: .1rem .6rem; align-items: baseline; padding: .35rem 0; border-top: 1px solid var(--border); }
+  .figures .fixlist .chain { font-weight: 600; font-size: .78rem; }
+
+  /* Roles */
+  .figures .roles { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
+  .figures .side h4 { margin: 0 0 .5rem; font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+  .figures .side.self { display: grid; gap: .6rem; align-content: start; }
+  .figures .side.self { grid-template-columns: 1fr 1fr; }
+  .figures .side.self h4 { grid-column: 1 / -1; margin-bottom: 0; }
+  .figures .role { border: 1px solid var(--border); border-radius: 6px; padding: .7rem .8rem; font-size: .84rem; min-width: 0; }
+  .figures .side.client .role { border-color: var(--accent); background: var(--accent-soft); }
+  .figures .role .who { display: flex; flex-wrap: wrap; gap: .3rem .5rem; align-items: baseline; }
+  .figures .role .who strong { font-size: 1rem; color: var(--title); }
+  .figures .role p { margin: .35rem 0 0; line-height: 1.45; }
+  .figures .role .what { color: var(--muted); }
+  .figures .role .ai { color: var(--muted); border-left: 2px solid var(--border); padding-left: .55rem; }
+  .figures .role details { margin-top: .4rem; }
+  .figures .role summary { cursor: pointer; color: var(--accent); font-size: .8rem; }
+  .figures .role ul { margin: .3rem 0 0; padding-left: 1.1rem; }
+  @media (max-width: 720px) { .figures .roles, .figures .side.self { grid-template-columns: 1fr; } }
+  /* Corrections: thin, rounded, inside the level's own bar — not a third priority. */
+  .figures .fixline { position: absolute; left: 0; top: calc(100% + 3px); height: 4px; border-radius: 2px; background: var(--human); }
+  .figures .sw.fix { background: var(--human); height: 4px; border-radius: 2px; vertical-align: 2px; }
+  .figures .fixnote { color: var(--human); font-weight: 600; }
+  .figures .bar .val { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .figures .bar .val b { color: var(--title); }
+  .figures .dotline { position: relative; height: 18px; }
+  .figures .dotline .rail { position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: var(--border); }
+  .figures .dotline .avg { position: absolute; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); transform: translateX(-50%); }
+
+  /* Decision timeline, coloured by kind */
+  .figures .tl { position: relative; height: 3.4rem; margin: 1.8rem .5rem 0; }
+  .figures .tl .axis { position: absolute; left: 0; right: 0; top: 1.6rem; height: 2px; background: var(--border); }
+  .figures .tl .tick { position: absolute; top: 1.35rem; width: 1px; height: .55rem; background: var(--muted); }
+  .figures .tl .m { position: absolute; top: 2rem; font-size: .7rem; color: var(--muted); }
+  .figures .tl .d { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg); transform: translateX(-50%); }
+  .figures .k-adr { background: var(--accent); }
+  .figures .k-prd { background: #2f5d8a; }
+  .figures .k-dsr { background: #b07a1f; }
+  .figures .k-other { background: var(--muted); }
+  .figures .declist { margin: .6rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0 1.2rem; font-size: .82rem; }
+  .figures .declist li { display: flex; gap: .5rem; padding: .3rem 0; border-top: 1px solid var(--border); align-items: baseline; }
+  .figures .declist a { color: var(--fg); min-width: 0; }
+  .figures .declist a:hover { color: var(--accent); }
+
+  /* Diagram matrix */
+  .figures table.mx { border-collapse: separate; border-spacing: 4px; width: 100%; font-size: .78rem; table-layout: fixed; }
+  .figures .mx th { font-size: .7rem; color: var(--muted); font-weight: 700; text-align: left; padding: 0 .2rem .1rem; }
+  .figures .mx th.row { width: 5.2rem; vertical-align: top; padding-top: .4rem; }
+  .figures .mx td { background: var(--surface) !important; border-radius: 4px; padding: .35rem; vertical-align: top; }
+  .figures .mx td.empty { background: transparent !important; outline: 1px dashed var(--border); outline-offset: -1px; }
+  .figures .mx .cnt { font-weight: 800; color: var(--title); font-size: .9rem; display: block; margin-bottom: .1rem; }
+  .figures .chip { display: block; padding: .15rem .35rem; margin-top: .2rem; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--fg); line-height: 1.3; overflow-wrap: break-word; hyphens: auto; }
+  .figures .chip:hover { border-color: var(--accent); text-decoration: none; }
+  .figures .chip .lvl { display: block; font-size: .68rem; color: var(--muted); margin-top: .1rem; }
+  @media (max-width: 560px) { .figures .bar { grid-template-columns: 3.6rem 1fr 5.5rem; } .figures .heat td.name { max-width: 10rem; } }
+</style>

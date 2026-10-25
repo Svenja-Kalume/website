@@ -10,6 +10,9 @@
   --accent: #7a1e33;
   --accent-strong: #58121f;
   --accent-soft: #f5e7ea;
+  /* A human decision point (a test walk, a changed practice), set apart from the accent. */
+  --human: #1f5f4a;
+  --human-soft: #e4f1ec;
   --title: #2a2024;
   --subtitle: #574a4f;
   --menu: #3b3035;
@@ -190,7 +193,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
 }
 .card { position: relative; }
 .card:hover { border-left-color: var(--accent); }
-.card strong { font-size: 20px; font-weight: 600; line-height: 1.3; }
+/* The card's title only — not every <strong> inside it: a label such as "AI contribution:"
+   in a card's body is body text, and inheriting the title size made it the loudest word. */
+.card > strong, .card-link > strong, .card .card-title { font-size: 20px; font-weight: 600; line-height: 1.3; }
 .card p { font-size: 15px; font-weight: 400; line-height: 1.6; }
 /* Stretched link: the title anchor covers the whole card. */
 .card-link::after { content: ""; position: absolute; inset: 0; }
@@ -204,8 +209,15 @@ th { background: var(--code-bg); }
    length. The min-width stays under main's usable 43.6rem (46rem max-width less its
    1.2rem padding), so the table lines up with every other block on the page instead of
    overflowing it; below that width .table-scroll takes over rather than crushing it. */
-.trace-table { table-layout: fixed; min-width: 32rem; }
-.trace-table td { overflow-wrap: anywhere; }
+.trace-table { table-layout: fixed; min-width: 40rem; }
+.trace-table td { overflow-wrap: break-word; hyphens: auto; }
+.trace-table code { font-size: .78rem; background: none; padding: 0; }
+.trace-table .cover { display: block; margin-top: .3rem; }
+.trace-table .lvgroup + .lvgroup { margin-top: .45rem; }
+.trace-table .lvname { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.trace-table .line { line-height: 1.4; padding: .1rem 0; }
+.trace-table .model .adrs { display: flex; flex-wrap: wrap; gap: .2rem .5rem; margin-bottom: .3rem; }
+.trace-table .model .dia::before { content: "◇ "; color: var(--muted); }
 .trace-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0 0 0.8rem; }
 .chip {
   font: inherit;
@@ -231,7 +243,8 @@ th { background: var(--code-bg); }
 }
 .ai-note strong { color: var(--fg); }
 
-ul.reset { list-style: none; padding: 0; }
+ul.reset, ol.reset { list-style: none; padding: 0; }
+.lede { font-size: 1.1rem; color: var(--title); }
 
 .flow { display: flex; flex-direction: column; gap: 0.3rem; }
 .flow .step { padding: 0.2rem 0; }

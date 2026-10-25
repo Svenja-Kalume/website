@@ -2,7 +2,8 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
-import { iterationLabel, iterationSlug, byOrder } from '../../lib/iterations';
+import { iterationLabel, iterationSlug, byOrder, iterationsOf } from '../../lib/iterations';
+import EvidenceChain from '../../components/EvidenceChain.astro';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -15,6 +16,8 @@ const t = useTranslations(lang);
 // as there is more than one, and the projects have nothing to compare anyway.
 const requirements = (await getCollection('requirements')).sort((a, b) => a.id.localeCompare(b.id));
 const stories = await getCollection('user-stories');
+const adrs = await getCollection('adr');
+const diagrams = await getCollection('diagrams');
 
 // The level a story shipped in, resolved once. It hangs off the story, not the requirement:
 // a requirement is worked across iterations, so a single level per row would be a lie as
@@ -26,7 +29,19 @@ const rows = await Promise.all(
   requirements.map(async (req) => {
     const linked = stories.filter((s) => s.data.requirement.id === req.id);
     const caseEntry = await getEntry(req.data.case);
-    return { req, caseEntry, stories: linked };
+    // The rest of the chain, from the references the stories and decisions carry: a
+    // decision belongs to the requirement when one of its stories cites it or it names the
+    // requirement itself; a diagram when one of its stories cites it as its process.
+    const adrIds = new Set([
+      ...linked.flatMap((s) => s.data.adr.map((r) => r.id)),
+      ...adrs.filter((a) => a.data.relatedRequirements.some((r) => r.id === req.id)).map((a) => a.id),
+    ]);
+    const diagramIds = new Set(linked.map((s) => s.data.bpmn?.id).filter(Boolean));
+    return {
+      req, caseEntry, stories: linked,
+      adrs: adrs.filter((a) => adrIds.has(a.id)).sort((a, b) => a.id.localeCompare(b.id)),
+      diagrams: diagrams.filter((d) => diagramIds.has(d.id)),
+    };
   })
 );
 
@@ -40,6 +55,10 @@ const groups = [...byCase.entries()]
   .map(([caseId, items]) => ({
     caseId,
     title: items[0].caseEntry ? localize(items[0].caseEntry.data.title, lang) : caseId,
+    // The case study's worked example: one defect followed through every artifact it
+    // touched — what this table makes possible, shown on a real case.
+    workedExample: items[0].caseEntry?.data.workedExample?.id,
+    caseIterations: iterationsOf(allIterationList, caseId),
     items,
     // The levels this case actually has stories in — derived, so the filter can never
     // offer a level that would empty the table, and a third iteration adds its button
@@ -55,6 +74,14 @@ const groups = [...byCase.entries()]
     ].sort(byOrder),
   }))
   .sort((a, b) => a.caseId.localeCompare(b.caseId));
+// Where an artifact is rendered in full: the level that introduced it, at its card.
+const levelOf = (e: { data: { introducedIn?: { id: string } } }) =>
+  e.data.introducedIn ? iterations.get(e.data.introducedIn.id) : undefined;
+const hrefOf = (e: { id: string; data: { introducedIn?: { id: string } } }) => {
+  const it = levelOf(e);
+  return it ? `/${lang}/case-studies/${it.data.case.id}/${iterationSlug(it, allIterationList)}#${e.id}` : undefined;
+};
+const short = (id: string) => id.replace(/^[A-Z]+-/, '');
 // One project: the case heading and the case column are both redundant.
 const showCase = groups.length > 1;
 ---
@@ -87,59 +114,84 @@ const showCase = groups.length > 1;
               stories. */}
           <colgroup>
             <col style={showCase ? 'width:20%' : 'width:24%'} />
-            {showCase && <col style="width:14%" />}
-            <col style={showCase ? 'width:52%' : 'width:60%'} />
-            <col style={showCase ? 'width:14%' : 'width:16%'} />
+            {showCase && <col style="width:12%" />}
+            <col style={showCase ? 'width:46%' : 'width:54%'} />
+            <col style={showCase ? 'width:22%' : 'width:22%'} />
           </colgroup>
           <thead>
             <tr>
               <th>{t('trace.th.req')}</th>
               {showCase && <th>{t('trace.th.case')}</th>}
               <th>{t('trace.th.stories')}</th>
-              <th>{t('trace.th.status')}</th>
+              <th>{t('trace.th.model')}</th>
             </tr>
           </thead>
           <tbody>
-            {g.items.map(({ req, caseEntry, stories }) => (
-              <tr data-levels={[...new Set(stories
-                    .map((s) => s.data.introducedIn && iterations.get(s.data.introducedIn.id)?.id)
-                    .filter(Boolean))].join(' ')}>
-                <td><strong>{req.id}</strong><br /><span class="small">{localize(req.data.title, lang)}</span></td>
+            {g.items.map(({ req, caseEntry, stories, adrs, diagrams }) => {
+              // Stories grouped by the level that shipped them: the level is said once per
+              // group instead of once per story, which halved the row heights.
+              const byLevel = [...new Map(stories.map((s) => [levelOf(s)?.id ?? '', levelOf(s)])).entries()]
+                .sort((x, y) => (x[1]?.data.order ?? 0) - (y[1]?.data.order ?? 0))
+                .map(([id, it]) => ({ id, it, stories: stories.filter((s) => (levelOf(s)?.id ?? '') === id) }));
+              return (
+              <tr id={req.id} data-levels={byLevel.map((x) => x.id).filter(Boolean).join(' ')}>
+                <td>
+                  <strong>{req.id}</strong><br /><span class="small">{localize(req.data.title, lang)}</span>
+                  {stories.length > 0 && (
+                    <span class="muted small cover">{stories.length} {t('iter.stories')} · {byLevel.map((x) => x.it ? iterationLabel(x.it, t('iter.level')) : '').filter(Boolean).join(', ')}</span>
+                  )}
+                </td>
                 {showCase && <td class="small">{caseEntry ? localize(caseEntry.data.title, lang) : req.data.case.id}</td>}
                 <td class="small">
                   {stories.length === 0
                     ? <span class="tag">{t('trace.noStory')}</span>
-                    : stories.map((s) => {
-                        const it = s.data.introducedIn ? iterations.get(s.data.introducedIn.id) : undefined;
-                        return (
-                          <div data-level={it?.id ?? ''}>
-                            {s.id}: {localize(s.data.title, lang)}
-                            {/* MoSCoW belongs to the story: the acceptance checklist assigns
-                                Must/Should per checklist item, and an item is a story. A
-                                story shipped outside those headings carries no tier, and
-                                inventing one for it would be a guess. */}
-                            {s.data.priority && (
-                              <span class="tag" style="margin-left:.4rem">
-                                {t(`trace.priority.${s.data.priority}` as const)}
-                              </span>
-                            )}
-                            {it && (
-                              <a class="tag" style="margin-left:.4rem"
-                                 href={`/${lang}/case-studies/${it.data.case.id}/${iterationSlug(it, allIterationList)}`}>
-                                {iterationLabel(it, t('iter.level'))}
-                              </a>
-                            )}
-                          </div>
-                        );
-                      })}
+                    : byLevel.map((grp) => (
+                        <div class="lvgroup" data-level={grp.id}>
+                          {grp.it && (
+                            <a class="lvname" href={`/${lang}/case-studies/${grp.it.data.case.id}/${iterationSlug(grp.it, allIterationList)}`}>
+                              {iterationLabel(grp.it, t('iter.level'))}
+                            </a>
+                          )}
+                          {grp.stories.map((s) => (
+                            <div class="line">
+                              <a href={hrefOf(s)}><code>{short(s.id)}</code></a> {localize(s.data.title, lang)}
+                              {/* MoSCoW belongs to the story. Must is the normal case, so only
+                                  the exceptions are marked; a story with no tier gets none. */}
+                              {s.data.priority && s.data.priority !== 'must' && (
+                                <span class="tag" style="margin-left:.4rem">{t(`trace.priority.${s.data.priority}` as const)}</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ))}
                 </td>
-                <td class="small">{req.data.status}</td>
+                {/* Decisions and diagrams share a column: few requirements reach a diagram
+                    through a story, and a column of its own was mostly empty. A decision is
+                    shown by id (its title on hover) — the title lives on its card. */}
+                <td class="small model">
+                  {adrs.length > 0 && (
+                    <div class="adrs">
+                      {adrs.map((x) => (
+                        <a href={hrefOf(x)} title={localize(x.data.title, lang)} data-level={levelOf(x)?.id ?? ''}><code>{short(x.id)}</code></a>
+                      ))}
+                    </div>
+                  )}
+                  {diagrams.map((d) => (
+                    <div class="line dia" data-level={levelOf(d)?.id ?? ''}>
+                      <a href={hrefOf(d)}>{localize(d.data.title, lang)}</a>
+                    </div>
+                  ))}
+                </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
       <p class="muted small trace-empty" hidden>{t('trace.filterEmpty')}</p>
+      {g.workedExample && (
+        <EvidenceChain lang={lang} caseId={g.caseId} iterations={g.caseIterations} storyId={g.workedExample} />
+      )}
     </div>
   ))}
 </BaseLayout>
