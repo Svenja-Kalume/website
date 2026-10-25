@@ -19,7 +19,7 @@ done.
 
 ## 1 · The target role is not named anywhere
 
-Status: open
+Status: answered
 
 **Finding.** "Requirements Engineer" and "Business Analyst" appear on no page of the built
 site. The header says "An open working journal …"; About says the focus is "increasingly
@@ -74,6 +74,35 @@ description (what search engines and link previews show).
 > rather than the history. Want to add it, or keep it as is?
 
 **Answer:** let's discuss about it
+
+> **Discussion (2026-10-25).** Q1: A moment a requirement reached you and you saw at once it
+> would cause trouble — what did you notice that its author had not?
+
+**Answer:** "Datenschutzanzeige soll durch einbinden in Unternehmensseite gelöst werden, in dem die Anwendung geschachtelt angezeigt wird. Problem ist zum einen, dass die Anwendung selbst schon einen Schachtelung enthält und damit der Browser nicht mehr auseinander halten kann, welche Ebene für welchen Teil verantwortlich ist. Weiteres Problem ist, dass die Anwendung Authentifizierung benötigt, dass von der Website erledigt werden müsste."
+
+> Q2: What happened next — raised it, with whom, how decided? Cost if nobody had seen it?
+
+**Answer:** yes, iframe idea was thrown and the company website will use a link to open the app with localization information
+
+> Q3: One-off or a pattern? Which kinds of requirement have you learned to distrust on sight,
+> and what do they cost when found only in implementation?
+
+**Answer:** table with switched columns and rows, cells should be editable. With on that time WPF the idea was just to flip the binding source. But espiacially with editing this would cause a lot of problem on writing the values back. So the technical decision was to introduce a new table type supporting columns and rows other way round
+
+> Q4: In your own words, what do both examples share — the one thing the eleven years let you
+> see in a requirement that others miss?
+
+**Answer:** Ideas brought by the poeple are ok and could work in other parts, but to fullfill the requirement, you have also to ensure the solution is fitting to circumstences
+
+> Q5: The sentence in German? And should About carry one example (iframe / WPF table) as
+> proof, or only the sentence?
+
+**Answer (DE):** Ideen werden von den Anwendern und anderen Stakeholdern mit gebracht. Oberflächlich betrachtet passt es zur Anforderung, aber damit die Rechnung am Ende aufgeht, muss die Umgebung inkl. bestehender Anwendung für die Lösung berücksichtigt werden.
+
+**Example on About:** only the sentence, no example.
+
+> **1.3 answered (2026-10-25).** Written into About `about.p4`: domains, team sizes and growing
+> responsibility from the first answer, then the Q5 sentence. English is a draft translation.
 
 
 1.4 IREB CPRE Foundation Level: year obtained? Link to verify it (IREB certificate register,

@@ -301,8 +301,9 @@ export const ui = {
       'I love understanding complex relationships, bringing different perspectives together, and letting a shared picture emerge from many individual pieces.',
     'about.p3':
       'This website documents exactly that process — not as a collection of perfect projects, but as an open working journal of my learning path, including wrong turns, new insights, and the question of how good solutions grow out of understanding.',
+    // The eleven years as the asset, from the owner's interview answers (1.3).
     'about.p4':
-      'Professionally, I have worked as a software engineer for over eleven years. My focus is increasingly moving towards requirements engineering, because that is where I rediscover the very things that have driven me since the start of my career: understanding problems, connecting people, and structuring complexity.',
+      'Professionally, I have worked as a software engineer for over eleven years, on very different projects: in medical informatics, in a field regulated by public authorities, and in projects on warehousing, mechanical engineering and construction, in teams of two to nine developers. The responsibility I took on grew steadily with my experience. Users and other stakeholders bring ideas with them. On the surface they fit the requirement, but for it to work out in the end, the solution has to take the environment into account, including the existing application. My focus is increasingly moving towards requirements engineering, because that is where I rediscover the very things that have driven me since the start of my career: understanding problems, connecting people, and structuring complexity.',
     // The goal, in the owner's words: the role is what they are heading for, not a title claimed.
     'about.goal':
       "I want to get into the real questions users face — to understand them, so I can find ways to make their everyday challenges easier. That is what I am looking for in requirements engineering.",
@@ -590,7 +591,7 @@ export const ui = {
     'about.p3':
       'Diese Website dokumentiert genau diesen Prozess. Nicht als Sammlung perfekter Projekte, sondern als offenes Arbeitsjournal meines Lernwegs — inklusive Irrwegen, neuen Erkenntnissen und der Frage, wie aus Verständnis gute Lösungen entstehen.',
     'about.p4':
-      'Beruflich arbeite ich seit über elf Jahren als Software Engineer. Mein Schwerpunkt entwickelt sich zunehmend in Richtung Requirements Engineering, weil ich dort genau die Themen wiederfinde, die mich seit Beginn meiner Laufbahn antreiben: Probleme verstehen, Menschen verbinden und Komplexität strukturieren.',
+      'Beruflich arbeite ich seit über elf Jahren als Software Engineer. Ich konnte bisher in sehr unterschiedlichen Projekten mitarbeiten: in der Medizininformatik, im behördlich regulierten Bereich, aber auch in Projekten zu Lagerhaltung, Maschinenbau und Bauwesen, in Teams zwischen 2 und 9 Entwicklern. Die von mir übernommene Verantwortung ist mit meiner Erfahrung kontinuierlich gewachsen. Ideen werden von den Anwendern und anderen Stakeholdern mitgebracht. Oberflächlich betrachtet passen sie zur Anforderung, aber damit die Rechnung am Ende aufgeht, muss die Umgebung inklusive der bestehenden Anwendung für die Lösung berücksichtigt werden. Mein Schwerpunkt entwickelt sich zunehmend in Richtung Requirements Engineering, weil ich dort genau die Themen wiederfinde, die mich seit Beginn meiner Laufbahn antreiben: Probleme verstehen, Menschen verbinden und Komplexität strukturieren.',
     'about.goal':
       'Ich möchte in die echten Fragestellungen der Anwender rein gehen. Sie verstehen, um Möglichkeiten zu finden, die ihnen ihre Herausforderungen im Alltag erleichtern. Das ist, was ich im Requirements Engineering suche.',
     'about.cert': 'Zertifiziert: IREB CPRE Foundation Level, Februar 2026 —',
