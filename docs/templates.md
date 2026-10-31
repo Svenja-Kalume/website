@@ -247,6 +247,9 @@ glossary: [kunde]    # the domain terms this topic is about; empty = a technical
 # summary:
 #   en: …
 #   de: …
+# Optional, a short verb phrase per level for the user-stories tile; title shown otherwise:
+# levelSummary:
+#   WZ-0.1.0: { en: Manage customers, de: Kunden verwalten }
 requirements: [R-01]
 stories: [US-26]     # optional overrides
 diagrams: []         # optional; else derived from the stories citing them

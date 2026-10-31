@@ -280,6 +280,12 @@ for (const j of load('journal')) {
 // story it blocks must not be in flight. This is an ERROR, not a warning: proceeding
 // means someone is about to invent the answer, which is the one thing the gate exists
 // to prevent.
+// A topic's levelSummary is keyed by iteration id; a misspelled key is never shown, silently.
+for (const tp of load('topics')) {
+  for (const key of Object.keys(tp.data.levelSummary ?? {}))
+    if (!iterationIds.has(key)) errors.push(`${tp.file}: levelSummary key "${key}" is not an iteration id.`);
+}
+
 const storyById = new Map(stories.map((s) => [s.id, s]));
 const stakeholderIds = ids(load('stakeholders'));
 for (const q of questions) {

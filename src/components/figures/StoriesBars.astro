@@ -4,6 +4,9 @@
  * carries a thin green line INSIDE its own bar for the stories that do — priority and
  * correction are independent (a correcting story can be must or should), so the line is
  * drawn over the bar rather than as a third segment.
+ *
+ * On a level page there is one level, so one bar would say nothing: pass `groups` and
+ * each row is a topic of that level instead, linked to its sub-chapter.
  */
 import type { CollectionEntry } from 'astro:content';
 import { useTranslations, type Lang } from '../../i18n/ui';
@@ -14,28 +17,33 @@ interface Props {
   iterations: Iteration[];
   stories: CollectionEntry<'user-stories'>[];
   levelHref: (it: Iteration, anchor?: string) => string;
+  /** One row per group (a level's topics) instead of one per level. */
+  groups?: { label: string; href: string; stories: CollectionEntry<'user-stories'>[] }[];
 }
-const { lang, iterations, stories, levelHref } = Astro.props;
+const { lang, iterations, stories, levelHref, groups } = Astro.props;
 const t = useTranslations(lang);
 
-const levels = iterations.map((it) => {
-  const s = introducedIn(stories, it.id);
-  return {
-    it,
-    total: s.length,
+const row = (label: string, href: string, s: CollectionEntry<'user-stories'>[], pool?: number) => ({
+  label,
+  href,
+  total: s.length,
     must: s.filter((x) => x.data.priority === 'must').length,
     should: s.filter((x) => x.data.priority === 'should').length,
     other: s.filter((x) => x.data.priority !== 'must' && x.data.priority !== 'should').length,
     corrects: s.filter((x) => x.data.changes.length > 0).length,
-    pool: it.data.storiesDone,
-  };
+  pool,
 });
+const levels = groups
+  ? groups.map((g) => row(g.label, g.href, g.stories))
+  : iterations.map((it) => row(iterationLabel(it, t('iter.level')), levelHref(it, 'introduced'), introducedIn(stories, it.id), it.data.storiesDone));
 const max = Math.max(1, ...levels.map((l) => l.total));
 const pct = (n: number) => `${(n / max) * 100}%`;
 const done = stories.filter((s) => s.data.status === 'done').length;
 const corrections = levels.reduce((n, l) => n + l.corrects, 0);
 // The pool is only summed when every level records it; a partial sum would read as a total.
-const pool = levels.every((l) => l.pool !== undefined) ? levels.reduce((n, l) => n + l.pool!, 0) : undefined;
+const pool = groups
+  ? (iterations.every((it) => it.data.storiesDone !== undefined) ? iterations.reduce((n, it) => n + it.data.storiesDone!, 0) : undefined)
+  : levels.every((l) => l.pool !== undefined) ? levels.reduce((n, l) => n + l.pool!, 0) : undefined;
 ---
 <div class="kpis">
   <div class="kpi"><span class="v">{done} / {stories.length}</span><span class="l">{t('figp.stories.done')}</span></div>
@@ -43,10 +51,10 @@ const pool = levels.every((l) => l.pool !== undefined) ? levels.reduce((n, l) =>
   <div class="kpi"><span class="v">{levels.reduce((n, l) => n + l.must, 0)} / {levels.reduce((n, l) => n + l.should, 0)}</span><span class="l">{t('figp.mustShould')}</span></div>
   {corrections > 0 && <div class="kpi"><span class="v">{corrections}</span><span class="l">{t('figp.stories.corrects')}</span></div>}
 </div>
-<div class="bars">
+<div class:list={['bars', { topics: groups }]}>
   {levels.map((l) => (
     <div class="bar">
-      <a class="lab" href={levelHref(l.it, 'introduced')}>{iterationLabel(l.it, t('iter.level'))}</a>
+      <a class="lab" href={l.href}>{l.label}</a>
       <div class:list={['track', { 'has-fix': l.corrects > 0 }]}>
         <div class="segs">
         {l.must > 0 && <span class="seg must" style={`width:${pct(l.must)}`}>{l.must}</span>}

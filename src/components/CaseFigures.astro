@@ -23,7 +23,7 @@ import StoriesBars from './figures/StoriesBars.astro';
 import CriteriaDots from './figures/CriteriaDots.astro';
 import DecisionTimeline from './figures/DecisionTimeline.astro';
 import DiagramMatrix from './figures/DiagramMatrix.astro';
-import { topicsOf } from '../lib/topics';
+import { topicsOf, groupByTopic } from '../lib/topics';
 
 interface Props {
   lang: Lang;
@@ -85,6 +85,19 @@ const figures = [
   { key: 'findings', n: fixes.length },
 ].filter((f) => f.n > 0);
 const k = (s: string) => `fig.${s}` as UiKey;
+// Each topic of the level, most stories first: the rows of the stories and criteria overlays.
+const storyTopics = (() => {
+  if (!scope) return undefined;
+  const { groups, unassigned } = groupByTopic(topics, { diagrams: [], stories, adrs: [] }, caseStories);
+  const rows = groups.map((g) => ({ label: localize(g.topic!.data.title, lang) ?? g.topic!.id, summary: localize(g.topic!.data.levelSummary?.[scope.id], lang), href: levelHref(scope, g.topic!.id)!, stories: g.stories, owned: g.topic!.data.requirements.map((r) => r.id) }));
+  if (unassigned) rows.push({ label: t('fig.stories.other'), summary: undefined as string | undefined, href: levelHref(scope, 'artifacts')!, stories: unassigned.stories, owned: [] });
+  return rows.sort((a, b) => b.stories.length - a.stories.length);
+})();
+// Overlay rows on a level page: the topic's phrase for this level, else its title.
+const topicRows = storyTopics?.map((r) => ({ ...r, label: r.summary ?? r.label }));
+// On a level page the stories tile only says what a story is; the topics it worked on
+// are in its overlay, so the tile does not repeat them.
+const explain = (key: string) => (key === 'stories' && scope ? t('fig.stories.lead') : t(k(`${key}.x`)));
 // Rows the tiles fill: four or fewer in one row, five or six in rows of three, more in fours.
 const cols = figures.length <= 4 ? figures.length : figures.length <= 6 ? 3 : 4;
 const panelId = (key: string) => `fig-panel-${key}`;
@@ -96,7 +109,7 @@ const panelId = (key: string) => `fig-panel-${key}`;
         <button type="button" class="tile" aria-expanded="false" aria-controls={panelId(f.key)}>
           <span class="n">{f.n}</span>
           <span class="k">{t(k(f.key))}</span>
-          <span class="x">{t(k(`${f.key}.x`))}</span>
+          <span class="x">{explain(f.key)}</span>
         </button>
       </li>
     ))}
@@ -121,8 +134,8 @@ const panelId = (key: string) => `fig-panel-${key}`;
       {f.key === 'roles' && <RolesPanel lang={lang} roles={roles} />}
       {f.key === 'findings' && <FindingsPanel lang={lang} iterations={iterations} stories={caseStories} scope={scope} journal={journal} workflow={workflow} workedExample={workedExample} levelHref={(it, a) => levelHref(it, a)!} />}
       {f.key === 'requirements' && <RequirementsHeat lang={lang} iterations={shown} requirements={requirements} stories={stories} {...(scope ? { allIterations: iterations, allStories: caseStories, levelHref: (it: Iteration, a?: string) => levelHref(it, a)! } : {})} />}
-      {f.key === 'stories' && <StoriesBars lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
-      {f.key === 'criteria' && <CriteriaDots lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} />}
+      {f.key === 'stories' && <StoriesBars lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} groups={topicRows} />}
+      {f.key === 'criteria' && <CriteriaDots lang={lang} iterations={shown} stories={stories} levelHref={(it, a) => levelHref(it, a)!} groups={topicRows} />}
       {f.key === 'adr' && <DecisionTimeline lang={lang} iterations={shown} adrs={adrs} levelHref={levelHref} />}
       {f.key === 'diagrams' && <DiagramMatrix lang={lang} iterations={shown} diagrams={diagrams} stories={caseStories} topics={topics} levelHref={(it, a) => levelHref(it, a)!} />}
     </div>
@@ -243,6 +256,13 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .figures .heat td.later { border-left: 2px dashed var(--border); width: 4.2rem; font-weight: 700; }
   .figures .heat td.later.hit { background: var(--accent-soft); }
   .figures .heat td.later a { color: var(--accent); }
+  /* The mirror on the left: levels before this one. */
+  .figures .heat th.prior { border-right: 2px dashed var(--border); padding-right: .3rem; }
+  .figures .heat td.prior { border-right: 2px dashed var(--border); width: 4.2rem; font-weight: 700; }
+  .figures .heat td.prior.hit { background: var(--accent-soft); }
+  .figures .heat td.prior a { color: var(--accent); }
+  .figures .back td.name a::after { content: " ↺"; color: var(--accent); font-weight: 700; }
+  .figures .back.revisit td.name a::after { content: " ↺ ↻"; }
   .figures td.c1, .figures .sw.c1 { background: #f5e7ea; color: var(--title); }
   .figures td.c2, .figures .sw.c2 { background: #e3b8c2; color: var(--title); }
   .figures td.c3, .figures .sw.c3 { background: #c27588; color: #fff; }
@@ -257,6 +277,9 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .figures .bars { display: grid; gap: .6rem; }
   .figures .bar { display: grid; grid-template-columns: 4.2rem 1fr 9rem; gap: .7rem; align-items: center; font-size: .85rem; }
   .figures .bar .lab { font-weight: 700; color: var(--title); }
+  /* Topic phrases are longer than "Level 3". */
+  .figures .bars.topics .bar { grid-template-columns: 12rem 1fr 9rem; }
+  .figures .bars.topics .bar .lab { overflow-wrap: break-word; hyphens: auto; }
   .figures .track { position: relative; height: 18px; }
   .figures .track.has-fix { margin-bottom: 7px; }
   .figures .segs { display: flex; height: 100%; border-radius: 3px; overflow: hidden; background: var(--surface); }
@@ -323,5 +346,5 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .figures .chip { display: block; padding: .15rem .35rem; margin-top: .2rem; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--fg); line-height: 1.3; overflow-wrap: break-word; hyphens: auto; }
   .figures .chip:hover { border-color: var(--accent); text-decoration: none; }
   .figures .chip .lvl { display: block; font-size: .68rem; color: var(--muted); margin-top: .1rem; }
-  @media (max-width: 560px) { .figures .bar { grid-template-columns: 3.6rem 1fr 5.5rem; } .figures .heat td.name { max-width: 10rem; } }
+  @media (max-width: 560px) { .figures .bar { grid-template-columns: 3.6rem 1fr 5.5rem; } .figures .bars.topics .bar { grid-template-columns: 8rem 1fr 4.5rem; } .figures .heat td.name { max-width: 10rem; } }
 </style>
