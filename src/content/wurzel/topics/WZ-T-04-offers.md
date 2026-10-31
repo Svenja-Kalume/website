@@ -5,6 +5,19 @@ title:
 case: wurzel
 order: 4
 source: docs/epics.md
+levelSummary:
+  WZ-0.1.0:
+    en: "Create and version offers"
+    de: "Angebote erstellen und versionieren"
+  WZ-0.2.0:
+    en: "Export offers as PDF"
+    de: "Angebote als PDF exportieren"
+  WZ-0.3.0-level-3:
+    en: "Align offers with invoices"
+    de: "Angebote an Rechnung angleichen"
+  WZ-0.3.0-level-4:
+    en: "Save before export"
+    de: "Vor Export speichern"
 glossary: [WZ-angebot, WZ-angebotsposition, WZ-snapshot]
 requirements: [WZ-R-04, WZ-R-08]
 # The repo records these as cross-cutting, with Offers as the primary epic: the behaviour

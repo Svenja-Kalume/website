@@ -273,6 +273,12 @@ const topics = defineCollection({
     // Sort order of the sub-chapters within a level.
     order: z.number(),
     summary: loc.optional(),
+    // What this topic's work did in one level, as a short verb phrase ("Rechnungen
+    // korrigieren"), keyed by iteration id. Shown on that level's user-stories tile;
+    // a level without an entry shows the bare title. Hand-written: no artifact holds it.
+    // It lives here, not on the iteration, because a published iteration is frozen and
+    // a topic is not versioned.
+    levelSummary: z.record(z.string(), loc).default({}),
     // The artifact in the project repo this topic is taken from (repo-relative path).
     source: z.string().optional(),
     // The domain terms this topic is about. A topic with none is TECHNICAL — that is
