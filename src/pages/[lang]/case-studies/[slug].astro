@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { languages, useTranslations, localize, toLang } from '../../../i18n/ui';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
@@ -8,8 +8,7 @@ import DiagramFigure from '../../../components/DiagramFigure.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import AdrCard from '../../../components/AdrCard.astro';
 import CaseFigures from '../../../components/CaseFigures.astro';
-import EvidenceChain from '../../../components/EvidenceChain.astro';
-import { allIterations, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
+import { allIterations, iterationsOf, currentOf, displayVersion, iterationSlug, iterationLabel } from '../../../lib/iterations';
 import { absoluteUrl, techArticleSchema } from '../../../lib/schema';
 
 export async function getStaticPaths() {
@@ -34,6 +33,12 @@ const diagrams = (await getCollection('diagrams')).filter(inCase);
 
 const iterations = await allIterations();
 const caseIterations = iterationsOf(iterations, caseId);
+// Worked examples, resolved to the level that tells each one. One today; a list regardless.
+const chains = (await Promise.all(
+  [entry.data.workedExample].filter((r): r is NonNullable<typeof r> => !!r).map((r) => getEntry(r))
+))
+  .map((fix) => ({ fix, it: fix?.data.introducedIn && caseIterations.find((i) => i.id === fix.data.introducedIn!.id) }))
+  .filter((x): x is { fix: NonNullable<typeof x.fix>; it: NonNullable<typeof x.it> } => !!x.fix && !!x.it);
 const current = currentOf(iterations, caseId);
 
 // While there is exactly one case study this page IS the top of the trail -- the
@@ -90,10 +95,20 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
       : <Content />}
   </div>
 
-  {/* One finding followed through every artifact it touched — the case's own story, so it
-      lives on the case study; the findings themselves open from their key figure. */}
-  {entry.data.workedExample && (
-    <EvidenceChain lang={lang} caseId={caseId} iterations={caseIterations} storyId={entry.data.workedExample.id} />
+  {/* Findings followed through the whole chain. Each is told on the level whose fix ends
+      it; the overview only lists them, so a second one adds a line here, not a section. */}
+  {chains.length > 0 && (
+    <>
+      <h2 id="chains">{t('chain.list.h2')}</h2>
+      <ul>
+        {chains.map(({ fix, it }) => (
+          <li>
+            <a href={`/${lang}/case-studies/${caseId}/${iterationSlug(it, caseIterations)}#chain-${fix.id}`}>{localize(fix.data.title, lang)}</a>
+            <span class="muted"> · {iterationLabel(it, t('iter.level'))}</span>
+          </li>
+        ))}
+      </ul>
+    </>
   )}
 
   {looseDiagrams.length > 0 && (

@@ -10,6 +10,7 @@ import AdrCard from '../../../../components/AdrCard.astro';
 import GlossaryTerms from '../../../../components/GlossaryTerms.astro';
 import CaseFigures from '../../../../components/CaseFigures.astro';
 import SideToc from '../../../../components/SideToc.astro';
+import EvidenceChain from '../../../../components/EvidenceChain.astro';
 import { languages, useTranslations, localize, toLang, type UiKey } from '../../../../i18n/ui';
 import { iterationsOf, currentOf, introducedIn, iterationLabel, iterationSlug } from '../../../../lib/iterations';
 import { topicsOf, groupByTopic } from '../../../../lib/topics';
@@ -45,6 +46,10 @@ const all = await getCollection('iterations');
 const isCurrent = currentOf(all, caseEntry.id)?.id === iteration.id;
 // Siblings, oldest first — the submenu that lets you walk the levels in order.
 const caseIterations = iterationsOf(all, caseEntry.id);
+// The worked example is told on the level whose fix ends it — the level the fixing story
+// was introduced in — and nowhere else; the overview only lists it.
+const workedFix = caseEntry.data.workedExample ? await getEntry(caseEntry.data.workedExample) : undefined;
+const chainHere = workedFix?.data.introducedIn?.id === iteration.id ? workedFix : undefined;
 
 // Diagrams, stories and ADRs belong to the level that introduced them, and are rendered
 // here in full — the case study page is the overview. The rest stays a listing.
@@ -121,6 +126,7 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
 const toc = [
   ...((hasProcessChanges || sameProcess) ? [{ href: '#process-changes', label: t('iter.processChanges') }] : []),
   ...(corrects.filter(Boolean).length > 0 ? [{ href: '#corrects', label: t('iter.corrects') }] : []),
+  ...(chainHere ? [{ href: `#chain-${chainHere.id}`, label: t('chain.h2') }] : []),
   {
     href: '#introduced', label: t('iter.introduced'),
     children: [
@@ -254,6 +260,10 @@ const toc = [
         ))}
       </ul>
     </>
+  )}
+
+  {chainHere && (
+    <EvidenceChain lang={lang} caseId={caseEntry.id} iterations={caseIterations} storyId={chainHere.id} />
   )}
 
   <h2 id="introduced">{t('iter.introduced')}</h2>
