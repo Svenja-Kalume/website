@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Mermaid from '../../components/Mermaid.astro';
+import RedThread from '../../components/RedThread.astro';
 import { languages, useTranslations, localize, toLang } from '../../i18n/ui';
 import { allIterations, displayVersion } from '../../lib/iterations';
 import { absoluteUrl, webSiteSchema } from '../../lib/schema';
@@ -16,9 +16,6 @@ const cases = (await getCollection('case-studies')).sort((a, b) => a.data.order 
 // Derived from the current iteration, not read from case-studies.version — otherwise
 // this shows a stale version the day a new iteration publishes.
 const iterations = await allIterations();
-
-// The diagram's labels are prose, so the source is a translated string (see i18n/ui.ts).
-const redThread = t('home.redThread.code');
 ---
 <BaseLayout
   lang={lang}
@@ -35,7 +32,8 @@ const redThread = t('home.redThread.code');
   <p class="muted">{t('home.p2')}</p>
 
   <h2>{t('home.redThread')}</h2>
-  <Mermaid code={redThread} />
+  <RedThread lang={lang} />
+  <p>{t('home.gate')}</p>
 
   <h2>{t('nav.cases')}</h2>
   <ul class="reset">

@@ -26,6 +26,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+          # Full history, so re:check can diff the content against origin/main (append-only).
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -38,6 +40,7 @@ jobs:
           SITE_URL: ${{ inputs.site-url }}
         run: |
           npm ci
+          npm run re:check
           npm run build
 
 # Please do not touch the following action

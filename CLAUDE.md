@@ -114,7 +114,8 @@ npm run preview     # preview the build locally
 npm run re:check    # check traceability & scope (before commit/deploy)
 ```
 
-Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanly.
+Before every deploy: **`npm run re:check` and `npm run build`** must pass cleanly. CI enforces
+both (`website-build.yaml` runs `re:check` before the build, so an error stops the deploy).
 
 ## Architecture
 
@@ -209,25 +210,38 @@ set `site:` in `astro.config.mjs` to the real domain.
 
 **The site is live off `main`. Never commit to it and never merge into it.** Work on a feature branch
 and merge into **`develop`**; promoting `develop` to `main` is a publication decision and belongs to
-the owner alone. A branch per unit of work also keeps the append-only rule auditable — the whole point
+the owner alone. **The only way into `main` is a pull request the owner approves and merges on GitHub
+themselves** — `main` is never merged locally, and no agent pushes to it, merges or approves a pull
+request, or changes branch protection. Opening a PR against `main` is fine; the rest is theirs.
+`.claude/harness/git-guard.mjs` denies all of it. A branch per unit of work also keeps the append-only rule auditable — the whole point
 of an iteration update is that its diff can be read.
 
-`.github/workflows/website-orchestration.yaml` triggers on **`push` with no branch filter**, so
-pushing *any* branch to origin starts a Deploy Now run. Ask before pushing.
+`.github/workflows/website-orchestration.yaml` deploys on a push to **`main` or `develop`** only; a
+feature branch can be pushed to share it without publishing it. Every push is still outward-facing:
+ask before pushing.
 
 ## Harness (reminds you of the steps)
 
-- `.claude/settings.json` — hooks: **SessionStart** shows the guardrails; **PostToolUse** (Write/Edit
-  on `src/content/**`) surfaces the matching checklist (required fields, AI contribution, linking).
+- `.claude/settings.json` — hooks: **SessionStart** shows the guardrails; **PreToolUse** (Bash)
+  denies a commit, merge or push on `main`, any PR merge or approval, and API writes to branch
+  protection; asks before every other `git push`;
+  **PostToolUse** (Write/Edit on `src/content/**`) surfaces the matching checklist (required fields,
+  AI contribution, linking) and warns when the edited file is frozen — introduced in a published
+  iteration, a published iteration itself, or a committed non-draft journal entry.
 - `.claude/harness/*.mjs` — the hook scripts.
 - `scripts/check-traceability.mjs` (`npm run re:check`) — checks broken references, missing required
-  fields (acceptance criteria, AI contribution), coverage gaps and scope limits.
+  fields (acceptance criteria, AI contribution), coverage gaps and scope limits, and **errors on any
+  frozen content file modified or deleted since `origin/main`** (diffed from the merge base) — the
+  append-only rule for edits the Write/Edit hook never sees: by hand, by script, by merge.
 - Slash command **`/re-check`** runs the check and summarises it.
 - Slash command **`/update-iteration <tag>`** is the whole update in one run: pull the app repo at
   the tag, publish the implementation levels that have no iteration yet, refresh what is derivable
   without a decision, then work through journal, `processChanges`, `lessons` and `aiContribution`
   **with** you. It reads the vault at `${WURZEL_REPO:-/home/svenja/src/wurzel/wurzel}` *at the tag*,
   never in its working tree — an iteration documents the practice as it was then.
+  **Wurzel journal entries start as notes in the vault's `docs/journal/`** — plain English facts,
+  not the entry. `/update-iteration` writes the bilingual entry from each note at the tag, for the
+  site's main audience, under the note's filename as id; a published entry is never rewritten.
 
 ## Language
 

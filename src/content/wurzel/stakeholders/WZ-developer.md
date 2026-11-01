@@ -5,6 +5,7 @@ role:
   de: Entwickler / Delivery-Team — KI-Technician-Subagenten (Backend / Frontend / Tester / Reviewer)
 case: wurzel
 order: 3
+party: self
 influence: medium
 heldBy:
   en: Me. The subagents plan, implement and review; the plan approval, the acceptance and the root-cause calls are mine.

@@ -7,7 +7,8 @@ import LevelNav from '../../../components/LevelNav.astro';
 import DiagramFigure from '../../../components/DiagramFigure.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import AdrCard from '../../../components/AdrCard.astro';
-import { allIterations, iterationsOf, currentOf, introducedIn, displayVersion, iterationSlug } from '../../../lib/iterations';
+import CaseFigures from '../../../components/CaseFigures.astro';
+import { allIterations, iterationsOf, currentOf, displayVersion } from '../../../lib/iterations';
 import { absoluteUrl, techArticleSchema } from '../../../lib/schema';
 
 export async function getStaticPaths() {
@@ -26,9 +27,6 @@ const { Content } = await render(entry);
 
 const inCase = (e: { data: { case?: { id: string } } }) => e.data.case?.id === caseId;
 
-const stakeholders = (await getCollection('stakeholders'))
-  .filter(inCase)
-  .sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
 const stories = (await getCollection('user-stories')).filter(inCase);
 const adrs = (await getCollection('adr')).filter(inCase);
 const diagrams = (await getCollection('diagrams')).filter(inCase);
@@ -43,18 +41,8 @@ const current = currentOf(iterations, caseId);
 const onlyCase = (await getCollection('case-studies')).length === 1;
 
 // Diagrams, stories and ADRs are shown on the level that introduced them, not here: this
-// page is the overview, and a flat dump of every artifact hides which increment produced
-// what. Each iteration card carries the counts and links to the level that renders them.
-const perIteration = new Map(
-  caseIterations.map((it) => [
-    it.id,
-    {
-      stories: introducedIn(stories, it.id).length,
-      diagrams: introducedIn(diagrams, it.id).length,
-      adrs: introducedIn(adrs, it.id).length,
-    },
-  ])
-);
+// page is the overview. The levels themselves open from the first key figure, which
+// replaced the separate iteration list that repeated them further down.
 
 // Fallback, not a second home: an artifact with no `introducedIn` has no level to move to,
 // so it stays visible here rather than disappearing from the site. Everything that does
@@ -90,6 +78,10 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
     <span class="tag">{entry.data.status}</span>
     {entry.data.demoUrl && <a class="button" style="margin-left:.6rem" href={entry.data.demoUrl}>{t('cases.openDemo')}</a>}
   </p>
+  {localize(entry.data.lede, lang) && <p class="lede">{localize(entry.data.lede, lang)}</p>}
+
+  {/* The opener: what the work amounts to, counted, before any of its vocabulary. */}
+  <CaseFigures lang={lang} caseId={caseId} iterations={caseIterations} workedExample={entry.data.workedExample?.id} />
 
   <div>
     {entry.data.intro
@@ -97,64 +89,6 @@ const looseAdrs = adrs.filter((a) => !a.data.introducedIn);
       : <Content />}
   </div>
 
-  {/* Derived from what this page actually renders, so it cannot list a section that is not
-      there. The diagrams are named individually: they are the furthest down and the most
-      likely thing a reader came for. */}
-  <ul class="reset contents">
-    {caseIterations.length > 0 && <li><a href="#iterations">{t('iter.h2')}</a></li>}
-    {stakeholders.length > 0 && <li><a href="#stakeholders">{t('case.stakeholders')}</a></li>}
-  </ul>
-
-  {/* The development-over-time view: every published iteration stays listed and reachable,
-      oldest first. The list is a development, and a development reads forwards: Level 1
-      is where the reasoning starts, so it is where the reader starts. Each iteration has
-      its own stable URL — earlier ones never disappear. */}
-  {caseIterations.length > 0 && (
-    <>
-      <h2 id="iterations">{t('iter.h2')}</h2>
-      <ul class="reset">
-        {caseIterations.map((it) => (
-          <li class="card">
-            <a class="card-link" href={`/${lang}/case-studies/${caseId}/${iterationSlug(it, caseIterations)}`}>
-              <strong>{localize(it.data.title, lang)}</strong>
-            </a>
-            <span class="tag" style="margin-left:.5rem">v{it.data.version}</span>
-            {it.id === current?.id && <span class="tag" style="margin-left:.3rem">{t('iter.current')}</span>}
-            <span class="muted small" style="margin-left:.5rem">{it.data.date.toISOString().slice(0, 10)}</span>
-            <p class="muted small" style="margin:.4rem 0 0">{localize(it.data.summary, lang)}</p>
-            <p class="muted small" style="margin:.3rem 0 0">
-              {perIteration.get(it.id)!.stories} {t('iter.stories')} · {perIteration.get(it.id)!.diagrams} {t('iter.diagrams')} · {perIteration.get(it.id)!.adrs} {t('iter.adr')}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </>
-  )}
-
-  {stakeholders.length > 0 && (
-    <>
-      <h2 id="stakeholders">{t('case.stakeholders')}</h2>
-      <ul class="reset">
-        {stakeholders.map((s) => (
-          <li class="card">
-            <strong>{s.data.name}</strong> — {localize(s.data.role, lang)}
-            <span class="tag" style="margin-left:.5rem">{t('case.influence')} {s.data.influence}</span>
-            {localize<string[]>(s.data.interests, lang)!.length > 0 && (
-              <p class="muted small" style="margin:.3rem 0 0">{t('case.interests')} {localize<string[]>(s.data.interests, lang)!.join(', ')}</p>
-            )}
-            {/* Who holds the role as a human, and where the assisting agents stop. On a site
-                about working with AI, leaving that implicit invites the opposite reading. */}
-            {localize(s.data.heldBy, lang) && (
-              <p class="small" style="margin:.3rem 0 0"><strong>{t('case.heldBy')}</strong> {localize(s.data.heldBy, lang)}</p>
-            )}
-            {localize(s.data.aiSupport, lang) && (
-              <p class="ai-note"><strong>{t('case.aiSupport')}</strong> {localize(s.data.aiSupport, lang)}</p>
-            )}
-          </li>
-        ))}
-      </ul>
-    </>
-  )}
 
   {looseDiagrams.length > 0 && (
     <>

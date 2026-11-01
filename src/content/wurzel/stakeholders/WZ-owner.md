@@ -5,6 +5,7 @@ role:
   de: GaLaBau-Betriebsinhaber (Endnutzer)
 case: wurzel
 order: 1
+party: client
 influence: high
 heldBy:
   en: A commercial landscaping contractor — a real business, not a persona. Where the application goes next is decided by that person, never by the AI and never by me alone.

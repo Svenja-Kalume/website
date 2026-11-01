@@ -5,7 +5,15 @@
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "node .claude/harness/session-reminder.mjs" }
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/harness/session-reminder.mjs" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/harness/git-guard.mjs" }
         ]
       }
     ],
@@ -13,7 +21,7 @@
       {
         "matcher": "Write|Edit",
         "hooks": [
-          { "type": "command", "command": "node .claude/harness/post-write.mjs" }
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/harness/post-write.mjs" }
         ]
       }
     ]

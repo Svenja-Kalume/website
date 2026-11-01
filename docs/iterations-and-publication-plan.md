@@ -149,8 +149,13 @@ Neither repo has a remote today.
       iteration, ADRs and diagrams as "N new per iteration".
 - [ ] The backfill in step 2.2 — recommended, never explicitly agreed. (Not the `introducedIn`
       backfill, which is done; this is the *rendering* question of regrouping the case-study page.)
-- [ ] Exemplar-selection criterion: richest **AI-override** story, or most **business-critical**
-      feature? They are rarely the same story. **Blocks stage 4.**
+- [x] Exemplar-selection criterion — settled 2026-10-24: **richest AI-override record first,
+      business-critical as the tie-break.** The site's thesis is human judgement over AI, and a
+      story where the AI was overruled proves it; what the application *does* the levels already
+      show. Applies from the next iteration's cut on; the published cuts stay as they are. The
+      size of the cut is now data too: an iteration records `storiesDone` (the level's `Done`
+      stories in the vault at the tag), so the site can show "15 of 24" instead of a total that
+      reads as everything.
 - [ ] Is Given/When/Then or EARS the house style for acceptance criteria? Measured 2026-08-02:
       **109 of 118** existing criteria are declarative-testable instead ("CustomerNumber is generated
       as yyyy-nnn"), which is a legitimate third style. `re:check` therefore reports shape as a
@@ -380,7 +385,7 @@ with `iterations`, `workflow`, `questions` and `journal` checklists.
   publish only Done work — means accepted, not merely built. No tag until it passes.
 - **The `acceptance-checklist.md` Level 2 criteria**, still never read; they could force the
   Level 2/3 re-cut to be redone, so read them *before* testing rather than after.
-- **The exemplar-selection criterion** (open, above).
+- **The exemplar-selection criterion** (settled 2026-10-24, above).
 
 Test failures are not a setback for the site: a story returning from `Done` is the gate working, and
 a failure with no answer in any artifact is an `OQ-` entry, not a defect.

@@ -3,8 +3,8 @@ title:
   en: wurzel — business admin for a landscaping trade
   de: wurzel — Betriebsverwaltung für den GaLaBau
 summary:
-  en: How a landscaping business gets a web app to manage customers, projects and priced offers — modelled requirements-first, built AI-assisted, every step under human judgement.
-  de: Wie ein Garten- und Landschaftsbaubetrieb eine Web-App für Kunden, Projekte und bepreiste Angebote bekommt — anforderungsgetrieben modelliert, KI-gestützt gebaut, jeder Schritt unter menschlichem Urteil.
+  en: Understanding what a small landscaping business needs and building the application that eases its paperwork — requirements-first, AI-assisted, every step under human judgement.
+  de: Verstehen, was ein kleiner GaLaBau-Betrieb braucht, und daraus die Anwendung entwickeln, die ihm die Papierarbeit erleichtert — anforderungsgetrieben, KI-gestützt, jeder Schritt unter menschlichem Urteil.
 intro:
   en:
     - A German landscaping and garden-maintenance business (Garten- und Landschaftsbau, sole proprietor or small team) quotes by hand — calculator, word processor, copy-paste between documents. Offers are hard to revise and nothing ties a job together. The goal — a usable web application, quickly — to manage customers, projects and offers in one simple workflow.
@@ -16,6 +16,10 @@ intro:
     - Diese Fallstudie verfolgt ein fachliches Problem durchgängig — von Problem und Stakeholdern über Glossar, Domänenmodell, Context Map und BPMN bis zu Anforderungen, User Stories, Architekturentscheidungen und Code. An jeder Station stehen das Artefakt, die Begründung („Warum habe ich mich so entschieden?“) und der KI-Anteil („Was hat die KI vorgeschlagen, was habe ich geändert?“).
     - Die Anwendung ist real, und die Arbeitsweise ist der Punkt. Stories werden von einem menschlichen Product Owner gegen explizite Akzeptanzkriterien und ein Readiness-Gate gegroomt; die Umsetzung übernehmen dann KI-Technician-Subagenten (Backend, Frontend, Tester), die parallel planen und test-first implementieren. Der Mensch besitzt Absicht, Scope und jedes Gate; die KI beschleunigt die mechanische Mitte.
     - "Der veröffentlichte Stand hat Level 4 erreicht (Tag 0.3.0). Level 3 ergänzte die Rechnungsstrecke — Abschlags- und Schlussrechnungen, das Rechnungsdokument und den Export, der eine Rechnung stellt und einfriert. Level 4 korrigiert diese Strecke gegen das, was drei manuelle Testdurchläufe gefunden haben. Level 1 bis 3 bleiben in der Iterations-Timeline sichtbar, und der lebende Stand entwickelt sich auf dem main-Branch weiter."
+lede:
+  en: Understanding the requirements of a small business owner and turning them into an application that eases their paperwork — for a real landscaping business in Germany, not a persona.
+  de: Anforderungen eines Kleinunternehmers verstehen und daraus eine Anwendung entwickeln, die ihm die Papierarbeiten erleichtert — für einen echten GaLaBau-Betrieb in Deutschland, keine Persona.
+workedExample: WZ-US-50
 status: active
 repoAccess: private
 repoNote:

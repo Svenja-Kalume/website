@@ -5,6 +5,13 @@ title:
 case: wurzel
 order: 5
 source: docs/epics.md
+levelSummary:
+  WZ-0.3.0-level-3:
+    en: "Issue and cancel invoices"
+    de: "Rechnungen stellen und stornieren"
+  WZ-0.3.0-level-4:
+    en: "Correct invoices"
+    de: "Rechnungen korrigieren"
 glossary: [WZ-rechnung, WZ-abschlagsrechnung, WZ-schlussrechnung, WZ-stornorechnung, WZ-rechnungsposition, WZ-rechnungsnummer, WZ-leistungszeitraum, WZ-zahlungsziel, WZ-kleinunternehmer, WZ-restmenge]
 requirements: [WZ-R-13, WZ-R-14, WZ-R-16]
 # Three requirements span topics and are therefore not claimed here: WZ-R-12 (the valid

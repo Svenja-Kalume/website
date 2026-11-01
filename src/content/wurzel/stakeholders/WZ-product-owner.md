@@ -1,10 +1,13 @@
 ---
-name: ProductOwner
+name:
+  en: Product Owner
+  de: Produktverantwortlicher
 role:
   en: Product Owner (grooming & readiness gate)
   de: Product Owner (Grooming & Readiness-Gate)
 case: wurzel
 order: 2
+party: self
 influence: high
 heldBy:
   en: Me. What is Ready, what is in scope and which way the product goes is decided here, whatever the agents propose.

@@ -1,0 +1,79 @@
+---
+/**
+ * Findings: what a human walk of the running application found that green tests and the
+ * agent review did not, each fixed as a story of its own. Counted from data — a story in
+ * a corrective iteration that `changes` an earlier one is one finding, fixed — so the
+ * number is "fixed as a story", not a raw count of everything the walks noted. Raw counts
+ * per iteration come from the optional `walkFindings` and are shown where they exist.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, localize, type Lang } from '../../i18n/ui';
+import { iterationLabel, walkFixes, type Iteration } from '../../lib/iterations';
+
+interface Props {
+  lang: Lang;
+  iterations: Iteration[];
+  stories: CollectionEntry<'user-stories'>[];
+  journal: CollectionEntry<'journal'>[];
+  workflow: CollectionEntry<'workflow'>[];
+  workedExample?: string;
+  /** Only the fixes this level wrote, on the level's own page. */
+  scope?: Iteration;
+  levelHref: (it: Iteration, anchor?: string) => string;
+}
+const { lang, iterations, stories, journal, workflow, workedExample, scope, levelHref } = Astro.props;
+const t = useTranslations(lang);
+const label = (it: Iteration) => iterationLabel(it, t('iter.level'));
+const byId = new Map(iterations.map((i) => [i.id, i]));
+const storyById = new Map(stories.map((s) => [s.id, s]));
+
+const fixes = walkFixes(iterations, stories).filter((f) => !scope || f.data.introducedIn?.id === scope.id);
+const caseIdOf = (s: CollectionEntry<'user-stories'>) => s.data.case.id;
+// Where each finding came from: the level of the story it corrects.
+const originOf = (s: CollectionEntry<'user-stories'>) => {
+  const old = storyById.get(s.data.changes[0].id);
+  return old?.data.introducedIn ? byId.get(old.data.introducedIn.id) : undefined;
+};
+const perOrigin = iterations
+  .map((it) => ({ it, fixes: fixes.filter((f) => originOf(f)?.id === it.id), raw: it.data.walkFindings }))
+  .filter((x) => x.fixes.length > 0 || x.raw !== undefined);
+const max = Math.max(1, ...perOrigin.map((x) => Math.max(x.fixes.length, x.raw ?? 0)));
+const walkedIds = new Set(perOrigin.map((x) => x.it.id));
+const walks = journal
+  .filter((j) => !j.data.draft && j.data.iteration && walkedIds.has(j.data.iteration.id) && j.data.tags.includes('testing'))
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const fixIts = new Set(fixes.map((f) => f.data.introducedIn?.id));
+const steps = workflow.filter((w) => w.data.introducedIn && fixIts.has(w.data.introducedIn.id));
+---
+<div class="kpis">
+  <div class="kpi"><span class="v">{fixes.length}</span><span class="l">{t('figp.find.fixed')}</span></div>
+  <div class="kpi"><span class="v">{perOrigin.map((x) => label(x.it)).join(', ')}</span><span class="l">{t('figp.find.from')}</span></div>
+  {steps.length > 0 && <div class="kpi"><span class="v">{steps.length}</span><span class="l">{t('figp.find.practice')}</span></div>}
+</div>
+<div class="bars">
+  {perOrigin.map((x) => (
+    <div class="bar">
+      <a class="lab" href={levelHref(x.it)}>{label(x.it)}</a>
+      <div class="track"><div class="segs"><span class="seg found" style={`width:${(x.fixes.length / max) * 100}%`}>{x.fixes.length}</span></div></div>
+      <span class="val"><b>{x.fixes.length}</b> {t('figp.find.fixedShort')}{x.raw !== undefined && ` · ${x.raw} ${t('figp.find.raw')}`}</span>
+    </div>
+  ))}
+</div>
+<ul class="reset fixlist">
+  {fixes.map((f) => {
+    const it = f.data.introducedIn ? byId.get(f.data.introducedIn.id) : undefined;
+    return (
+      <li>
+        <a href={it ? levelHref(it, f.id) : undefined}>{localize(f.data.title, lang)}</a>
+        <span class="muted">{t('walk.changes')} {f.data.changes.map((r) => r.id).join(', ')}</span>
+        {f.id === workedExample && <a class="chain" href={`/${lang}/traceability#worked-example-${caseIdOf(f)}`}>{t('walk.followChain')}</a>}
+      </li>
+    );
+  })}
+</ul>
+<div class="foot">
+  <span>
+    {walks.length > 0 && <>{t('walk.journal')} {walks.map((j, i) => <>{i > 0 && ', '}<a href={`/${lang}/journal/${j.id}`}>{localize(j.data.title, lang)}</a></>)}</>}
+  </span>
+  {steps.length > 0 && <span>{t('walk.practice')} {steps.map((w, i) => <>{i > 0 && '; '}<a href={`/${lang}/how-i-work#${w.id}`}>{localize(w.data.title, lang)}</a></>)}</span>}
+</div>

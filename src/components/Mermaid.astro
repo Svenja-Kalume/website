@@ -72,7 +72,14 @@ const described = describeMermaid(code);
     // A class with no attributes still got two empty compartments drawn under its name.
     class: { useMaxWidth: false, hideEmptyMembersBox: true },
   });
-  const run = () => mermaid.run({ querySelector: '.mermaid' });
+  // Diagrams render after the browser has already jumped to the URL's #anchor, and each
+  // one that grows above the target pushes it out of view. Once they are drawn, jump
+  // again — so a link to one decision record or story lands on it, not above it.
+  const toAnchor = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (id) document.getElementById(id)?.scrollIntoView();
+  };
+  const run = () => mermaid.run({ querySelector: '.mermaid' }).then(toAnchor, toAnchor);
   run();
   document.addEventListener('astro:page-load', run);
 </script>

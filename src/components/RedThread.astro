@@ -1,0 +1,74 @@
+---
+/**
+ * The red thread on the home page, drawn as a vertical line of stations.
+ *
+ * It replaced a Mermaid flowchart because the two things the diagram has to say are not
+ * boxes and arrows: that two of the stations are GATES, where a human decides, and where
+ * each gate sends work back to. A gate is drawn differently from a station, and its
+ * loop-backs are written under it as prose, so they translate like any other label.
+ *
+ * Plain HTML and CSS: no client-side script, readable as an ordered list without styles.
+ * The station set is the practice as it is now (the `workflow` collection names the same
+ * steps for practitioners); the labels live in `i18n/ui.ts`.
+ */
+import { useTranslations, type Lang, type UiKey } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+type Station = { key: string; sub?: boolean; gate?: boolean; loops?: string[] };
+const stations: Station[] = [
+  { key: 'problem' },
+  { key: 'stakeholders' },
+  { key: 'workshop' },
+  { key: 'glossary', sub: true },
+  { key: 'requirements', sub: true },
+  { key: 'stories' },
+  { key: 'gate', gate: true, loops: ['formal', 'question'] },
+  { key: 'architecture', sub: true },
+  { key: 'code', sub: true },
+  { key: 'walk', sub: true, gate: true, loops: ['finding'] },
+  { key: 'retro', loops: ['next'] },
+];
+const k = (s: string) => `thread.${s}` as UiKey;
+---
+<figure class="thread">
+  <ol>
+    {stations.map((s) => (
+      <li class:list={['st', { gate: s.gate }]}>
+        <span class="mark" aria-hidden="true"></span>
+        <div class="body">
+          <span class="name">{t(k(s.key))}</span>
+          {s.gate && <span class="visually-hidden"> ({t('thread.gateWord')})</span>}
+          {s.sub && <span class="sub">{t(k(`${s.key}.sub`))}</span>}
+          {s.loops && (
+            <ul class="loops">
+              {s.loops.map((l) => <li>{t(k(`${s.key}.${l}`))}</li>)}
+            </ul>
+          )}
+        </div>
+      </li>
+    ))}
+  </ol>
+  <figcaption>{t('thread.caption')}</figcaption>
+</figure>
+
+<style>
+  .thread { margin: 1.2rem 0 1.6rem; }
+  ol { list-style: none; margin: 0; padding: 0; }
+  .st { display: grid; grid-template-columns: 1.6rem 1fr; gap: .7rem; position: relative; padding-bottom: .75rem; }
+  /* The rail: a line from each mark down to the next one; the last station has none. */
+  .st::before { content: ""; position: absolute; left: calc(.8rem - 1px); top: 1.1rem; bottom: 0; width: 2px; background: var(--border); }
+  .st:last-child::before { display: none; }
+  .mark { width: 12px; height: 12px; margin: .4rem auto 0; border-radius: 50%; border: 2px solid var(--muted); background: var(--bg); position: relative; }
+  .gate .mark { width: 14px; height: 14px; border-radius: 2px; transform: rotate(45deg); border-color: var(--accent); background: var(--accent-soft); margin-top: .35rem; }
+  .body { min-width: 0; }
+  .name { font-weight: 700; color: var(--title); }
+  .gate .name { color: var(--accent); }
+  .sub { display: block; font-size: .875rem; color: var(--muted); }
+  .loops { list-style: none; margin: .35rem 0 0; padding: 0; display: grid; gap: .25rem; }
+  .loops li { font-size: .875rem; border-left: 2px solid var(--accent); padding: .1rem 0 .1rem .6rem; }
+  .st:not(.gate) .loops li { border-left-style: dashed; border-left-color: var(--muted); color: var(--muted); }
+  figcaption { margin-top: .4rem; padding-top: .8rem; border-top: 1px solid var(--border); font-weight: 600; color: var(--title); }
+</style>

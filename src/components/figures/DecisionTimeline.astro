@@ -1,0 +1,78 @@
+---
+/**
+ * Decision records on a time axis, coloured by KIND rather than by level: the level is
+ * already one click away, and the kind is what a reader scans for once architecture,
+ * product and design decisions sit side by side.
+ *
+ * The kind is DERIVED from the id (`WZ-ADR-006` → ADR), so a new kind needs no schema
+ * field and no edit to a published file — its records simply arrive with their own
+ * prefix. Kinds without a colour of their own fall back to a neutral one; the legend
+ * lists only the kinds present.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, localize, type Lang, type UiKey } from '../../i18n/ui';
+import { iterationLabel, type Iteration } from '../../lib/iterations';
+
+interface Props {
+  lang: Lang;
+  iterations: Iteration[];
+  adrs: CollectionEntry<'adr'>[];
+  levelHref: (it: Iteration | undefined, anchor?: string) => string | undefined;
+}
+const { lang, iterations, adrs, levelHref } = Astro.props;
+const t = useTranslations(lang);
+
+const KNOWN = ['ADR', 'PRD', 'DSR'];
+const kindOf = (id: string) => id.split('-').find((p) => /^[A-Z]{2,4}$/.test(p) && p !== id.split('-')[0]) ?? 'ADR';
+const kindClass = (k: string) => (KNOWN.includes(k) ? `k-${k.toLowerCase()}` : 'k-other');
+const kinds = [...new Set(adrs.map((a) => kindOf(a.id)))];
+const kindLabel = (k: string) => (KNOWN.includes(k) ? t(`figp.kind.${k.toLowerCase()}` as UiKey) : k);
+
+const dated = [...adrs].sort((a, b) => a.data.date.getTime() - b.data.date.getTime() || a.id.localeCompare(b.id));
+const day = (d: Date) => d.toISOString().slice(0, 10);
+const first = dated[0]?.data.date;
+const last = dated[dated.length - 1]?.data.date;
+// The axis runs from the first day of the first month to the last day of the last month.
+const start = first ? Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1) : 0;
+const end = last ? Date.UTC(last.getUTCFullYear(), last.getUTCMonth() + 1, 1) : 1;
+const x = (d: Date | number) => ((+d - start) / (end - start)) * 100;
+const months: { at: number; name: string }[] = [];
+for (let m = new Date(start); +m < end; m = new Date(Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1)))
+  months.push({ at: x(m), name: m.toLocaleString(lang, { month: 'short', timeZone: 'UTC' }) });
+
+const stackAt = new Map<string, number>();
+const dots = dated.map((a) => {
+  const k = stackAt.get(day(a.data.date)) ?? 0;
+  stackAt.set(day(a.data.date), k + 1);
+  return { a, k };
+});
+const busiest = [...stackAt.entries()].sort((p, q) => q[1] - p[1])[0];
+const superseded = new Set(adrs.map((a) => a.data.supersedes?.id).filter(Boolean));
+const byId = new Map(iterations.map((i) => [i.id, i]));
+const iterOf = (a: CollectionEntry<'adr'>) => (a.data.introducedIn ? byId.get(a.data.introducedIn.id) : undefined);
+const perLevel = iterations.map((it) => adrs.filter((a) => a.data.introducedIn?.id === it.id).length);
+---
+<div class="kpis">
+  <div class="kpi"><span class="v">{adrs.length - superseded.size} / {adrs.length}</span><span class="l">{t('figp.dec.current')}</span></div>
+  <div class="kpi"><span class="v">{perLevel.join(' · ')}</span><span class="l">{t('figp.dec.perLevel')}{iterations.length > 1 && ` (${iterationLabel(iterations[0], t('iter.level'))}–${iterationLabel(iterations[iterations.length - 1], t('iter.level'))})`}</span></div>
+  {busiest && busiest[1] > 1 && <div class="kpi"><span class="v">{busiest[1]}</span><span class="l">{t('figp.dec.sameDay')} {busiest[0]}</span></div>}
+</div>
+<div class="tl" role="img" aria-label={t('figp.dec.aria')}>
+  <span class="axis"></span>
+  {months.map((m) => <><span class="tick" style={`left:${m.at}%`}></span><span class="m" style={`left:${m.at}%`}>{m.name}</span></>)}
+  {dots.map(({ a, k }) => (
+    <span class:list={['d', kindClass(kindOf(a.id))]} style={`left:${x(a.data.date)}%;top:${1.25 - 0.8 * k}rem`} title={`${a.id} · ${day(a.data.date)}`}></span>
+  ))}
+</div>
+<ul class="reset declist">
+  {dated.map((a) => (
+    <li>
+      <span class:list={['sw', kindClass(kindOf(a.id))]}></span>
+      <a href={levelHref(iterOf(a), a.id)}><code>{a.id.replace(/^[A-Z]+-/, '')}</code> {localize(a.data.title, lang)}</a>
+    </li>
+  ))}
+</ul>
+<div class="foot">
+  <span class="legend">{kinds.map((k) => <span><span class:list={['sw', kindClass(k)]}></span>{kindLabel(k)}</span>)}</span>
+  <span>{t('figp.dec.legend')}</span>
+</div>
