@@ -66,7 +66,7 @@ const steps = workflow.filter((w) => w.data.introducedIn && fixIts.has(w.data.in
       <li>
         <a href={it ? levelHref(it, f.id) : undefined}>{localize(f.data.title, lang)}</a>
         <span class="muted">{t('walk.changes')} {f.data.changes.map((r) => r.id).join(', ')}</span>
-        {f.id === workedExample && <a class="chain" href={`/${lang}/traceability#worked-example-${caseIdOf(f)}`}>{t('walk.followChain')}</a>}
+        {f.id === workedExample && <a class="chain" href={`/${lang}/case-studies/${caseIdOf(f)}#worked-example-${caseIdOf(f)}`}>{t('walk.followChain')}</a>}
       </li>
     );
   })}
