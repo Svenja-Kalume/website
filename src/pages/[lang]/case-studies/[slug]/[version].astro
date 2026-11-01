@@ -126,7 +126,7 @@ const hasLessons = (localize<string[]>(iteration.data.lessons, lang) ?? []).leng
 const toc = [
   ...((hasProcessChanges || sameProcess) ? [{ href: '#process-changes', label: t('iter.processChanges') }] : []),
   ...(corrects.filter(Boolean).length > 0 ? [{ href: '#corrects', label: t('iter.corrects') }] : []),
-  ...(chainHere ? [{ href: `#chain-${chainHere.id}`, label: t('chain.h2') }] : []),
+  ...(chainHere ? [{ href: `#chain-${chainHere.id}`, label: localize(chainHere.data.title, lang) ?? chainHere.id }] : []),
   {
     href: '#introduced', label: t('iter.introduced'),
     children: [
