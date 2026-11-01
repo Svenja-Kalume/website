@@ -188,6 +188,7 @@ const toc = [
       <li><a href="#process-changes">{t('iter.processChanges')}</a></li>
     )}
     {corrects.filter(Boolean).length > 0 && <li><a href="#corrects">{t('iter.corrects')}</a></li>}
+    {chainHere && <li><a href={`#chain-${chainHere.id}`}>{localize(chainHere.data.title, lang)}</a></li>}
     <li>
       <a href="#introduced">{t('iter.introduced')}</a>
       {sections.length > 0 && (
