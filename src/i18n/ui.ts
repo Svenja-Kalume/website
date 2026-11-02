@@ -161,6 +161,7 @@ export const ui = {
     'walk.practice': 'What changed in the way of working:',
 
     'chain.h2': 'One defect, followed through the whole chain',
+    'chain.list.h2': 'Findings followed through the whole chain',
     'chain.intro': 'Every row is an artifact on this site, linked by the references it carries. Nothing on this chain was written for it.',
     'chain.requirement': 'Requirement',
     'chain.story': 'User story',
@@ -457,6 +458,7 @@ export const ui = {
     'walk.practice': 'Was sich an der Arbeitsweise geändert hat:',
 
     'chain.h2': 'Ein Fehler, durch die ganze Kette verfolgt',
+    'chain.list.h2': 'Befunde, durch die ganze Kette verfolgt',
     'chain.intro': 'Jede Zeile ist ein Artefakt dieser Website, verknüpft über die Referenzen, die es trägt. Nichts in dieser Kette wurde für sie geschrieben.',
     'chain.requirement': 'Anforderung',
     'chain.story': 'User Story',
