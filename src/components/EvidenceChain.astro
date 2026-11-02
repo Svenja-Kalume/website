@@ -72,8 +72,11 @@ if (fix) {
 }
 ---
 {rows.length > 0 && (
-  <section class="chain" id={`worked-example-${caseId}`}>
-    <h2>{t('chain.h2')}</h2>
+  <section class="chain" id={`chain-${storyId}`}>
+    {/* The shared phrase names the pattern; the heading names this finding by its fix, so
+        two chains never read the same in the overview list or the side contents. */}
+    <h2>{fix ? localize(fix.data.title, lang) : t('chain.h2')}</h2>
+    <p class="subtitle">{t('chain.h2')}</p>
     <p class="muted">{t('chain.intro')}</p>
     <ol class="reset">
       {rows.map((r) => (
@@ -91,6 +94,8 @@ if (fix) {
 
 <style>
   .chain { margin-top: 2.2rem; }
+  .chain h2 { margin-bottom: .2rem; }
+  .subtitle { margin: 0 0 .8rem; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
   .row { display: grid; grid-template-columns: 6.5rem 1fr; gap: .9rem; padding: .7rem 0; border-bottom: 1px solid var(--border); }
   .row:last-child { border-bottom: 0; }
   .id { font-family: var(--mono); font-size: .8rem; padding-top: .15rem; overflow-wrap: anywhere; }
