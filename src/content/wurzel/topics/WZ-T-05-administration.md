@@ -12,8 +12,11 @@ levelSummary:
   WZ-0.3.0-level-4:
     en: "Fix small-business setting"
     de: "Kleinunternehmer korrigieren"
+  WZ-0.4.0:
+    en: "Preset the VAT rate"
+    de: "Steuersatz voreinstellen"
 glossary: [WZ-dokumentennummer]
 # R-08 is an Offers requirement; only the company-settings story is Administration.
-stories: [WZ-US-21, WZ-US-59]
+stories: [WZ-US-21, WZ-US-59, WZ-US-82]
 diagrams: [WZ-company-settings]
 ---

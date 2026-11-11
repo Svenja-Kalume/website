@@ -26,7 +26,7 @@ export function tagCounts(entries: CollectionEntry<'journal'>[]): { tag: string;
  * A tag missing here lands in `other` rather than disappearing: a new tag shows up at once,
  * and the empty map entry is the reminder to place it.
  */
-export const tagGroups = ['domain', 'code', 'ai', 'other'] as const;
+export const tagGroups = ['domain', 'code', 'ai', 'artifacts', 'other'] as const;
 export type TagGroup = (typeof tagGroups)[number];
 
 const groupOf: Record<string, Exclude<TagGroup, 'other'>> = {
@@ -38,7 +38,6 @@ const groupOf: Record<string, Exclude<TagGroup, 'other'>> = {
   address: 'domain',
   lifecycle: 'domain',
   architecture: 'code',
-  adr: 'code',
   testing: 'code',
   'code-quality': 'code',
   simplification: 'code',
@@ -50,6 +49,12 @@ const groupOf: Record<string, Exclude<TagGroup, 'other'>> = {
   discovery: 'ai',
   'dead-end': 'ai',
   retro: 'ai',
+  // The kind of record an entry is about — a separate axis from its subject: an entry on
+  // how ADRs, BDRs, DSDRs and PRDs are kept apart belongs in one place, not three.
+  adr: 'artifacts',
+  bdr: 'artifacts',
+  dsdr: 'artifacts',
+  prd: 'artifacts',
 };
 
 export function tagGroup(tag: string): TagGroup {

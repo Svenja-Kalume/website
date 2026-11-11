@@ -213,6 +213,8 @@ th { background: var(--code-bg); }
 .trace-table td { overflow-wrap: break-word; hyphens: auto; }
 .trace-table code { font-size: .78rem; background: none; padding: 0; }
 .trace-table .cover { display: block; margin-top: .3rem; }
+.trace-table .src { display: block; margin-top: .3rem; }
+.trace-table .entity-tags { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .3rem; }
 .trace-table .lvgroup + .lvgroup { margin-top: .45rem; }
 .trace-table .lvname { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
 .trace-table .line { line-height: 1.4; padding: .1rem 0; }

@@ -22,8 +22,8 @@ interface Props {
 const { lang, iterations, adrs, levelHref } = Astro.props;
 const t = useTranslations(lang);
 
-const KNOWN = ['ADR', 'PRD', 'DSR'];
-const kindOf = (id: string) => id.split('-').find((p) => /^[A-Z]{2,4}$/.test(p) && p !== id.split('-')[0]) ?? 'ADR';
+const KNOWN = ['ADR', 'BDR', 'DSDR', 'PRD'];
+const kindOf = (id: string) => id.split('-').find((p) => /^[A-Z]{3,4}$/.test(p) && p !== id.split('-')[0]) ?? 'ADR';
 const kindClass = (k: string) => (KNOWN.includes(k) ? `k-${k.toLowerCase()}` : 'k-other');
 const kinds = [...new Set(adrs.map((a) => kindOf(a.id)))];
 const kindLabel = (k: string) => (KNOWN.includes(k) ? t(`figp.kind.${k.toLowerCase()}` as UiKey) : k);
