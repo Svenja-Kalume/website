@@ -82,7 +82,7 @@ const figures = [
   { key: 'criteria', n: criteriaOf(stories) },
   { key: 'adr', n: adrs.length },
   { key: 'diagrams', n: diagrams.length },
-  { key: 'findings', n: fixes.length },
+  { key: 'findings', n: fixes.length + shown.reduce((n, it) => n + (it.data.walkFixed ?? 0), 0) },
 ].filter((f) => f.n > 0);
 const k = (s: string) => `fig.${s}` as UiKey;
 // Each topic of the level, most stories first: the rows of the stories and criteria overlays.
@@ -329,7 +329,8 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .figures .tl .d { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg); transform: translateX(-50%); }
   .figures .k-adr { background: var(--accent); }
   .figures .k-prd { background: #2f5d8a; }
-  .figures .k-dsr { background: #b07a1f; }
+  .figures .k-bdr { background: #3f7d4e; }
+  .figures .k-dsdr { background: #b07a1f; }
   .figures .k-other { background: var(--muted); }
   .figures .declist { margin: .6rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0 1.2rem; font-size: .82rem; }
   .figures .declist li { display: flex; gap: .5rem; padding: .3rem 0; border-top: 1px solid var(--border); align-items: baseline; }

@@ -286,6 +286,23 @@ for (const tp of load('topics')) {
     if (!iterationIds.has(key)) errors.push(`${tp.file}: levelSummary key "${key}" is not an iteration id.`);
 }
 
+// Entities: every requirement depends on at least one (Kunde, Projekt, Angebot, Rechnung,
+// Plattform, UX). An untagged requirement silently drops out of every entity filter on the
+// traceability page, so a missing tag is an ERROR. The tag is written on the unversioned
+// entity's `requirements` list — never as a field on the (possibly frozen) requirement.
+const entities = load('entities');
+const taggedReq = new Set();
+for (const en of entities) {
+  checkRef(en.file, 'case', en.data.case, caseIds);
+  for (const r of en.data.requirements ?? []) {
+    checkRef(en.file, 'requirements', r, reqIds);
+    taggedReq.add(refId(r));
+  }
+}
+for (const r of requirements)
+  if (!taggedReq.has(r.id))
+    errors.push(`${r.file}: requirement ${r.id} has no entity tag. Add it to the \`requirements\` list of at least one file in \`entities/\`.`);
+
 const storyById = new Map(stories.map((s) => [s.id, s]));
 const stakeholderIds = ids(load('stakeholders'));
 for (const q of questions) {
