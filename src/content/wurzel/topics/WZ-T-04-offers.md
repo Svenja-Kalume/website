@@ -18,8 +18,11 @@ levelSummary:
   WZ-0.3.0-level-4:
     en: "Save before export"
     de: "Vor Export speichern"
+  WZ-0.4.0:
+    en: "Quote in parts, keep every version"
+    de: "In Teilen anbieten, jede Version behalten"
 glossary: [WZ-angebot, WZ-angebotsposition, WZ-snapshot]
-requirements: [WZ-R-04, WZ-R-08]
+requirements: [WZ-R-04, WZ-R-08, WZ-R-19, WZ-R-20]
 # The repo records these as cross-cutting, with Offers as the primary epic: the behaviour
 # is the open offer absorbing a position change, and the outcome of the shortcut is an offer.
 stories: [WZ-US-10, WZ-US-31, WZ-US-32, WZ-US-48, WZ-US-62]
