@@ -175,10 +175,6 @@ const toc = [
   {/* The same key figures as the case study, counted for this level only. */}
   <CaseFigures lang={lang} caseId={caseEntry.id} iterations={caseIterations} scope={iteration} workedExample={caseEntry.data.workedExample?.id} />
 
-  {iteration.data.blocks.length > 0 && (
-    <p class="small muted">{t('iter.blocks')} {iteration.data.blocks.join(' · ')}</p>
-  )}
-
   {/* Every section of this page, in the order it appears, with the sub-chapters nested
       under the one that introduces them. Derived from what actually renders — a section
       the contents list omits is a section the reader never learns is there, which is how

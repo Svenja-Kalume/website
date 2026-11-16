@@ -1,7 +1,7 @@
 ---
 title:
   en: "A locked offer shows only the lines it showed"
-  de: "Ein gesperrtes Angebot zeigt nur die Zeilen, die es zeigte"
+  de: "Ein gesperrtes Angebot zeigt nur Positionen, die es auch selbst angeboten hatte"
 case: wurzel
 asA:
   en: "a landscaping business owner"

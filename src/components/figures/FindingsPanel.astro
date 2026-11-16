@@ -54,7 +54,12 @@ const steps = workflow.filter((w) => w.data.introducedIn && fixIts.has(w.data.in
 ---
 <div class="kpis">
   <div class="kpi"><span class="v">{total}</span><span class="l">{t('figp.find.fixed')}</span></div>
-  <div class="kpi"><span class="v">{perOrigin.map((x) => label(x.it)).join(', ')}</span><span class="l">{t('figp.find.from')}</span></div>
+  {/* Only on a level page that recorded its walks' raw count: a sum on the case page
+      would cover just the levels that recorded one and read as the whole. There it takes
+      the place of "walked and corrected", which on such a page names only the level itself. */}
+  {scope?.data.walkFindings !== undefined
+    ? <div class="kpi"><span class="v">{scope.data.walkFindings}</span><span class="l">{t('figp.find.found')}</span></div>
+    : <div class="kpi"><span class="v">{perOrigin.map((x) => label(x.it)).join(', ')}</span><span class="l">{t('figp.find.from')}</span></div>}
   {steps.length > 0 && <div class="kpi"><span class="v">{steps.length}</span><span class="l">{t('figp.find.practice')}</span></div>}
 </div>
 <div class="bars">
