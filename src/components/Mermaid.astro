@@ -11,10 +11,12 @@
 //     picture — so it is always rendered, always for assistive technology, never in sight.
 //     A caption is no substitute for it: prose about a diagram is not the diagram.
 import { describeMermaid } from '../lib/mermaid-text';
+import { toLang, useTranslations } from '../i18n/ui';
 
 interface Props { code: string; caption?: string; }
 const { code, caption } = Astro.props;
 const described = describeMermaid(code);
+const t = useTranslations(toLang(Astro.params.lang));
 ---
 <figure class="mermaid-figure">
   {/* Hidden from assistive technology on purpose, in both of its states: before the script
@@ -24,6 +26,15 @@ const described = describeMermaid(code);
   <div class="mermaid-wrap" aria-hidden="true">
     <pre class="mermaid">{code}</pre>
   </div>
+  {/* Shown only when the diagram cannot fit the column at full size (see the script). */}
+  <button type="button" class="mermaid-full" hidden>{t('diagram.full')}</button>
+  <dialog class="mermaid-dialog" aria-label={caption || t('diagram.full')}>
+    <div class="mermaid-dialog-bar">
+      <button type="button" class="mermaid-close">{t('diagram.close')}</button>
+    </div>
+    <div class="mermaid-dialog-body" aria-hidden="true"></div>
+    {described && <p class="visually-hidden">{described}</p>}
+  </dialog>
   {caption && <figcaption class="muted small">{caption}</figcaption>}
   {described && <figcaption class="visually-hidden">{described}</figcaption>}
 </figure>
@@ -32,13 +43,56 @@ const described = describeMermaid(code);
   .mermaid-figure { margin: 0 0 1.4rem; }
   .mermaid-figure figcaption { margin-top: .5rem; }
 
-  /* Mermaid scales an SVG down to fit its container, and the page measure is narrow
-     (--max: 46rem). A wide graph with prose labels therefore shrank until the text was
-     unreadable. Scrolling a wide diagram is better than shrinking every diagram: the
-     labels keep their size, and only the graphs that genuinely do not fit ask the reader
-     to scroll. `useMaxWidth: false` below is the other half of this. */
+  /* A diagram is read at its labels' size or not at all. Mermaid's own answer to a graph
+     wider than its box is to scale it down, and with the narrow page measure (--max: 46rem)
+     that shrank prose labels until they could not be read; a horizontal scrollbar instead
+     hides half the graph behind a gesture. The rule now (fitDiagram in the script below):
+       1. a diagram that fits is drawn as authored, at natural size — nothing changes;
+       2. a flowchart that does not fit is laid out again: the same source with its flow
+          direction turned (TD <-> LR), then both directions with tighter spacing and a
+          narrower label wrap, so long labels break onto more lines instead of widening the
+          boxes. The first layout that fits wins, otherwise the narrowest. Only the
+          direction token and layout settings change — never a node, edge or label — and
+          only in the browser: the published source is untouched, the turn is presentation;
+       3. a diagram still too wide (most of them on a phone) is shown scaled to the column
+          as a preview of its shape, with a button under it that opens it at full size in
+          a dialog, scrollable there. The labels are never read small: the preview is a map,
+          the dialog is where the diagram is read.
+     `useMaxWidth: false` below keeps Mermaid at natural size so the script alone decides. */
   .mermaid-wrap { overflow-x: auto; }
-  .mermaid-wrap :global(svg) { max-width: none; height: auto; }
+  .mermaid-wrap :global(svg) { max-width: none; height: auto; display: block; }
+  /* The global `pre` rule gives the inner <pre> its own padding, background and overflow,
+     which made it a second scroller that clipped the SVG. */
+  .mermaid-wrap :global(pre.mermaid) {
+    margin: 0; padding: 0; background: none; border-radius: 0; overflow: visible;
+  }
+  .mermaid-wrap.preview { overflow: hidden; cursor: zoom-in; }
+
+  /* Sits under the box: the wrapper's bottom margin (global.css) is pulled in. */
+  .mermaid-full {
+    margin-top: -.7rem; padding: 0; border: 0; background: none;
+    font: inherit; font-size: .9rem; color: var(--accent); cursor: pointer;
+  }
+  .mermaid-full:hover { color: var(--accent-strong); text-decoration: underline; }
+
+  .mermaid-dialog {
+    padding: 0; border: 1px solid var(--border); border-radius: 4px;
+    background: var(--bg); color: var(--fg);
+    width: max-content; max-width: calc(100vw - 2rem); max-height: calc(100vh - 2rem);
+    overflow: hidden;
+  }
+  .mermaid-dialog[open] { display: flex; flex-direction: column; }
+  .mermaid-dialog::backdrop { background: rgb(0 0 0 / .45); }
+  .mermaid-dialog-bar {
+    display: flex; justify-content: flex-end;
+    padding: .4rem .6rem; border-bottom: 1px solid var(--border);
+  }
+  .mermaid-close {
+    font: inherit; font-size: .9rem; padding: .2rem .7rem; cursor: pointer;
+    background: var(--bg); color: var(--fg); border: 1px solid var(--border); border-radius: 3px;
+  }
+  .mermaid-dialog-body { overflow: auto; padding: 1rem; min-height: 0; }
+  .mermaid-dialog-body :global(svg) { max-width: none; display: block; }
 </style>
 
 <script>
@@ -55,16 +109,27 @@ const described = describeMermaid(code);
       noteTextColor: '#222',
       noteBorderColor: '#bbb',
     },
-    // Render at natural size; .mermaid-wrap scrolls when that is wider than the measure.
+    // Render at natural size; fitDiagram picks the layout and decides the fallback.
     // The spacing is tighter than the default because these graphs are small and were
     // reading as a scatter of boxes with a lot of air between them.
     flowchart: {
       useMaxWidth: false,
-      nodeSpacing: 34,
-      rankSpacing: 44,
+      nodeSpacing: 28,
+      rankSpacing: 34,
       padding: 8,
       subGraphTitleMargin: { top: 4, bottom: 10 },
     },
+    // A decision diamond is drawn square, with a side of its label's width PLUS its height,
+    // so a label wrapped wide (two lines of ~190px) made a diamond ~260px tall that was
+    // mostly empty. Wrapped narrower its side shrinks: each extra line adds one line height
+    // and removes far more width. The rule is applied while Mermaid measures the label
+    // (the stylesheet sits in the SVG before drawing) and only to nodes marked by
+    // markDecisions below; a word longer than the wrap widens the box rather than spilling
+    // out of it. Font size is untouched.
+    themeCSS: `.mmd-decision .label div {
+      display: inline-block !important; white-space: normal !important;
+      width: auto !important; max-width: 100px !important; min-width: min-content !important;
+    }`,
     // mirrorActors repeats the whole actor row under the diagram, which doubles its height
     // and says nothing the row at the top has not already said.
     sequence: { useMaxWidth: false, mirrorActors: false, actorMargin: 18, width: 100, boxMargin: 8 },
@@ -79,7 +144,144 @@ const described = describeMermaid(code);
     const id = decodeURIComponent(location.hash.slice(1));
     if (id) document.getElementById(id)?.scrollIntoView();
   };
-  const run = () => mermaid.run({ querySelector: '.mermaid' }).then(toAnchor, toAnchor);
+
+  // Layouts tried for a flowchart that does not fit, in order (rule in the style block).
+  // Tight: less air between boxes, and labels wrap at 130px instead of 200px. The font
+  // size is never part of a layout.
+  const TIGHT = '%%{init: {"flowchart": {"wrappingWidth": 130, "nodeSpacing": 22, "rankSpacing": 28}}}%%\n';
+  const HEADER = /^(\s*(?:flowchart|graph)(?:-elk)?)(?:[ \t]+(TD|TB|BT|LR|RL))?[ \t]*;?[ \t]*$/;
+  const FLIP: Record<string, string> = { TD: 'LR', TB: 'LR', BT: 'RL', LR: 'TD', RL: 'BT' };
+  /** The source with its flowchart direction turned, or null when it is not a flowchart. */
+  const flipped = (src: string): string | null => {
+    const lines = src.split('\n');
+    const i = lines.findIndex((l) => l.trim() && !l.trim().startsWith('%%'));
+    const m = i < 0 ? null : lines[i].match(HEADER);
+    if (!m) return null;
+    lines[i] = `${m[1]} ${FLIP[m[2] ?? 'TD']}`;
+    return lines.join('\n');
+  };
+  /** A flowchart with its decision nodes (`id{…}`, not the `{{…}}` hexagon) given the
+   *  class the decision-label rule in `themeCSS` targets. Appends one `class` line — no
+   *  node, edge or label changes, and only in the browser, like the turn above. */
+  const markDecisions = (src: string): string => {
+    const head = src.split('\n').find((l) => l.trim() && !l.trim().startsWith('%%'));
+    if (!head || !HEADER.test(head)) return src;
+    const bare = src.replace(/"[^"]*"/g, '""').replace(/\|[^|\n]*\|/g, '||').replace(/^\s*%%.*$/gm, '');
+    const ids = new Set([...bare.matchAll(/([A-Za-z0-9_]+)\{(?!\{)/g)].map((m) => m[1]));
+    return ids.size ? `${src}\n  class ${[...ids].join(',')} mmd-decision` : src;
+  };
+
+  type Layout = { svg: string; width: number; height: number; bind?: (el: Element) => void };
+  type Diagram = { src: string; layouts: Map<string, Layout>; chosen?: string };
+  const diagrams = new WeakMap<HTMLElement, Diagram>();
+  let seq = 0;
+
+  const layout = async (d: Diagram, key: string, text: string): Promise<Layout> => {
+    const have = d.layouts.get(key);
+    if (have) return have;
+    const { svg, bindFunctions } = await mermaid.render(`mmd-${seq++}`, markDecisions(text));
+    // Read from the markup: the SVG holds HTML labels (<br>) that are not well-formed XML.
+    const box = svg.match(/<svg[^>]*\sviewBox="([^"]+)"/)?.[1].split(/[\s,]+/).map(Number) ?? [];
+    const got = { svg, width: box[2] || 0, height: box[3] || 0, bind: bindFunctions };
+    d.layouts.set(key, got);
+    return got;
+  };
+
+  const fitDiagram = async (wrap: HTMLElement) => {
+    const d = diagrams.get(wrap);
+    if (!d) return;
+    const cs = getComputedStyle(wrap);
+    const room = wrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if (room <= 0) {
+      // Not laid out (a hidden figure): draw as authored; the observer refits once shown.
+      const l = await layout(d, 'authored', d.src);
+      if (d.chosen !== 'authored') { wrap.innerHTML = l.svg; l.bind?.(wrap); d.chosen = 'authored'; }
+      wrap.dataset.layout = 'authored';
+      return;
+    }
+    const turned = flipped(d.src);
+    const candidates: [string, string][] = [['authored', d.src]];
+    if (turned) candidates.push(['turned', turned], ['tight', TIGHT + d.src], ['turned-tight', TIGHT + turned]);
+    let best: [string, Layout] | null = null;
+    for (const [key, text] of candidates) {
+      const l = await layout(d, key, text);
+      if (!best || l.width < best[1].width) best = [key, l];
+      if (l.width <= room + 0.5) { best = [key, l]; break; }
+    }
+    if (!best) return;
+    const [key, l] = best;
+    if (d.chosen !== key) {
+      wrap.innerHTML = l.svg;
+      l.bind?.(wrap);
+      d.chosen = key;
+    }
+    const svg = wrap.querySelector('svg')!;
+    if (!l.width) return; // no viewBox to measure: leave Mermaid's own sizing
+    const fits = l.width <= room + 0.5;
+    const scale = fits ? 1 : room / l.width;
+    svg.style.width = `${l.width * scale}px`;
+    svg.style.height = `${l.height * scale}px`;
+    wrap.dataset.layout = key;
+    wrap.dataset.scale = scale.toFixed(3);
+    wrap.classList.toggle('preview', !fits);
+    const fig = wrap.closest('figure')!;
+    fig.querySelector<HTMLButtonElement>('.mermaid-full')!.hidden = fits;
+  };
+
+  const openFull = (fig: HTMLElement) => {
+    const wrap = fig.querySelector<HTMLElement>('.mermaid-wrap')!;
+    const svg = wrap.querySelector('svg');
+    const dialog = fig.querySelector<HTMLDialogElement>('.mermaid-dialog')!;
+    if (!svg || dialog.open) return;
+    const body = dialog.querySelector('.mermaid-dialog-body')!;
+    const copy = svg.cloneNode(true) as SVGSVGElement;
+    const l = diagrams.get(wrap)!.layouts.get(wrap.dataset.layout!)!;
+    copy.style.width = `${l.width}px`;
+    copy.style.height = `${l.height}px`;
+    body.replaceChildren(copy);
+    dialog.showModal();
+  };
+
+  const wire = (fig: HTMLElement) => {
+    if (fig.dataset.wired) return;
+    fig.dataset.wired = '1';
+    const button = fig.querySelector<HTMLButtonElement>('.mermaid-full')!;
+    const dialog = fig.querySelector<HTMLDialogElement>('.mermaid-dialog')!;
+    const wrap = fig.querySelector<HTMLElement>('.mermaid-wrap')!;
+    button.addEventListener('click', () => openFull(fig));
+    wrap.addEventListener('click', () => { if (wrap.classList.contains('preview')) openFull(fig); });
+    dialog.querySelector('.mermaid-close')!.addEventListener('click', () => dialog.close());
+    // A click on the backdrop lands on the <dialog> itself; one inside lands on its content.
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => {
+      dialog.querySelector('.mermaid-dialog-body')!.replaceChildren();
+      if (!button.hidden) button.focus();
+    });
+  };
+
+  // Refit when a column changes width: a resize, or a figure that was hidden (room 0) and
+  // is shown. Only the width matters; the wrapper's height follows the SVG.
+  const widths = new WeakMap<HTMLElement, number>();
+  const observer = new ResizeObserver((entries) => {
+    for (const { target } of entries) {
+      const wrap = target as HTMLElement;
+      if (widths.get(wrap) === wrap.clientWidth) continue;
+      widths.set(wrap, wrap.clientWidth);
+      fitDiagram(wrap).catch(console.error);
+    }
+  });
+
+  const run = async () => {
+    for (const wrap of document.querySelectorAll<HTMLElement>('.mermaid-wrap')) {
+      const pre = wrap.querySelector('pre.mermaid');
+      if (!diagrams.has(wrap) && pre) diagrams.set(wrap, { src: pre.textContent ?? '', layouts: new Map() });
+      wire(wrap.closest('figure')!);
+      widths.set(wrap, wrap.clientWidth);
+      try { await fitDiagram(wrap); } catch (e) { console.error(e); }
+      observer.observe(wrap);
+    }
+    toAnchor();
+  };
   run();
   document.addEventListener('astro:page-load', run);
 </script>
