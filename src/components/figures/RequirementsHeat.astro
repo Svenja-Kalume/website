@@ -60,7 +60,9 @@ const rows = requirements.map((r) => {
     r, cells, first, priority, total: own.length, laterStories: laterStories.length, laterLevels,
     priorStories: priorStories.length, priorLevels,
     // Picked up again AFTER it was introduced: a later column here, or a later level off-page.
-    revisited: first >= 0 && (cells.some((n, i) => n > 0 && i > first) || laterStories.length > 0),
+    // A later level counts even for a requirement introduced before this table's first column:
+    // on a level page it was worked on here AND picked up again afterwards.
+    revisited: (first >= 0 && cells.some((n, i) => n > 0 && i > first)) || laterStories.length > 0,
   };
 });
 const groups = [

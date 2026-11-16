@@ -82,7 +82,7 @@ const figures = [
   { key: 'criteria', n: criteriaOf(stories) },
   { key: 'adr', n: adrs.length },
   { key: 'diagrams', n: diagrams.length },
-  { key: 'findings', n: fixes.length },
+  { key: 'findings', n: fixes.length + shown.reduce((n, it) => n + (it.data.walkFixed ?? 0), 0) },
 ].filter((f) => f.n > 0);
 const k = (s: string) => `fig.${s}` as UiKey;
 // Each topic of the level, most stories first: the rows of the stories and criteria overlays.
@@ -147,11 +147,13 @@ const panelId = (key: string) => `fig-panel-${key}`;
   // and a click anywhere outside the figures.
   for (const section of document.querySelectorAll<HTMLElement>('.figures')) {
     const tiles = [...section.querySelectorAll<HTMLButtonElement>('button.tile')];
-    // An overlay hangs from the card that opened it: its top edge at the card's bottom,
-    // the pointer above the card's centre. Offsets are relative to `.figures`.
+    // An overlay hangs below the whole grid of cards, the pointer above the centre of the
+    // card that opened it. Hanging it from the card itself covered the second row whenever
+    // the cards wrap (five or more). Offsets are relative to `.figures`.
+    const grid = section.querySelector<HTMLElement>('.tiles')!;
     const place = (tile: HTMLButtonElement, panel: HTMLElement) => {
       if (!panel.classList.contains('overlay')) return;
-      panel.style.top = `${tile.offsetTop + tile.offsetHeight}px`;
+      panel.style.top = `${grid.offsetTop + grid.offsetHeight}px`;
       // Measured on screen: a wide panel is centred on the page, not on the column.
       const tr = tile.getBoundingClientRect();
       panel.style.setProperty('--pointer-x', `${tr.left + tr.width / 2 - panel.getBoundingClientRect().left}px`);
@@ -315,7 +317,9 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .figures .fixline { position: absolute; left: 0; top: calc(100% + 3px); height: 4px; border-radius: 2px; background: var(--human); }
   .figures .sw.fix { background: var(--human); height: 4px; border-radius: 2px; vertical-align: 2px; }
   .figures .fixnote { color: var(--human); font-weight: 600; }
-  .figures .bar .val { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  /* Wraps inside its fixed column: a nowrap label ran out of the panel when it was longer
+     than the column ("13 behoben · 14 in den Durchgängen notiert"). */
+  .figures .bar .val { line-height: 1.35; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
   .figures .bar .val b { color: var(--title); }
   .figures .dotline { position: relative; height: 18px; }
   .figures .dotline .rail { position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: var(--border); }
@@ -329,7 +333,8 @@ const panelId = (key: string) => `fig-panel-${key}`;
   .figures .tl .d { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg); transform: translateX(-50%); }
   .figures .k-adr { background: var(--accent); }
   .figures .k-prd { background: #2f5d8a; }
-  .figures .k-dsr { background: #b07a1f; }
+  .figures .k-bdr { background: #3f7d4e; }
+  .figures .k-dsdr { background: #b07a1f; }
   .figures .k-other { background: var(--muted); }
   .figures .declist { margin: .6rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0 1.2rem; font-size: .82rem; }
   .figures .declist li { display: flex; gap: .5rem; padding: .3rem 0; border-top: 1px solid var(--border); align-items: baseline; }

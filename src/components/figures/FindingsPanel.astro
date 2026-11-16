@@ -1,9 +1,9 @@
 ---
 /**
  * Findings: what a human walk of the running application found that green tests and the
- * agent review did not, each fixed as a story of its own. Counted from data — a story in
- * a corrective iteration that `changes` an earlier one is one finding, fixed — so the
- * number is "fixed as a story", not a raw count of everything the walks noted. Raw counts
+ * agent review did not. Counted from data: a story in a corrective iteration that `changes`
+ * an earlier one is one finding, fixed; a level that fixed its findings before sign-off
+ * states how many in `walkFixed`. Both count the same — not a raw count of everything noted. Raw counts
  * per iteration come from the optional `walkFindings` and are shown where they exist.
  */
 import type { CollectionEntry } from 'astro:content';
@@ -33,28 +33,41 @@ const originOf = (s: CollectionEntry<'user-stories'>) => {
   const old = storyById.get(s.data.changes[0].id);
   return old?.data.introducedIn ? byId.get(old.data.introducedIn.id) : undefined;
 };
+// A level's own walk counts appear on the case page and on that level's page only.
+const own = (it: Iteration) => !scope || scope.id === it.id;
 const perOrigin = iterations
-  .map((it) => ({ it, fixes: fixes.filter((f) => originOf(f)?.id === it.id), raw: it.data.walkFindings }))
-  .filter((x) => x.fixes.length > 0 || x.raw !== undefined);
-const max = Math.max(1, ...perOrigin.map((x) => Math.max(x.fixes.length, x.raw ?? 0)));
+  .map((it) => {
+    const stories = fixes.filter((f) => originOf(f)?.id === it.id);
+    // Fixed as a story of a corrective level, or inside the level before sign-off.
+    const fixed = stories.length + (own(it) ? it.data.walkFixed ?? 0 : 0);
+    return { it, fixed, raw: own(it) ? it.data.walkFindings : undefined };
+  })
+  .filter((x) => x.fixed > 0 || x.raw !== undefined);
+const total = perOrigin.reduce((n, x) => n + x.fixed, 0);
+const max = Math.max(1, ...perOrigin.map((x) => Math.max(x.fixed, x.raw ?? 0)));
 const walkedIds = new Set(perOrigin.map((x) => x.it.id));
 const walks = journal
   .filter((j) => !j.data.draft && j.data.iteration && walkedIds.has(j.data.iteration.id) && j.data.tags.includes('testing'))
   .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
-const fixIts = new Set(fixes.map((f) => f.data.introducedIn?.id));
+const fixIts = new Set([...fixes.map((f) => f.data.introducedIn?.id), ...perOrigin.filter((x) => x.it.data.walkFixed).map((x) => x.it.id)]);
 const steps = workflow.filter((w) => w.data.introducedIn && fixIts.has(w.data.introducedIn.id));
 ---
 <div class="kpis">
-  <div class="kpi"><span class="v">{fixes.length}</span><span class="l">{t('figp.find.fixed')}</span></div>
-  <div class="kpi"><span class="v">{perOrigin.map((x) => label(x.it)).join(', ')}</span><span class="l">{t('figp.find.from')}</span></div>
+  <div class="kpi"><span class="v">{total}</span><span class="l">{t('figp.find.fixed')}</span></div>
+  {/* Only on a level page that recorded its walks' raw count: a sum on the case page
+      would cover just the levels that recorded one and read as the whole. There it takes
+      the place of "walked and corrected", which on such a page names only the level itself. */}
+  {scope?.data.walkFindings !== undefined
+    ? <div class="kpi"><span class="v">{scope.data.walkFindings}</span><span class="l">{t('figp.find.found')}</span></div>
+    : <div class="kpi"><span class="v">{perOrigin.map((x) => label(x.it)).join(', ')}</span><span class="l">{t('figp.find.from')}</span></div>}
   {steps.length > 0 && <div class="kpi"><span class="v">{steps.length}</span><span class="l">{t('figp.find.practice')}</span></div>}
 </div>
 <div class="bars">
   {perOrigin.map((x) => (
     <div class="bar">
       <a class="lab" href={levelHref(x.it)}>{label(x.it)}</a>
-      <div class="track"><div class="segs"><span class="seg found" style={`width:${(x.fixes.length / max) * 100}%`}>{x.fixes.length}</span></div></div>
-      <span class="val"><b>{x.fixes.length}</b> {t('figp.find.fixedShort')}{x.raw !== undefined && ` · ${x.raw} ${t('figp.find.raw')}`}</span>
+      <div class="track"><div class="segs"><span class="seg found" style={`width:${(x.fixed / max) * 100}%`}>{x.fixed}</span></div></div>
+      <span class="val"><b>{x.fixed}</b> {t('figp.find.fixedShort')}{x.raw !== undefined && ` · ${x.raw} ${t('figp.find.raw')}`}</span>
     </div>
   ))}
 </div>

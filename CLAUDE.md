@@ -126,7 +126,11 @@ both (`website-build.yaml` runs `re:check` before the build, so an error stops t
   frontmatter shape → update the schema here. Content location is configurable via `CONTENT_DIR`.
 - **`src/content/<project>/<collection>/`** — content as Markdown. Collections: `case-studies`,
   `iterations`, `stakeholders`, `glossary`, `requirements`, `epics`, `topics`, `user-stories`,
-  `adr`, `diagrams`, `workflow`, `questions`, `journal`.
+  `adr`, `diagrams`, `workflow`, `questions`, `journal`, `entities`.
+  `entities` tags requirements by what they depend on (Kunde, Projekt, Angebot, Rechnung,
+  Plattform, UX) for the traceability filter. Like a topic it is unversioned, and its
+  `requirements` list is the membership — never a field on a published requirement.
+  **Every requirement needs at least one tag**; `re:check` errors on an untagged one.
   `topics` groups a level's artifacts into domain sub-chapters. The set is **not invented for
   the site**: it is the project's own epic spine (wurzel: `docs/epics.md` — Customers, Projects,
   Positions, Offers, Administration, Navigation & UX, Platform), cited per topic in `source`.

@@ -152,6 +152,10 @@ const iterations = defineCollection({
     // backfilled: iterations published before the field existed keep no count, and a
     // chart of the counts waits until enough iterations carry one.
     walkFindings: z.number().int().nonnegative().optional(),
+    // How many of those findings were fixed inside the same iteration, before sign-off,
+    // rather than as stories of a later corrective iteration (`corrects`). Counted with
+    // those stories in "findings fixed": a fix is a fix, wherever it was delivered.
+    walkFixed: z.number().int().nonnegative().optional(),
     // How many `Done` stories the vault holds for this level at the tag — the pool the
     // published stories were curated from (the guardrail allows 15–25 per iteration). Lets
     // the site say "15 of 24" instead of a total that reads as all the work. Optional and
@@ -461,6 +465,27 @@ const journal = defineCollection({
   }),
 });
 
+/**
+ * What a requirement depends on (Kunde, Projekt, Angebot, Rechnung, Plattform, UX) — a
+ * second lens on the requirements, next to the level, for the traceability filter. A
+ * requirement can depend on several and needs at least one: an untagged requirement would
+ * drop out of every entity filter, so `re:check` errors on it.
+ *
+ * Membership is stated HERE, on the unversioned entity, never as a field on a requirement:
+ * a published requirement is frozen, and tagging must not edit history. Like a topic, an
+ * entity is not versioned — it is a lens, not something a release ships.
+ */
+const entities = defineCollection({
+  loader: base('entities'),
+  schema: z.object({
+    title: loc,
+    case: reference('case-studies'),
+    // Order of the filter chips.
+    order: z.number(),
+    requirements: z.array(reference('requirements')).default([]),
+  }),
+});
+
 export const collections = {
   'case-studies': caseStudies,
   iterations,
@@ -469,6 +494,7 @@ export const collections = {
   requirements,
   epics,
   topics,
+  entities,
   'user-stories': userStories,
   adr,
   diagrams,

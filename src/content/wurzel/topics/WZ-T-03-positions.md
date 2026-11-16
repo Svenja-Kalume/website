@@ -15,6 +15,9 @@ levelSummary:
   WZ-0.3.0-level-4:
     en: "Keep edits"
     de: "Bearbeitung erhalten"
+  WZ-0.4.0:
+    en: "Order positions"
+    de: "Positionen ordnen"
 glossary: [WZ-projektposition, WZ-positionspreis, WZ-einheit, WZ-arbeitszeit]
 requirements: [WZ-R-03]
 stories: [WZ-US-56]
