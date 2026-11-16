@@ -8,9 +8,6 @@ tool: Mermaid
 caption:
   en: "A position counts as billed once it is on an invoice that is not cancelled. Each way of putting positions on an offer treats it differently on screen — left out silently, shown greyed with a reason, or refused at save — but none of them lets it through, and the server enforces the same rule for requests that do not come from the screens. A line already on an open offer is never removed by billing."
   de: "Eine Position gilt als abgerechnet, sobald sie auf einer nicht stornierten Rechnung steht. Jeder Weg, Positionen auf ein Angebot zu setzen, zeigt das am Bildschirm anders — still weggelassen, ausgegraut mit Grund oder beim Speichern abgelehnt —, aber keiner lässt sie durch, und der Server setzt dieselbe Regel für Anfragen durch, die nicht von den Bildschirmen kommen. Eine Zeile, die schon auf einem offenen Angebot steht, entfernt das Abrechnen nie."
-aiContribution:
-  en: "Drawn by the AI for this site from the billed-position story's criteria, one branch per entry point the story names."
-  de: "Von der KI für diese Website gezeichnet, aus den Kriterien der Story zu abgerechneten Positionen, ein Zweig je Einstiegspunkt, den die Story nennt."
 introducedIn: WZ-0.4.0
 source: docs/user-stories/152-a-billed-position-is-never-offered-again.md
 code:
